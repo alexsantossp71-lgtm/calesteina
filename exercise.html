@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício - Calistenia Pro</title>
+    <meta name="description" content="Biblioteca de detalhes anatômicos e passos rigorosos de como realizar seus exercícios perfeitamente.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .ex-hero {
+            background-color: var(--color-bg-alt);
+            border-bottom: 1px solid var(--color-border);
+            text-align: center;
+        }
+        .ex-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+        .ex-steps-card {
+            background: var(--color-bg-alt);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--color-border);
+            border-top: 4px solid var(--color-cta);
+        }
+        .ex-steps-list {
+            margin-top: 2rem;
+            padding-left: 1rem;
+            list-style: decimal;
+        }
+        .visual-demo {
+            height: 100%;
+            min-height: 400px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo">Calistenia<span class="highlight">Pro</span></div>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="program.html">Programa 30 Dias</a></li>
+                <li><a href="javascript:history.back()" style="color: var(--color-cta); font-weight: 600;">← Voltar ao Treino</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header Dinâmico -->
+    <header class="ex-hero section-spacing">
+        <div class="container">
+            <h1 id="ex-title">Carregando Movimento...</h1>
+            <div id="ex-muscles" style="margin-top: 1.5rem; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;">
+                <!-- Chips de musculo criados dinamicamente -->
+            </div>
+        </div>
+    </header>
+
+    <section class="section-spacing">
+        <div class="container ex-content-grid">
+            <div class="ex-steps-card">
+                <h2>Como Realizar e Para que Serve?</h2>
+                <p id="ex-purpose" style="font-weight: 500; color: var(--color-text-dark); border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">Nossa biologia humana provê...</p>
+                <ol id="ex-steps" class="ex-steps-list">
+                    <!-- Passos injetados via JS -->
+                </ol>
+            </div>
+            
+            <div class="visual-demo shadow-hover" id="ex-image-container" style="padding: 1rem; overflow: hidden; background: #0f172a; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+                <!-- Imagens injetadas pelo script -->
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container foot-content">
+            <div class="logo">Calistenia<span class="highlight">Pro</span></div>
+            <p>&copy; 2024 Biblioteca Orgânica. Força Constante. SMWD.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts do site principal mais os db de dados -->
+    <script src="script.js"></script>
+    <script src="exercises-data.js"></script>
+</body>
+</html>
