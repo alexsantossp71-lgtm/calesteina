@@ -12,7 +12,7 @@ const programData = {
         {
             day: 2, type: "Descanso Ativo", exercises: [
                 { name: "Caminhada Leve", reps: "20-30 min" },
-                { name: "Alongamento Geral", reps: "10 min" }
+                { name: "Alongamento Geral & Mobilidade", reps: "10 min" }
             ]
         },
         {
@@ -173,23 +173,25 @@ const CalisteniaTracker = {
         return this.getCompletedDays().includes(dayNum);
     },
 
-    toggleDayCompleted(dayNum) {
+    setDayCompleted(dayNum, isCompleted = true) {
         let days = this.getCompletedDays();
         const index = days.indexOf(dayNum);
-        let isNowCompleted = false;
 
-        if (index > -1) {
-            days.splice(index, 1);
+        if (isCompleted) {
+            if (index === -1) days.push(dayNum);
         } else {
-            days.push(dayNum);
-            isNowCompleted = true;
+            if (index > -1) days.splice(index, 1);
         }
 
         try {
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(days));
         } catch (e) {}
+    },
 
-        return isNowCompleted;
+    toggleDayCompleted(dayNum) {
+        const isDone = this.isDayCompleted(dayNum);
+        this.setDayCompleted(dayNum, !isDone);
+        return !isDone;
     },
 
     resetProgress() {
@@ -216,6 +218,70 @@ const CalisteniaTracker = {
         return streak;
     }
 };
+
+// ==================================================
+// Diário de Treino & Anotações de Recorde
+// ==================================================
+const CalisteniaJournal = {
+    STORAGE_KEY: 'calistenia_pro_journal',
+
+    getJournal() {
+        try {
+            const data = localStorage.getItem(this.STORAGE_KEY);
+            return data ? JSON.parse(data) : {};
+        } catch(e) {
+            return {};
+        }
+    },
+
+    getNote(dayNum) {
+        const j = this.getJournal();
+        return j[dayNum] || '';
+    },
+
+    saveNote(dayNum, noteText) {
+        const j = this.getJournal();
+        j[dayNum] = noteText;
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(j));
+        } catch(e) {}
+    }
+};
+
+// ==================================================
+// Gerenciador de Rotinas Personalizadas
+// ==================================================
+const CustomRoutines = {
+    STORAGE_KEY: 'calistenia_pro_custom_routines',
+
+    getRoutines() {
+        try {
+            const data = localStorage.getItem(this.STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        } catch(e) {
+            return [];
+        }
+    },
+
+    saveRoutine(name, exercises) {
+        const list = this.getRoutines();
+        list.push({ name, exercises, createdAt: new Date().toISOString() });
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+        } catch(e) {}
+    },
+
+    deleteRoutine(index) {
+        const list = this.getRoutines();
+        if (index >= 0 && index < list.length) {
+            list.splice(index, 1);
+            try {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+            } catch(e) {}
+        }
+    }
+};
+window.CustomRoutines = CustomRoutines;
 
 // ==================================================
 // Theme System Manager (Modo Claro / Modo Escuro)
@@ -261,7 +327,7 @@ function showToast(message, type = 'success') {
         container.style.position = 'fixed';
         container.style.bottom = '20px';
         container.style.right = '20px';
-        container.style.zIndex = '9999';
+        container.style.zIndex = '99999';
         container.style.display = 'flex';
         container.style.flexDirection = 'column';
         container.style.gap = '10px';
@@ -274,7 +340,7 @@ function showToast(message, type = 'success') {
     toast.style.color = '#FFFFFF';
     toast.style.padding = '0.8rem 1.25rem';
     toast.style.borderRadius = '8px';
-    toast.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.2)';
+    toast.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.25)';
     toast.style.fontWeight = '600';
     toast.style.fontSize = '0.95rem';
     toast.style.display = 'flex';
@@ -289,11 +355,319 @@ function showToast(message, type = 'success') {
         toast.style.opacity = '0';
         toast.style.transition = 'opacity 0.3s ease';
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 3200);
 }
 
 // ==================================================
-// Program Page UI Renderer
+// MODO TREINO ATIVO (WORKOUT PLAYER ENGINE)
+// ==================================================
+const WorkoutPlayer = {
+    overlay: null,
+    currentWorkoutTitle: '',
+    currentExercises: [],
+    currentIndex: 0,
+    restInterval: null,
+    restSeconds: 30,
+    dayNum: null,
+
+    init() {
+        if (document.getElementById('workoutPlayerOverlay')) return;
+
+        const div = document.createElement('div');
+        div.id = 'workoutPlayerOverlay';
+        div.className = 'modal-overlay';
+        div.style.display = 'none';
+
+        div.innerHTML = `
+            <div class="modal-content shadow-sm" style="max-width: 650px; text-align: center; position: relative;">
+                <button id="wpCloseBtn" class="btn-outline btn-sm" style="position: absolute; top: 15px; right: 15px;">✕ Fechar</button>
+                <span class="label success" id="wpBadge">MODO TREINO ATIVO</span>
+                <h2 id="wpTitle" style="margin: 0.5rem 0 1.5rem 0;">Nome do Treino</h2>
+
+                <div id="wpContentBox" style="background: var(--color-bg-main); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem;">
+                    <span id="wpStepCount" style="font-size: 0.85rem; font-weight: 700; color: var(--color-cta);">Exercício 1 de 4</span>
+                    <h3 id="wpExName" style="font-size: 1.6rem; margin: 0.5rem 0;">Flexão de Braço</h3>
+                    <div id="wpExReps" style="font-size: 1.1rem; font-weight: 700; color: var(--color-cta); margin-bottom: 1rem;">3 séries de 10</div>
+                    
+                    <div id="wpImgBox" style="margin: 1rem 0;">
+                        <!-- Imagem do exercício -->
+                    </div>
+
+                    <p id="wpPurpose" style="font-size: 0.9rem; color: var(--color-text-muted);">Objetivo do exercício...</p>
+                </div>
+
+                <!-- Temporizador de Descanso Embutido -->
+                <div id="wpRestBox" style="display: none; background: #DBEAFE; border: 1px solid #93C5FD; padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem; color: #1E3A8A;">
+                    <h4 style="margin-bottom: 0.25rem;">⏱️ Intervalo de Descanso Ativo</h4>
+                    <div id="wpTimerDisplay" style="font-size: 2.5rem; font-weight: 700; font-family: monospace; color: #1D4ED8;">00:30</div>
+                    <button id="wpSkipRestBtn" class="btn-cta btn-sm" style="margin-top: 0.5rem;">Pular Descanso ➔</button>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button id="wpPrevBtn" class="btn-outline">← Anterior</button>
+                    <button id="wpNextBtn" class="btn-cta">Próximo Exercício →</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(div);
+        this.overlay = div;
+
+        document.getElementById('wpCloseBtn').addEventListener('click', () => this.close());
+        document.getElementById('wpPrevBtn').addEventListener('click', () => this.prev());
+        document.getElementById('wpNextBtn').addEventListener('click', () => this.next());
+        document.getElementById('wpSkipRestBtn').addEventListener('click', () => this.stopRest());
+    },
+
+    start(title, exercises, dayNum = null) {
+        this.init();
+        this.currentWorkoutTitle = title;
+        this.currentExercises = exercises;
+        this.currentIndex = 0;
+        this.dayNum = dayNum;
+
+        document.getElementById('wpTitle').textContent = title;
+        this.overlay.style.display = 'flex';
+        this.renderStep();
+    },
+
+    renderStep() {
+        this.stopRest();
+
+        if (this.currentIndex >= this.currentExercises.length) {
+            this.renderVictory();
+            return;
+        }
+
+        const exItem = this.currentExercises[this.currentIndex];
+        const total = this.currentExercises.length;
+
+        document.getElementById('wpStepCount').textContent = `Exercício ${this.currentIndex + 1} de ${total}`;
+        document.getElementById('wpExName').textContent = exItem.name;
+        document.getElementById('wpExReps').textContent = exItem.reps;
+
+        // Tenta buscar dados ricos no exerciseDB
+        let exId = "flexao-de-braco";
+        if (typeof processIdStr === 'function') {
+            exId = processIdStr(exItem.name);
+        }
+
+        const data = (window.exerciseDB && window.exerciseDB[exId]) ? window.exerciseDB[exId] : null;
+        if (data) {
+            document.getElementById('wpPurpose').textContent = data.purpose;
+        } else {
+            document.getElementById('wpPurpose').textContent = "Execute com forma limpa e controle respiratório.";
+        }
+
+        const imgBox = document.getElementById('wpImgBox');
+        imgBox.innerHTML = '';
+        const srcImg = (data && data.category === 'legs') ? "assets/img/squat_start.png" : "assets/img/pushup_start.png";
+        const img = document.createElement('img');
+        img.src = srcImg;
+        img.alt = exItem.name;
+        img.style.maxHeight = '180px';
+        img.style.borderRadius = '8px';
+        imgBox.appendChild(img);
+
+        document.getElementById('wpPrevBtn').style.display = this.currentIndex === 0 ? 'none' : 'inline-flex';
+        document.getElementById('wpNextBtn').textContent = this.currentIndex === total - 1 ? 'Concluir Treino! 🎉' : 'Próximo / Descanso →';
+    },
+
+    next() {
+        if (this.currentIndex < this.currentExercises.length - 1) {
+            this.startRest(() => {
+                this.currentIndex++;
+                this.renderStep();
+            });
+        } else {
+            this.currentIndex++;
+            this.renderVictory();
+        }
+    },
+
+    prev() {
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+            this.renderStep();
+        }
+    },
+
+    startRest(onFinish) {
+        const restBox = document.getElementById('wpRestBox');
+        const display = document.getElementById('wpTimerDisplay');
+        restBox.style.display = 'block';
+
+        let sec = 30;
+        display.textContent = `00:${sec}`;
+
+        this.restInterval = setInterval(() => {
+            sec--;
+            display.textContent = `00:${String(sec).padStart(2, '0')}`;
+            if (sec <= 0) {
+                this.stopRest();
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    osc.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.8);
+                } catch(e) {}
+                if (onFinish) onFinish();
+            }
+        }, 1000);
+    },
+
+    stopRest() {
+        if (this.restInterval) {
+            clearInterval(this.restInterval);
+            this.restInterval = null;
+        }
+        document.getElementById('wpRestBox').style.display = 'none';
+    },
+
+    renderVictory() {
+        const box = document.getElementById('wpContentBox');
+        box.innerHTML = `
+            <div style="padding: 2rem 0;">
+                <h2 style="font-size: 2.2rem; color: #10B981; margin-bottom: 0.5rem;">🎉 Treino Concluído!</h2>
+                <p style="font-size: 1.1rem; color: var(--color-text-dark);">Você superou a gravidade hoje e deu mais um passo na sua evolução!</p>
+                <div style="margin: 2rem 0;">
+                    <button id="wpShareBtn" class="btn-cta btn-large">🏆 Gerar Imagem de Conquista</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('wpPrevBtn').style.display = 'none';
+        document.getElementById('wpNextBtn').style.display = 'none';
+
+        if (this.dayNum) {
+            CalisteniaTracker.setDayCompleted(this.dayNum, true);
+            if (typeof renderProgressHeader === 'function') renderProgressHeader();
+            if (typeof renderWeek === 'function' && window.currentActiveWeek) renderWeek(window.currentActiveWeek);
+        }
+
+        document.getElementById('wpShareBtn')?.addEventListener('click', () => {
+            this.close();
+            ShareCardModal.open();
+        });
+    },
+
+    close() {
+        this.stopRest();
+        if (this.overlay) this.overlay.style.display = 'none';
+    }
+};
+window.WorkoutPlayer = WorkoutPlayer;
+
+// ==================================================
+// SHARE CARD GENERATOR (HTML5 CANVAS BADGE)
+// ==================================================
+const ShareCardModal = {
+    overlay: null,
+
+    init() {
+        if (document.getElementById('shareCardOverlay')) return;
+
+        const div = document.createElement('div');
+        div.id = 'shareCardOverlay';
+        div.className = 'modal-overlay';
+        div.style.display = 'none';
+
+        div.innerHTML = `
+            <div class="modal-content shadow-sm" style="max-width: 500px; text-align: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>🏆 Sua Cartão de Conquista</h3>
+                    <button id="closeShareBtn" class="btn-outline btn-sm">✕ Fechar</button>
+                </div>
+                
+                <canvas id="shareCanvas" width="800" height="800" style="width: 100%; height: auto; border-radius: 12px; box-shadow: var(--shadow-soft); margin-bottom: 1.5rem;"></canvas>
+                
+                <a id="downloadShareCardBtn" class="btn-cta btn-large" download="conquista-calistenia-pro.png" style="width: 100%;">📥 Baixar Imagem da Conquista</a>
+            </div>
+        `;
+
+        document.body.appendChild(div);
+        this.overlay = div;
+
+        document.getElementById('closeShareBtn').addEventListener('click', () => {
+            this.overlay.style.display = 'none';
+        });
+    },
+
+    open() {
+        this.init();
+        this.overlay.style.display = 'flex';
+        this.drawCanvas();
+    },
+
+    drawCanvas() {
+        const canvas = document.getElementById('shareCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        const daysDone = CalisteniaTracker.getCompletedDays().length;
+        const streak = CalisteniaTracker.getStreak();
+
+        // Background Gradient
+        const grad = ctx.createLinearGradient(0, 0, 800, 800);
+        grad.addColorStop(0, '#0F172A');
+        grad.addColorStop(1, '#1E293B');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 800, 800);
+
+        // Border Accent
+        ctx.strokeStyle = '#2563EB';
+        ctx.lineWidth = 16;
+        ctx.strokeRect(20, 20, 760, 760);
+
+        // Header Text
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 44px Playfair Display, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('CALISTENIA PRO', 400, 120);
+
+        ctx.fillStyle = '#3B82F6';
+        ctx.font = '600 24px Inter, sans-serif';
+        ctx.fillText('DOMINE SEU PRÓPRIO CORPO', 400, 165);
+
+        // Circle Badge
+        ctx.beginPath();
+        ctx.arc(400, 360, 130, 0, 2 * Math.PI);
+        ctx.fillStyle = '#2563EB';
+        ctx.fill();
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = '#10B981';
+        ctx.stroke();
+
+        // Stat inside Circle
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 80px Inter, sans-serif';
+        ctx.fillText(`${daysDone}`, 400, 380);
+
+        ctx.font = '600 20px Inter, sans-serif';
+        ctx.fillText('DIAS CONCLUÍDOS', 400, 420);
+
+        // Streak & Date
+        ctx.fillStyle = '#F8FAFC';
+        ctx.font = 'bold 32px Inter, sans-serif';
+        ctx.fillText(`🔥 Sequência: ${streak} Dias Seguidos`, 400, 560);
+
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '500 22px Inter, sans-serif';
+        ctx.fillText('30 Days Bodyweight Challenge', 400, 620);
+
+        ctx.fillStyle = '#10B981';
+        ctx.font = 'bold 26px Inter, sans-serif';
+        ctx.fillText('🏆 Mestre da Gravidade', 400, 700);
+
+        // Set download link href
+        const dataUrl = canvas.toDataURL('image/png');
+        document.getElementById('downloadShareCardBtn').href = dataUrl;
+    }
+};
+
+// ==================================================
+// PROGRAM PAGE UI RENDERER
 // ==================================================
 let currentActiveWeek = 1;
 
@@ -307,8 +681,7 @@ function renderProgressHeader() {
     const percentage = Math.round((completedCount / totalCount) * 100);
     const streak = CalisteniaTracker.getStreak();
 
-    // Determine Badge
-    let badgeText = "🥉 Iniciante Calistênico";
+    let badgeText = "🌱 Iniciante Calistênico";
     if (completedCount >= 30) badgeText = "🏆 Mestre Calistênico Supremo!";
     else if (completedCount >= 21) badgeText = "🥇 Ouro (Semana 3 Concluída)";
     else if (completedCount >= 14) badgeText = "🥈 Prata (Semana 2 Concluída)";
@@ -329,7 +702,8 @@ function renderProgressHeader() {
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" style="width: ${percentage}%;"></div>
             </div>
-            <div style="margin-top: 1rem; text-align: right;">
+            <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <button class="btn-cta btn-sm" id="btnOpenShareCard">🏆 Compartilhar Progresso</button>
                 <button class="btn-outline btn-sm" id="resetProgressBtn" style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">🔄 Resetar Progresso</button>
             </div>
         </div>
@@ -343,6 +717,10 @@ function renderProgressHeader() {
             showToast("Progresso resetado com sucesso.", "info");
         }
     });
+
+    document.getElementById('btnOpenShareCard')?.addEventListener('click', () => {
+        ShareCardModal.open();
+    });
 }
 
 function renderWeek(weekNum) {
@@ -350,7 +728,6 @@ function renderWeek(weekNum) {
     const daysGrid = document.getElementById('daysGrid');
     if (!daysGrid) return;
 
-    // Atualiza botoes da semana
     document.querySelectorAll('.week-btn').forEach((btn, idx) => {
         if (idx === weekNum - 1) {
             btn.classList.add('active');
@@ -359,7 +736,6 @@ function renderWeek(weekNum) {
         }
     });
 
-    // Limpa grid
     daysGrid.innerHTML = '';
 
     const days = programData[weekNum];
@@ -383,6 +759,8 @@ function renderWeek(weekNum) {
             `;
         });
 
+        const savedNote = CalisteniaJournal.getNote(day.day);
+
         dayCard.innerHTML = `
             <div class="day-header">
                 <div>
@@ -397,10 +775,22 @@ function renderWeek(weekNum) {
                 <ul class="exercise-list">
                     ${exercisesHtml}
                 </ul>
+
+                <div style="margin-top: 1.25rem; display: flex; gap: 0.5rem;">
+                    <button class="btn-cta btn-sm btn-start-player" data-day="${day.day}" style="flex: 1; font-size: 0.85rem; padding: 0.4rem;">
+                        ▶️ Treino Ativo
+                    </button>
+                </div>
+
+                <!-- Diário de Treino / Anotação -->
+                <div style="margin-top: 1rem; border-top: 1px dashed var(--color-border); padding-top: 0.75rem;">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 0.2rem;">📝 Diário & Anotação de Carga/Reps:</label>
+                    <input type="text" class="journal-input form-control" data-day="${day.day}" value="${savedNote}" placeholder="Ex: Fiz 20 flexões limpas!" style="font-size: 0.85rem; padding: 0.4rem 0.6rem;">
+                </div>
             </div>
         `;
 
-        // Event listener para marcar como concluido
+        // Listener para marcar dia
         const toggleBtn = dayCard.querySelector('.btn-toggle-day');
         toggleBtn.addEventListener('click', () => {
             const nowDone = CalisteniaTracker.toggleDayCompleted(day.day);
@@ -414,29 +804,47 @@ function renderWeek(weekNum) {
             }
         });
 
+        // Listener para iniciar Workout Player no dia
+        const startPlayerBtn = dayCard.querySelector('.btn-start-player');
+        startPlayerBtn.addEventListener('click', () => {
+            WorkoutPlayer.start(`Dia ${day.day} - ${day.type}`, day.exercises, day.day);
+        });
+
+        // Listener para salvar anotação do diário
+        const journalInput = dayCard.querySelector('.journal-input');
+        journalInput.addEventListener('change', (e) => {
+            CalisteniaJournal.saveNote(day.day, e.target.value);
+            showToast('Anotação salva no diário!', 'info');
+        });
+
         daysGrid.appendChild(dayCard);
     });
 }
 
-// Escopo global para clique nos botoes de semana
 window.filterWeek = function (week) {
     renderWeek(week);
 };
 
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(() => {
+            console.log('ServiceWorker registrado com sucesso!');
+        }).catch(() => {});
+    });
+}
+
 // ==================================================
-// Inicialização Global na Carga da Página
+// Inicialização Global
 // ==================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializa Tema (Dark/Light)
     ThemeManager.init();
 
-    // Se estiver na pagina do programa (program.html)
     if (document.getElementById('daysGrid')) {
         renderProgressHeader();
         renderWeek(1);
     }
 
-    // Menu Mobile
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
 
