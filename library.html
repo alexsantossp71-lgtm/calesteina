@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Exercícios - Calistenia Pro</title>
+    <meta name="description" content="Explore todos os exercícios de calistenia organizados por grupo muscular, nível de dificuldade e execução técnica.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .library-hero {
+            text-align: center;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto 0 auto;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--color-border);
+            background-color: var(--color-bg-alt);
+            color: var(--color-text-dark);
+            outline: none;
+            transition: var(--transition);
+        }
+        .search-input:focus {
+            border-color: var(--color-cta);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .filter-pill {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-pill:hover, .filter-pill.active {
+            background-color: var(--color-cta);
+            color: #FFFFFF !important;
+            border-color: var(--color-cta);
+        }
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .ex-card {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .ex-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--color-cta);
+        }
+        .ex-card-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .ex-card-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+        }
+        .ex-card-purpose {
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo"><a href="index.html" style="color: inherit;">Calistenia<span class="highlight">Pro</span></a></div>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="program.html">Programa 30 Dias</a></li>
+                <li><a href="library.html" class="active-link">Biblioteca</a></li>
+            </ul>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="theme-toggle-btn btn-outline btn-sm">🌙 Modo Escuro</button>
+                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header da Biblioteca -->
+    <header class="library-hero section-spacing bg-light">
+        <div class="container">
+            <h1>Biblioteca de <span class="highlight" style="color: var(--color-cta)">Exercícios</span></h1>
+            <p>Guia completo de movimentos para evoluir sua técnica e anatomia do movimento.</p>
+            
+            <div class="search-container">
+                <input type="text" id="librarySearch" class="search-input" placeholder="🔍 Buscar por nome, músculo ou objetivo (ex: flexão, peitoral, core)...">
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo com Filtros e Grid -->
+    <section class="section-spacing">
+        <div class="container">
+            <div class="filter-section">
+                <div class="filter-group" id="categoryFilters">
+                    <button class="filter-pill active" data-category="all">Todos os Grupos</button>
+                    <button class="filter-pill" data-category="push">Empurrar (Push)</button>
+                    <button class="filter-pill" data-category="pull">Puxar (Pull)</button>
+                    <button class="filter-pill" data-category="legs">Pernas (Legs)</button>
+                    <button class="filter-pill" data-category="core">Core / Abdômen</button>
+                    <button class="filter-pill" data-category="cardio">Cardio</button>
+                    <button class="filter-pill" data-category="mobility">Mobilidade</button>
+                </div>
+                <div class="filter-group" id="levelFilters">
+                    <button class="filter-pill active" data-level="all">Todos os Níveis</button>
+                    <button class="filter-pill" data-level="iniciante">Iniciante</button>
+                    <button class="filter-pill" data-level="intermediario">Intermediário</button>
+                    <button class="filter-pill" data-level="avancado">Avançado</button>
+                </div>
+            </div>
+
+            <div class="library-grid" id="libraryGrid">
+                <!-- Preenchido via JavaScript -->
+            </div>
+            <div id="noResultsMsg" style="display: none; text-align: center; padding: 4rem 0;">
+                <h3>Nenhum exercício encontrado</h3>
+                <p>Tente ajustar os termos da sua busca ou resetar os filtros.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container foot-content">
+            <div class="logo">Calistenia<span class="highlight">Pro</span></div>
+            <p>&copy; 2026 Calistenia Pro. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="exercises-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('libraryGrid');
+            const searchInput = document.getElementById('librarySearch');
+            const noResults = document.getElementById('noResultsMsg');
+            
+            let selectedCategory = 'all';
+            let selectedLevel = 'all';
+            let searchTerm = '';
+
+            function renderLibrary() {
+                grid.innerHTML = '';
+                let count = 0;
+
+                Object.keys(exerciseDB).forEach(key => {
+                    if (key === 'descanso') return; // ignora card de descanso na biblioteca
+                    const ex = exerciseDB[key];
+
+                    // Filtro de Categoria
+                    const matchCat = selectedCategory === 'all' || ex.category === selectedCategory;
+                    // Filtro de Nivel
+                    const matchLevel = selectedLevel === 'all' || ex.level === selectedLevel;
+                    // Filtro de Busca
+                    const textStr = `${ex.name} ${ex.purpose} ${ex.muscles.join(' ')} ${ex.categoryName}`.toLowerCase();
+                    const matchSearch = !searchTerm || textStr.includes(searchTerm.toLowerCase());
+
+                    if (matchCat && matchLevel && matchSearch) {
+                        count++;
+                        const card = document.createElement('div');
+                        card.className = 'ex-card';
+                        
+                        card.innerHTML = `
+                            <div>
+                                <div class="ex-card-tags">
+                                    <span class="label success">${ex.categoryName}</span>
+                                    <span class="label" style="background:#FEF3C7; color:#D97706;">${ex.levelName}</span>
+                                </div>
+                                <h3 class="ex-card-title">${ex.name}</h3>
+                                <p class="ex-card-purpose">${ex.purpose}</p>
+                            </div>
+                            <a href="exercise.html?id=${encodeURIComponent(ex.name)}" class="btn-cta btn-sm" style="width: 100%; text-align: center;">Ver Detalhes do Exercício →</a>
+                        `;
+                        grid.appendChild(card);
+                    }
+                });
+
+                if (count === 0) {
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                }
+            }
+
+            // Listeners de Busca
+            searchInput.addEventListener('input', (e) => {
+                searchTerm = e.target.value.trim();
+                renderLibrary();
+            });
+
+            // Listeners de Categoria
+            document.querySelectorAll('#categoryFilters .filter-pill').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#categoryFilters .filter-pill').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedCategory = btn.getAttribute('data-category');
+                    renderLibrary();
+                });
+            });
+
+            // Listeners de Nível
+            document.querySelectorAll('#levelFilters .filter-pill').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#levelFilters .filter-pill').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedLevel = btn.getAttribute('data-level');
+                    renderLibrary();
+                });
+            });
+
+            renderLibrary();
+        });
+    </script>
+</body>
+</html>
