@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Programa 30 Dias - Calistenia Pro</title>
-    <meta name="description" content="Seu desafio diário de 30 dias para dominar a calistenia.">
+    <meta name="description" content="Seu desafio diário de 30 dias para dominar a calistenia com acompanhamento de progresso.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563EB">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,23 +17,37 @@
     <!-- Navegação -->
     <nav class="navbar">
         <div class="container nav-content">
-            <div class="logo">Calistenia<span class="highlight">Pro</span></div>
+            <div class="logo"><a href="index.html" style="color: inherit;">Calistenia<span class="highlight">Pro</span></a></div>
             <ul class="nav-links">
                 <li><a href="index.html">Início</a></li>
-                <li><a href="program.html" style="color: var(--color-cta); font-weight: 600;">Programa 30 Dias</a></li>
+                <li><a href="program.html" class="active-link">Programa 30 Dias</a></li>
+                <li><a href="library.html">Biblioteca</a></li>
+                <li><a href="calculator.html">Calculadora</a></li>
             </ul>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="theme-toggle-btn btn-outline btn-sm">🌙 Modo Escuro</button>
+                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </div>
     </nav>
 
+    <!-- Header do Programa -->
     <header class="program-header section-spacing bg-light">
         <div class="container text-center">
-            <h1>Desafio de <span class="highlight" style="color: var(--color-cta)">Treino Diario</span></h1>
-            <p>Siga o cronograma e transforme força em habilidade real.</p>
+            <h1>Desafio de <span class="highlight" style="color: var(--color-cta)">Treino Diário</span></h1>
+            <p>Siga o cronograma, execute o Treino Ativo, anote seus recordes e transforme força em habilidade real.</p>
         </div>
     </header>
 
     <section class="program-container section-spacing">
         <div class="container">
+            
+            <!-- Widget de Progresso do Usuário (LocalStorage Tracker) -->
+            <div id="programProgressHeader" style="margin-bottom: 3rem;"></div>
+
+            <!-- Seletor de Semanas -->
             <div class="week-selector">
                 <button class="btn-outline week-btn active" onclick="filterWeek(1)">Semana 1</button>
                 <button class="btn-outline week-btn" onclick="filterWeek(2)">Semana 2</button>
@@ -40,7 +56,7 @@
             </div>
 
             <div class="disclaimer">
-                <p>⚠️ Consulte um médico antes de iniciar qualquer atividade física. Hidrate-se e respeite seus limites corporais.</p>
+                <p>⚠️ Consulte um médico antes de iniciar qualquer atividade física. Hidrate-se bem e respeite seus limites corporais.</p>
             </div>
 
             <!-- Preenchido pelo Javascript -->
@@ -51,10 +67,11 @@
     <footer class="footer">
         <div class="container foot-content">
             <div class="logo">Calistenia<span class="highlight">Pro</span></div>
-            <p>&copy; 2024 Calistenia Pro. Design SMWD. Todos os direitos reservados.</p>
+            <p>&copy; 2026 Calistenia Pro. Todos os direitos reservados.</p>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script src="exercises-data.js"></script>
 </body>
 </html>

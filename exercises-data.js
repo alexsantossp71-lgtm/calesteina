@@ -1,398 +1,554 @@
 const exerciseDB = {
-    // Semana 1 & Gerais
     "flexao-de-braco": {
         name: "Flexão de Braço",
-        purpose: "Desenvolver força fundamental de empurrar, criando um peitoral forte, ombros estáveis e braços densos.",
-        muscles: ["Peitoral Maior", "Tríceps", "Deltóide Anterior", "Core"],
+        category: "push",
+        categoryName: "Empurrar",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Desenvolver força fundamental de empurrar, fortalecendo peitoral, ombros e tríceps de forma integrada.",
+        muscles: ["Peitoral Maior", "Tríceps Braquial", "Deltoide Anterior", "Core"],
         steps: [
-            "Posicione as mãos no chão um pouco mais largas que a largura dos ombros.",
-            "Mantenha as pernas esticadas para trás, apoiadas pelas pontas dos pés.",
-            "Desça o corpo em linha reta controladamente até que o peito quase toque o chão (os cotovelos devem apontar para trás, em um ângulo de 45 graus).",
-            "Empurre o chão de volta para a posição inicial extendendo completamente os braços."
+            "Posicione as mãos no chão ligeiramente mais largas que a largura dos ombros.",
+            "Mantenha o corpo alinhado da cabeça aos calcanhares, ativando glúteos e abdômen.",
+            "Desça o peitoral de forma controlada até que ele fique a poucos centímetros do chão, mantendo cotovelos em ângulo de 45 graus.",
+            "Empurre o chão com firmeza estendendo os braços até retornar à posição inicial."
         ]
     },
     "flexao-de-braco-apoiada": {
-        name: "Flexão de Braço (Joalhos se necessário)",
-        purpose: "A versão com menos carga projetada para iniciantes criarem a base de força necessária para flexões completas.",
-        muscles: ["Peitoral Maior", "Tríceps", "Deltóide Anterior"],
+        name: "Flexão de Braço (Com Joelhos)",
+        category: "push",
+        categoryName: "Empurrar",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Versão adaptada para construir força de base e condicionar articulações antes de progredir para a flexão tradicional.",
+        muscles: ["Peitoral Maior", "Tríceps Braquial", "Deltoide Anterior"],
         steps: [
-            "Posicione as mãos no chão um pouco mais largas que a largura dos ombros.",
-            "Vá para a posição de prancha, mas apoie os dois joelhos no chão cruzando os tornozelos.",
-            "Desça o peito em direção ao chão mantendo o tronco e o quadril alinhados.",
-            "Empurre de volta estendendo os braços."
+            "Apoie as mãos no chão na largura dos ombros e apoie os joelhos no solo, cruzando os tornozelos atrás.",
+            "Mantenha a linha reta entre os joelhos, quadril e tronco.",
+            "Desça o tronco flexionando os cotovelos com controle até o peito aproximar-se do chão.",
+            "Empurre o chão de volta estendendo completamente os braços."
         ]
     },
-    "agachamento-livre": {
-        name: "Agachamento Livre",
-        purpose: "Exercício fundamental para construir pernas simétricas e fortes, focando na mobilidade de quadril, joelho e tornozelos.",
-        muscles: ["Quadríceps", "Glúteos", "Isquiotibiais", "Panturrilhas"],
-        steps: [
-            "Fique de pé com os pés na largura dos ombros.",
-            "Mantenha o peito erguido e inicie o movimento jogando os quadris para trás como se fosse sentar numa cadeira.",
-            "Desça até as coxas ficarem pelo menos paralelas ao chão, certificando-se de que os joelhos não passem drasticamente da linha dos pés.",
-            "Empurre o chão com os calcanhares para retornar à posição inicial."
-        ]
-    },
-    "prancha-abdominal": {
-        name: "Prancha Abdominal",
-        purpose: "Fortalecer globalmente a região do core, ensinando o corpo a atuar como uma unidade rígida e estável.",
-        muscles: ["Reto Abdominal", "Transverso do Abdômen", "Lombar", "Ombros"],
-        steps: [
-            "Apoie os antebraços no chão, com os cotovelos alinhados abaixo dos ombros.",
-            "Estique as pernas para trás, apoiando as pontas dos pés.",
-            "Mantenha seu corpo em uma linha reta perfeita, desde a cabeça até os tornozelos.",
-            "Contraia os glúteos e o abdômen; respire de forma controlada enquanto segura a posição."
-        ]
-    },
-    "polichinelos": {
-        name: "Polichinelos",
-        purpose: "Aumentar rapidamente a frequência cardíaca (cardio) e servir como aquecimento dinâmico.",
-        muscles: ["Sistema Cardiovascular", "Panturrilhas", "Ombros", "Núcleo (Core)"],
-        steps: [
-            "Comece na posição de pé com os braços relaxados ao lado do corpo.",
-            "Dê um pequeno salto abrindo as pernas e eleve os braços acima da cabeça batendo as mãos.",
-            "Dê outro salto para voltar à posição inicial.",
-            "Repita de forma contínua."
-        ]
-    },
-    "caminhada-leve": {
-        name: "Caminhada Leve",
-        purpose: "Atuar como descanso ativo para facilitar o fluxo sanguíneo eliminando ácido lático.",
-        muscles: ["Sistema Cardiovascular", "Pernas (Baixa Intensidade)"],
-        steps: [
-            "Encontre uma área externa ou esteira.",
-            "Caminhe em um ritmo onde sua respiração seja um pouco mais rápida mas ainda consiga manter uma conversa."
-        ]
-    },
-    "alongamento-geral": {
-        name: "Alongamento Geral",
-        purpose: "Prevenir lesões e manter/aumentar a amplitude de movimento articular.",
-        muscles: ["Corpo Inteiro (Flexibilidade)"],
-        steps: [
-            "Segure alongamentos estáticos para as pernas (toque os pés com as pernas esticadas).",
-            "Estique os braços no batente de uma porta para relaxar o peitoral.",
-            "Segure cada posição por 20 a 30 segundos, respirando fundo e sem causar dor aguda."
-        ]
-    },
-    "mergulho-no-banco": {
-        name: "Mergulho no Banco (Tríceps)",
-        purpose: "Isolar a força para estender os braços e construir volume de tríceps com facilidade.",
-        muscles: ["Tríceps Braquial", "Peitoral Inferior", "Deltóide Anterior"],
-        steps: [
-            "Sente-se na beirada de uma cadeira/banco rígido.",
-            "Apoie as mãos firmemente nas bordas, deslize os glúteos para fora do assento esticando as pernas (flexionadas diminuem a carga, retas aumentam).",
-            "Desça o corpo verticalmente dobrando os cotovelos até formar um ângulo próximo a 90 graus.",
-            "Empurre com força de volta acima."
-        ]
-    },
-    "prancha-alta-toque": {
-        name: "Prancha Alta (toque no ombro)",
-        purpose: "Introduzir instabilidade antiflexão (força anti-rotação do abdômen) aliada a estabilidade superior ativa.",
-        muscles: ["Ombros", "Core Anti-rotacional", "Reto Abdominal", "Tríceps"],
-        steps: [
-            "Inicie na posição superior da flexão de braço (prancha alta).",
-            "Mantenha o quadril o mais imóvel possível e levante levemente a mão direita do chão para tocar o ombro esquerdo.",
-            "Volte a mão para o chão e repita com o braço aposto."
-        ]
-    },
-    "agachamento-sumo": {
-        name: "Agachamento Sumô",
-        purpose: "Dar foco maior à porção interna da coxa e aos glúteos, alterando a base biomecânica natural.",
-        muscles: ["Glúteos Máximos", "Adutores", "Quadríceps"],
-        steps: [
-            "Posicione as pernas substancialmente mais largas que a largura dos ombros.",
-            "Aponte os pés para fora em ângulo de aproximadamente 45 graus.",
-            "Desça o quadril de forma vertical.",
-            "Volte e contraia os glúteos vigorosamente ao chegar no topo."
-        ]
-    },
-    "afundo": {
-        name: "Afundo (Lunge)",
-        purpose: "Exercício unilateral para corrigir desequilíbrios físicos de uma perna ser mais forte que a outra.",
-        muscles: ["Quadríceps", "Glúteos", "Isquiotibiais", "Core"],
-        steps: [
-            "Com as pernas juntas, dê um passo largo à frente com a sua perna direita.",
-            "Desça o quadril formando um ângulo de 90 graus na perna da frente e deixando o joelho de trás bater de leve no chão.",
-            "Com a força esmagadora na perna da frente, empurre seu corpo de volta à posição original."
-        ]
-    },
-    "elevacao-de-panturrilha": {
-        name: "Elevação de Panturrilha",
-        purpose: "Fortalecer a musculatura responsável pelo suporte do tornozelo e locomoção do dia-a-dia.",
-        muscles: ["Gastrocnêmio", "Sóleo (Panturrilha)"],
-        steps: [
-            "Fique em pé próximo a uma parede (para equilíbrio).",
-            "Tire os calcanhares do chão e levante seu corpo suportado apenas sobre as pontas dos dedos e a bola do pé.",
-            "Contraia no topo e desça sentindo o alongamento do músculo."
-        ]
-    },
-    "corrida-estacionaria": {
-        name: "Corrida Estacionária",
-        purpose: "Condicionamento físico simulando esteira/corrida natural se mantendo parado.",
-        muscles: ["Cardiovascular", "Panturrilhas", "Quadríceps"],
-        steps: [
-            "Corra no mesmo lugar que está.",
-            "Para aumentar a intensidade, leve os joelhos até a altura do abdômen."
-        ]
-    },
-
-    // Semana 2
     "flexao-fechada": {
         name: "Flexão Fechada (Diamante)",
-        purpose: "Migrar o estresse mecânico esmagadoramente pro tríceps, em vez do peitoral.",
-        muscles: ["Tríceps Braquial", "Parte Central do Peitoral", "Delts"],
+        category: "push",
+        categoryName: "Empurrar",
+        level: "intermediario",
+        levelName: "Intermediário",
+        purpose: "Aproximar as mãos para mudar o foco biomecânico e intensificar o recrutamento do tríceps braquial.",
+        muscles: ["Tríceps Braquial", "Peitoral Medial", "Deltoide Anterior"],
         steps: [
-            "Na posição da prancha, aproxime suas mãos até que os polegares e indicadores se toquem, montando uma forma de diamante.",
-            "Desça o peitoral sobre suas mãos e empurre até os braços travarem.",
-            "Mantenha os cotovelos colados ao corpo."
+            "Na posição de prancha, aproxime as mãos até que os polegares e indicadores formem um triângulo/diamante.",
+            "Mantenha os cotovelos colados ao corpo durante a descida.",
+            "Desça até o peitoral encostar suavemente nas mãos.",
+            "Empurre o solo com força focando na contração dos tríceps."
         ]
     },
-    "elevacao-lateral": {
-        name: "Elevação Lateral (com garrafas)",
-        purpose: "Exercitar a parte lateral do ombro na calistenia costuma ser complexo. Este é o único adendo de objeto para simetria.",
-        muscles: ["Deltóide Lateral"],
-        steps: [
-            "Segure dois objetos de pesos iguais (garrafa PET média de água, livros amarrados etc.).",
-            "Mantenha os braços esticados ao longo do corpo com microflexão de cotovelo.",
-            "Levante os braços para as laterais do corpo até ficar na linha dos ombros, e desça com controle extremo."
-        ]
-    },
-    "barra-fixa-isometria": {
-        name: "Barra Fixa (Isometria) / Remada",
-        purpose: "Construção massiva das costas (Asa/Dorsal) preparando o indivíduo para a 1ª barra fixa da vida.",
-        muscles: ["Grande Dorsal (Costas)", "Bíceps", "Antebraços", "Rombóide"],
-        steps: [
-            "Remada (Iniciante): Posicione-se sob uma mesa resistente, agarre a borda, puxe seu peito para cima travando o abdômen e desça.",
-            "Isometria: Pule para passar o queixo de uma barra afixada ou galho firme de árvore. Trave os músculos das costas para se segurar no ar ali mesmo por segundos ao invés de descer.",
-            "Na isometria (foco em queixo acima da barra) ou pendurado travando escápulas ativas são progressões de força bruta de dorsal."
-        ]
-    },
-    "superman": {
-        name: "Superman (Lombar)",
-        purpose: "Uma estrutura de aço exige uma lombar que equaliza o peitoral e o abdômen pesado.",
-        muscles: ["Eretores da Espinha", "Glúteo", "Delts Post."],
-        steps: [
-            "Deite-se de bruços totalmente relaxado com braços e pernas retos esticados.",
-            "Exageradamente e simultaneamente, descole mãos, peito e coxas do chão levantando-se simulando o Superman em voo.",
-            "Segure 2 segundos contraindo a lombar rigorosamente antes de relaxar em contato com o chão."
-        ]
-    },
-    "abdominal-infra": {
-        name: "Abdominal Infra (Elevação de Pernas)",
-        purpose: "Estimular a porção inferior do abdômen mais difícil de atingir do que em sit-ups normais.",
-        muscles: ["Reto Abdominal Inferior", "Flexores do Quadril/Psoas"],
-        steps: [
-            "Deite-se no piso em cima das mãos voltadas por baixo dos glúteos evitando curvar a lombar maléficamente.",
-            "Com as pernas retas (ou com os joelhos um pouco dobrados para inexperientes), levante as pontas de pés até a perpendicular em direção ao teto.",
-            "Desça suavemente parando pouco antes de raspar o calcanhar no solo."
-        ]
-    },
-    "agachamento-bulgaro": {
-        name: "Agachamento Búlgaro",
-        purpose: "Exercício supremo de desenvolvimento de hipertrofia da perna, isolando um lado inteiramente para carga pesada.",
-        muscles: ["Quadríceps Exigido Maximalmente", "Glúteo", "Fibra Isquiotibial"],
-        steps: [
-            "Pise à frente, estique a perna oposta acomodando as pontas/peito do pé por cima do assento do sofá ou de uma cadeira recuada pra trás.",
-            "Mantenha postura vertical rígida descendo todo seu quadril verticalmente no formato dum Lunge extremo.",
-            "Empurre forçando do meio o calcanhar daquela perna frontal sentindo os fluidos musculares arderem.",
-            "Sempre revezar igualmente perna para não produzir deformação hipertrófica natural."
-        ]
-    },
-    "agachamento-isometrico": {
-        name: "Agachamento Isométrico (Wall Sit)",
-        purpose: "Torrar e aumentar durabilidade isométrica fibral. Muito exigente mental e fisicamente.",
-        muscles: ["Quadríceps Bruto"],
-        steps: [
-            "Ache parede desocupada. Recue encostando a retidão da espinha/costas dela totalmente colados.",
-            "Caminhe pernas para longe enquanto rola pro despenhadeiro formando sua coxa como sentada a ar paralelo 90 graus (assento imaginário).",
-            "Mãos fora do fêmur. Feche olhos, encare a barreira queimante de ácid lático das pernas pelo tempo exigido sem vacilar."
-        ]
-    },
-    "ponte-gluteos": {
-        name: "Ponte para Glúteos",
-        purpose: "Contração pura do motor mestre motor dos traseiros para não ficar com assento achatado provindo de sedentarismo.",
-        muscles: ["Glúteo Máximo", "Isquiolombar"],
-        steps: [
-            "Deite de costas no piso com calcanhares o mais agarrados na proximidade extrema dos glúteos e joelhos curvos para cima.",
-            "Esfrie escápulas no piso. Trave e arremesse absurdamente rápido seu quadril (genital) até o céu formando um triângulo reto de suas hastes.",
-            "Congele o ápice cerrando as nádegas brutalmente por 3 segundos longos, para descer e tocar chão e reprisar."
-        ]
-    },
-    "burpees": {
-        name: "Burpees",
-        purpose: "Movimento odiado pelos amadores e amado pela máquina de destruição calórica generalizada HIIT vital de performance.",
-        muscles: ["Corpo Extremo por Extenso", "Peitos", "Panturrilha Extrema", "Pulmões"],
-        steps: [
-            "Levante-se de pé regular e jogue as mãos no piso instantaneamente abaixando num agachamento relâmpago de sapo.",
-            "As canelas disparam ambas pra trás colocando-te em Prancha de braços estendida.",
-            "Faça uma flexão afundando o peito, recolha rapidão e dê um tiro/salto para pro ar vertical batendo as palmas da mão para os altos.",
-            "Sem descanso, recomece repetindo o círculo fatal pra aguentar até derreter os triglicerídeos inertes indesejáveis."
-        ]
-    },
-    "mountain-climbers": {
-        name: "Mountain Climbers",
-        purpose: "Socar mobilidade na flexibilidade dos eixos coxofemorais triturando abdômen aceleradamente como cardio.",
-        muscles: ["Core Tracionado", "Glúteos Flexíveis", "Hald de Peitorais", "Cárdio"],
-        steps: [
-            "Crave o corpo inteiro igual flexão normal de braços trancadas fixas no solo.",
-            "Bata seu joelho o mais rente do cotovelo cruzando sem desativar a planitude prancha do tórax e traseiro (jamais erga traseiro por burrice lombar).",
-            "Troca veloz salticando as sapatilhas numa dança alternadora que rasga estamina com vigor feroz nos ventres em fogo muscular."
-        ]
-    },
-    "agachamento-salto": {
-        name: "Agachamento com Salto (Jump Squat)",
-        purpose: "A exploração e recruta das fibras tipo 2 brancas (explosão de força, reatividade neural/atlética monstruosa).",
-        muscles: ["Fáscia das Pernas Cinetica-Mecânicas", "Glúteos", "Soleo Panturrílico", "Vastos"],
-        steps: [
-            "Abaixe no fundo poço escuro de seu Agachamento Padrão de perna regular livre (Caderas para as costas).",
-            "Em vez de se erguer no seu tempo civil de vovó, exalte um salto para explodir suas pregas da gravidade da terra com a ferocidade.",
-            "Aterrise e absorva com calcanhares abrandando no fundo contínuo sem solavancos nas rulas das cartilagens articulares delicadas."
-        ]
-    },
-    "prancha-lateral": {
-        name: "Prancha Lateral",
-        purpose: "Blindar a fraqueza periférica de lateral core (costelas flácidas destratadas e mal-torneadas).",
-        muscles: ["Oblíquo Interno", "Oblíquo Externo", "Transverso Profundo"],
-        steps: [
-            "Deitar-se rolando de banda. Levante apoiar peso do cotovelo direto sobre alicerce plano.",
-            "Pernas justapostas e empilhadas, erga o fêmur/quadrelhas descolando e formando linha diagonal imaculada (chão para a testa).",
-            "Não arreiar do plano sagital até bater sua minutagem, sofrendo ardência profunda lateral para trincar como um V greco."
-        ]
-    },
-    "russian-twist": {
-        name: "Russian Twist",
-        purpose: "Trabalho primoroso anti-lateral dinâmico em isometrias mistas destrutivo focado nos oblíquos transversais oblíquos rasgados.",
-        muscles: ["Oblíquo Abdominal Lateral", "Core Estabilizador Total"],
-        steps: [
-            "Sente bunda no solo duro. Traga canelas recuadas um tanto de suspensão num 'V' com o tronco (torso jogado oblíquo nas traseiras).",
-            "Com mãos cruzadas sobre si ou carregadoras do garrafol d'agua giratório, destrave pro lado total, soque, pro reverso soque esquerda.",
-            "Crucialíssima pernas trancadamente quietas para matar os abdominais de chamas. Contorça para os extremos paralelos simétricos."
-        ]
-    },
-    "bicycle-crunch": {
-        name: "Bicycle Crunch (Abdominal Bicicleta)",
-        purpose: "Engenhar abdômen tridimensional forjado mesclando contração reta do pilar com rodopio simultâneo diagonal flexivo cortante.",
-        muscles: ["Abdominais Todos", "Oblíquos Fios e Transversos Cortantes"],
-        steps: [
-            "Escorado lombar em repouso tapete e nuca encapuzada pelos dedos sem arrancar espinhas puxada violenta ao crânio frágil.",
-            "Decole joelho perna ao ar flutuante no pedalo enquanto alinha contorsionadamente cruzando a linha do cotovelado bater nas rolete rotula da oposta pernetes.",
-            "Alavanque o biciclismo doloroso. Trave joelho no cotovelo cruzando até finalizar a rotina dos infindos rasgamentos laterais trincados de tanquinho."
-        ]
-    },
-
-    // Semana 3 e 4 - (Técnicas Avançadas)
     "flexao-declinada": {
         name: "Flexão Declinada",
-        purpose: "Simular Supino Inclinado na brutalidade Calistênica focada para construir a placa superior do tórax ombral espessa e salutar densamente hipertrofiada visualmente imponente.",
-        muscles: ["Peitoral Fibras Superiores Claviculares", "Deltóide Frontal Destruído", "Cúpulas do Tríceps Extensor Superior"],
+        category: "push",
+        categoryName: "Empurrar",
+        level: "intermediario",
+        levelName: "Intermediário",
+        purpose: "Elevar os pés para transferir maior carga corporal para a porção superior do peitoral e ombros.",
+        muscles: ["Peitoral Superior", "Deltoide Anterior", "Tríceps Braquial"],
         steps: [
-            "Encontre banquinho seguro ou cama maciça com degrau sólido elebatório não frouxo para escorregar e foder os dentes em chãos frios de cerâmica.",
-            "Craque sapatilhas nele ao ar e finque as mãos estendendo o paliteiro dos ossos firmes das palmas em prancha decaída e afundada inferior de pender os ombros no rastejar para descer esticados da prancha declive paralelos mortais do abismo de piso.",
-            "Avance flexão funda pra testar os bicos do focinho esfregarem no pó cimento. Depois, empurre a gravidade bruta planetária fora das molas dos bíceps/tríceps/peitos."
+            "Apoie a ponta dos pés em um banco, cadeira firme ou elevação estável.",
+            "Coloque as mãos no chão alinhadas à largura dos ombros.",
+            "Desça o peitoral em direção ao chão mantendo o tronco e o quadril firmes e travados.",
+            "Empurre o piso com energia de volta até estender os braços."
         ]
     },
     "pike-push-up": {
         name: "Pike Push Up (Ombros)",
-        purpose: "Desbocar as gêmulas ombrares pra transformar cocos num desenvolvimento pressado autêntico de ginastas gregos milenares do calistênico olimpal dos mestres das argolas soltas corporais puramente bestiais de estátuas anatômicas em rocha talhadas pela gravidade da crosta perversa estóica severa que pune falhos sem pena.",
-        muscles: ["Ombro", "Ombro e Só Ombro!", "Deltoide Central Extremo", "Core de Cargas", "Superíores Tríceps"],
+        category: "push",
+        categoryName: "Empurrar",
+        level: "intermediario",
+        levelName: "Intermediário",
+        purpose: "Focar o desenvolvimento da força vertical de empurrar nos deltoides, servindo como base para a flexão em bananeira.",
+        muscles: ["Deltoides (Ombros)", "Tríceps Braquial", "Trapézio", "Core"],
         steps: [
-            "Arme as retaguardas cravando nádegas cêu alçado igual V inverso.",
-            "Fixe a palmaria do tapete pra descer inclinadamente o topete do crano encurvado diagonal raso e beije chão caindo nas linhas.",
-            "Crave ombro travando empurrando trancado dos calossais erguida da ponte e volte no V de montanha cumeado formigando e repita."
+            "Na posição de prancha, caminhe com os pés em direção às mãos elevando o quadril para formar um 'V' invertido.",
+            "Mantenha a cabeça em posição neutra entre os braços.",
+            "Flexione os cotovelos descendo o topo da cabeça em direção ao chão ligeiramente à frente das mãos.",
+            "Empurre o solo de volta para a posição inicial em 'V'."
+        ]
+    },
+    "mergulho-no-banco": {
+        name: "Mergulho no Banco (Dips)",
+        category: "push",
+        categoryName: "Empurrar",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Isolar e hipertrofiar o tríceps braquial e a porção inferior do peitoral utilizando o peso do próprio corpo.",
+        muscles: ["Tríceps Braquial", "Peitoral Inferior", "Deltoide Anterior"],
+        steps: [
+            "Sente-se na borda de um banco ou cadeira firme com as mãos apoiadas ao lado dos quadris.",
+            "Avance os pés para frente e deslize o quadril para fora do assento.",
+            "Desça o corpo verticalmente dobrando os cotovelos até formar um ângulo de 90 graus.",
+            "Empurre o corpo de volta para cima até estender os braços."
+        ]
+    },
+    "elevacao-lateral": {
+        name: "Elevação Lateral (com Carga Leve)",
+        category: "push",
+        categoryName: "Empurrar",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Isolar o deltoide lateral para conferir estética, largura e estabilidade aos ombros.",
+        muscles: ["Deltoide Lateral", "Trapézio"],
+        steps: [
+            "Em pé com a coluna ereta, segure duas pequenas cargas (garrafas de água ou livros) ao lado do corpo.",
+            "Mantenha os cotovelos com uma leve microflexão.",
+            "Eleve os braços lateralmente até a altura dos ombros de forma controlada.",
+            "Retorne devagar sem deixar os braços despencarem."
+        ]
+    },
+    "barra-fixa-isometria": {
+        name: "Barra Fixa / Remada na Mesa",
+        category: "pull",
+        categoryName: "Puxar",
+        level: "iniciante",
+        levelName: "Iniciante / Intermediário",
+        purpose: "Construir a musculatura dorsal e bíceps, essencial para a saúde postural e força de tração.",
+        muscles: ["Latíssimo do Dorso", "Bíceps Braquial", "Romboides", "Core"],
+        steps: [
+            "Para Remada na Mesa: Deite-se sob uma mesa firme, segure na borda e puxe o peitoral em direção ao tampo.",
+            "Para Barra Fixa (Isometria): Pule ou use um apoio para posicionar o queixo acima da barra e segure a posição no ar pelo tempo indicado.",
+            "Mantenha as escápulas retraídas e o abdômen firme durante toda a sustentação."
+        ]
+    },
+    "superman": {
+        name: "Superman (Fortalecimento Lombar)",
+        category: "pull",
+        categoryName: "Puxar",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Fortalecer a cadeia posterior e os eretores da espinha, garantindo equilíbrio muscular com o abdômen.",
+        muscles: ["Eretores da Espinha", "Glúteos", "Deltoide Posterior"],
+        steps: [
+            "Deite-se de bruços no chão com os braços e pernas estendidos.",
+            "Eleve simultaneamente os braços, peitoral e coxas fora do chão contrando a lombar.",
+            "Sustente a posição no topo por 1 a 2 segundos.",
+            "Desça de forma suave e repita."
+        ]
+    },
+    "agachamento-livre": {
+        name: "Agachamento Livre",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Movimento fundamental para o desenvolvimento de pernas e glúteos, melhorando mobilidade de quadril e joelhos.",
+        muscles: ["Quadríceps", "Glúteo Máximo", "Isquiotibiais", "Panturrilhas"],
+        steps: [
+            "Fique em pé com os pés afastados na largura dos ombros.",
+            "Inicie o movimento projetando o quadril para trás e flexionando os joelhos como se fosse sentar.",
+            "Desça até as coxas ficarem paralelas ao chão mantendo o peito elevado.",
+            "Empurre o chão através dos calcanhares para subir até a posição vertical."
+        ]
+    },
+    "agachamento-sumo": {
+        name: "Agachamento Sumô",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Aumentar a solicitação dos músculos adutores da coxa e dos glúteos através de uma base mais ampla.",
+        muscles: ["Adutores da Coxa", "Glúteos", "Quadríceps"],
+        steps: [
+            "Posicione os pés bem mais afastados que a largura dos ombros com as pontas apontadas 45 graus para fora.",
+            "Mantenha o tronco ereto e agache projetando os joelhos na direção das pontas dos pés.",
+            "Desça até a linha dos joelhos e suba contraindo os glúteos no topo."
+        ]
+    },
+    "afundo": {
+        name: "Afundo / Passada (Lunge)",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Exercício unilateral para corrigir assimetrias de força entre as pernas e aprimorar a estabilidade.",
+        muscles: ["Quadríceps", "Glúteo Máximo", "Isquiotibiais", "Core"],
+        steps: [
+            "Dê um passo largo à frente mantendo o tronco ereto.",
+            "Flexione ambos os joelhos a 90 graus até o joelho traseiro quase tocar o chão.",
+            "Empurre o piso com a perna da frente para retornar à posição inicial.",
+            "Alterne as pernas ou faça todas as repetições de um lado antes de trocar."
+        ]
+    },
+    "elevacao-de-panturrilha": {
+        name: "Elevação de Panturrilha",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Fortalecer o complexo gastrocnêmio/sóleo, prevenindo lesões no tornozelo e aumentando a força de arranque.",
+        muscles: ["Gastrocnêmio", "Sóleo"],
+        steps: [
+            "Fique em pé perto de uma parede para apoio de equilíbrio se necessário.",
+            "Eleve o corpo projetando o peso para as pontas dos pés o mais alto possível.",
+            "Segure 1 segundo na contração máxima e desça devagar alongando a panturrilha."
+        ]
+    },
+    "agachamento-bulgaro": {
+        name: "Agachamento Búlgaro",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "intermediario",
+        levelName: "Intermediário",
+        purpose: "Exercício unilateral avançado de altíssima exigência para hipertrofia de coxa e glúteo.",
+        muscles: ["Quadríceps", "Glúteo Máximo", "Isquiotibiais", "Core"],
+        steps: [
+            "Apoie o peito do pé traseiro em uma cadeira ou banco atrás de você.",
+            "Com a perna da frente, flexione o joelho descendo o quadril verticalmente.",
+            "Desça até a coxa dianteira ficar paralela ao chão.",
+            "Empurre com força pelo calcanhar dianteiro para retornar à posição inicial."
+        ]
+    },
+    "agachamento-isometrico": {
+        name: "Agachamento Isométrico (Wall Sit)",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Desenvolver resistência muscular nos quadríceps e fortaleza mental na sustentação isométrica.",
+        muscles: ["Quadríceps", "Glúteos", "Panturrilhas"],
+        steps: [
+            "Encoste as costas totalmente em uma parede e caminhe com os pés para frente.",
+            "Desça o quadril até as coxas ficarem em ângulo de 90 graus (paralelas ao chão).",
+            "Mantenha os joelhos alinhados sobre os tornozelos e as costas pressionadas na parede.",
+            "Sustente a posição imóvel durante o tempo estabelecido."
+        ]
+    },
+    "ponte-gluteos": {
+        name: "Ponte para Glúteos",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Ativar e fortalecer diretamente os glúteos e a cadeia posterior, aliviando tensões na lombar.",
+        muscles: ["Glúteo Máximo", "Isquiotibiais", "Lombar"],
+        steps: [
+            "Deite-se de costas com os joelhos dobrados e pés apoiados no chão perto do quadril.",
+            "Empurre o chão com os calcanhares e eleve o quadril até formar uma linha reta dos ombros aos joelhos.",
+            "Contraia os glúteos com força no topo por 2 a 3 segundos.",
+            "Desça lentamente até quase tocar o chão e repita."
+        ]
+    },
+    "agachamento-salto": {
+        name: "Agachamento com Salto (Jump Squat)",
+        category: "legs",
+        categoryName: "Pernas",
+        level: "intermediario",
+        levelName: "Intermediário",
+        purpose: "Treinar explosão muscular de fibras rápidas, aumentando a potência atlética e gasto calórico.",
+        muscles: ["Quadríceps", "Glúteos", "Panturrilhas", "Sistema Cardiovascular"],
+        steps: [
+            "Execute um agachamento livre tradicional até a posição paralela.",
+            "Ao subir, salte explosivamente projetando o corpo para o alto.",
+            "Aterrise de forma suave absorvendo o impacto ao retornar diretamente para a flexão do agachamento."
         ]
     },
     "agachamento-pistol": {
         name: "Agachamento Pistol (Pistol Squat)",
-        purpose: "O domínimo mestre elusivo mágico ninja dos deuses do chão livre dos ginastas brutos de mobilidade bruta num ato isolador letal monstro das coxas divinas de 1 perna uní-co-existente formidável desproporcional proferido calistênico perna pesada das roletas infernais monstro da pernas espremidas das flexibilidades trincadas duríssimas inalienáveis trituradoras corporais brutas imortais massacradoras unificadoras do sistema humano de carga total em 1 pé mortalmente instintivo primário bípede calistênico desproporcionadamente focado monstruoso em balanço.",
-        muscles: ["Quadríceps Exarcebado Mortal Extremo Focado", "Glúteo Motor 100% Unilateral Neural Ativador Equilibratório Psoas Abdômen Máquina De Guerra Das Tibiais Cargas Estabilizadoras Profundas Ligamentares Patelares Críticas Descobertas"],
+        category: "legs",
+        categoryName: "Pernas",
+        level: "avancado",
+        levelName: "Avançado",
+        purpose: "Dominar o agachamento de uma perna só, unindo força máxima, flexibilidade de tornozelo e equilíbrio.",
+        muscles: ["Quadríceps", "Glúteos", "Flexores do Quadril", "Tornozelos", "Core"],
         steps: [
-            "Firme pé na lona, desgarre a outrana projetante pro vácuo esticado (frente canela ao ares suspenso).",
-            "Flexione quadril rolando abaixo devagar abismal (apoie no móvel como roda de treinar infantilidade).",
-            "Margeie bumbum batendo calcanhar com braço frente prumagem esmagadora dos centros gravitacionais terráqueos do cosmo corpóreo e emane erguido pra retornar travando e rezando.",
-            "(Repare: Requer mobilidade. É nível altíssimo e ensina humanidade a usar gravidade real pura extrema nas articulações saudáveis construídas meses)."
+            "Fique em pé apoiado em uma só perna e estenda a outra perna à frente no ar.",
+            "Estenda os braços à frente para estabilizar o centro de gravidade.",
+            "Agache devagar na perna de apoio até encostar a coxa na panturrilha.",
+            "Empurre pelo calcanhar para subir de volta. (Iniciantes podem apoiar a mão em uma parede ou cadeira)."
+        ]
+    },
+    "prancha-abdominal": {
+        name: "Prancha Abdominal",
+        category: "core",
+        categoryName: "Core",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Construir rigidez e estabilidade isométrica em toda a cinta abdominal e coluna lombar.",
+        muscles: ["Reto Abdominal", "Transverso do Abdômen", "Lombar", "Ombros"],
+        steps: [
+            "Apoie os antebraços no chão com os cotovelos alinhados diretamente abaixo dos ombros.",
+            "Estenda as pernas para trás apoiando-se nas pontas dos pés.",
+            "Mantenha o corpo em linha reta rigorosa da cabeça aos pés.",
+            "Respire ritmadamente mantendo o abdômen e glúteos contraídos."
+        ]
+    },
+    "prancha-alta-toque": {
+        name: "Prancha Alta com Toque no Ombro",
+        category: "core",
+        categoryName: "Core",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Desafiar o core com estabilização anti-rotacional enquanto alterna os apoios.",
+        muscles: ["Core Anti-Rotacional", "Ombros", "Tríceps Braquial", "Reto Abdominal"],
+        steps: [
+            "Inicie na posição de prancha alta (mãos estendidas abaixo dos ombros).",
+            "Mantendo o quadril o mais firme e imóvel possível, toque o ombro esquerdo com a mão direita.",
+            "Retorne a mão ao chão e repita com a mão esquerda no ombro direito."
+        ]
+    },
+    "prancha-lateral": {
+        name: "Prancha Lateral",
+        category: "core",
+        categoryName: "Core",
+        level: "iniciante",
+        levelName: "Iniciante / Intermediário",
+        purpose: "Fortalecer a musculatura oblíqua e estabilizadores laterais do quadril e da coluna.",
+        muscles: ["Oblíquos Interno e Externo", "Transverso do Abdômen", "Glúteo Médio"],
+        steps: [
+            "Deite-se de lado e apoie o antebraço no chão diretamente abaixo do ombro.",
+            "Empilhe as pernas uma sobre a outra e eleve o quadril do chão.",
+            "Forme uma linha reta diagonal do topo da cabeça aos calcanhares.",
+            "Segure pelo tempo estipulado e repita do outro lado."
+        ]
+    },
+    "abdominal-infra": {
+        name: "Abdominal Infra (Elevação de Pernas)",
+        category: "core",
+        categoryName: "Core",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Treinar a porção inferior do reto abdominal e flexores do quadril.",
+        muscles: ["Reto Abdominal Inferior", "Flexores do Quadril"],
+        steps: [
+            "Deite-se de costas com as mãos sob o quadril para apoiar a região lombar.",
+            "Mantenha as pernas estendidas e eleve-as até formarem um ângulo de 90 graus com o tronco.",
+            "Desça as pernas devagar até quase tocarem o chão sem arquear a lombar.",
+            "Suba novamente de forma controlada."
+        ]
+    },
+    "russian-twist": {
+        name: "Russian Twist (Rotação de Tronco)",
+        category: "core",
+        categoryName: "Core",
+        level: "iniciante",
+        levelName: "Iniciante / Intermediário",
+        purpose: "Trabalhar rotação ativa de tronco para fortalecer oblíquos e controle central.",
+        muscles: ["Oblíquos Abdominais", "Reto Abdominal", "Lombar"],
+        steps: [
+            "Sente-se no chão, incline o tronco levemente para trás e tire os pés do chão (ou mantenha calcanhares levemente apoiados).",
+            "Junte as mãos à frente do peito.",
+            "Gire o tronco de um lado para o outro tocando as mãos perto do chão ao lado do quadril.",
+            "Mantenha as pernas o mais estáveis possível durante a rotação."
+        ]
+    },
+    "bicycle-crunch": {
+        name: "Abdominal Bicicleta (Bicycle Crunch)",
+        category: "core",
+        categoryName: "Core",
+        level: "iniciante",
+        levelName: "Iniciante / Intermediário",
+        purpose: "Combinar flexão frontal com rotação diagonal para recrutamento completo do abdômen.",
+        muscles: ["Reto Abdominal", "Oblíquos", "Flexores do Quadril"],
+        steps: [
+            "Deite-se de costas com as mãos atrás da cabeça e as pernas elevadas.",
+            "Traga o cotovelo direito em direção ao joelho esquerdo enquanto estende a perna direita.",
+            "Alterne o movimento trazendo o cotovelo esquerdo ao joelho direito simulando o pedalar.",
+            "Mantenha o movimento fluido e ritmado."
         ]
     },
     "treino-lsit": {
         name: "Treino de L-Sit",
-        purpose: "Fundição abdominal brutal. Corpo vira Letra L sustentada.",
-        muscles: ["Core Imortal", "Tríceps", "Flexor de Quadril"],
+        category: "core",
+        categoryName: "Core",
+        level: "avancado",
+        levelName: "Avançado",
+        purpose: "Sustentar o corpo inteiro no ar apenas com a força do abdômen, tríceps e estabilizadores escapulares.",
+        muscles: ["Core Abdominal Profundo", "Tríceps Braquial", "Flexores do Quadril", "Escápulas"],
         steps: [
-            "Sente solo, pernas extenas e retíssimas juntas coladas pra frente.",
-            "Aqueça mãos no soalho lado do rabo trancado e pressione o mundo duro longe do bumbum descolado flutuante suspensos calcanhares suspirantes imortais mantendo o L imodificável calmo como templo monástico no vazio sofrador temporal e isométrico.",
-            "Progessão simples: Levantar pernas uma a uma se tiver barrigudo caindo pra despencadas gravitacionais doentias."
+            "Sente-se no chão com as pernas juntas e estendidas à frente.",
+            "Coloque as palmas das mãos no chão ao lado dos quadris.",
+            "Empurre o chão para baixo e eleve o quadril e as pernas do solo mantendo a forma de 'L'.",
+            "(Iniciantes podem dobrar os joelhos ou fazer com um pé apoiado)."
+        ]
+    },
+    "polichinelos": {
+        name: "Polichinelos",
+        category: "cardio",
+        categoryName: "Cardio",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Atuar como aquecimento dinâmico e aumentar rapidamente a frequência cardíaca.",
+        muscles: ["Sistema Cardiovascular", "Panturrilhas", "Ombros"],
+        steps: [
+            "Inicie em pé com pés juntos e braços ao lado do corpo.",
+            "Dê um pequeno salto abrindo as pernas e elevando os braços acima da cabeça.",
+            "Dê outro salto retornando à posição inicial.",
+            "Mantenha o ritmo contínuo."
+        ]
+    },
+    "caminhada-leve": {
+        name: "Caminhada Leve",
+        category: "cardio",
+        categoryName: "Cardio",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Servir como regeneração ativa para acelerar o fluxo sanguíneo e recuperar o corpo.",
+        muscles: ["Sistema Cardiovascular", "Membros Inferiores"],
+        steps: [
+            "Caminhe em ritmo constante e agradável ao ar livre ou em esteira.",
+            "Mantenha uma respiração ritmada sem chegar à exaustão.",
+            "Mantenha uma boa postura ereta durante a caminhada."
+        ]
+    },
+    "corrida-estacionaria": {
+        name: "Corrida Estacionária",
+        category: "cardio",
+        categoryName: "Cardio",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Simular o estímulo cardiovascular da corrida em qualquer espaço reduzido.",
+        muscles: ["Sistema Cardiovascular", "Quadríceps", "Panturrilhas"],
+        steps: [
+            "Corra sem sair do lugar, elevando alternadamente os joelhos.",
+            "Movimente os braços em sintonia com as pernas.",
+            "Para maior intensidade, eleve os joelhos até a altura da cintura."
+        ]
+    },
+    "burpees": {
+        name: "Burpees",
+        category: "cardio",
+        categoryName: "Cardio",
+        level: "intermediario",
+        levelName: "Intermediário",
+        purpose: "Exercício de corpo inteiro de alta intensidade para queima calórica e condicionamento cardiovascular.",
+        muscles: ["Corpo Inteiro", "Peitoral", "Quadríceps", "Ombros", "Sistema Cardiovascular"],
+        steps: [
+            "Fique em pé, agache e apoie as mãos no chão à frente.",
+            "Jogue os pés para trás em um salto entrando na posição de prancha/flexão.",
+            "Realize uma flexão de braço e recolha os pés de volta ao agachamento.",
+            "Salte para o alto estendendo os braços acima da cabeça."
+        ]
+    },
+    "mountain-climbers": {
+        name: "Mountain Climbers (Escalador)",
+        category: "cardio",
+        categoryName: "Cardio",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Unir estabilidade de prancha com dinamismo cardiovascular e agilidade de pernas.",
+        muscles: ["Core", "Ombros", "Flexores do Quadril", "Sistema Cardiovascular"],
+        steps: [
+            "Inicie na posição de prancha alta com as mãos alinhadas aos ombros.",
+            "Puxe um dos joelhos em direção ao peitoral sem elevar o quadril.",
+            "Alterne as pernas rapidamente como se estivesse correndo na prancha.",
+            "Mantenha a estabilidade do tronco."
+        ]
+    },
+    "alongamento-geral": {
+        name: "Alongamento Geral & Mobilidade",
+        category: "mobility",
+        categoryName: "Mobilidade",
+        level: "iniciante",
+        levelName: "Iniciante",
+        purpose: "Aumentar a amplitude articular, aliviar tensões e prevenir rigidez muscular.",
+        muscles: ["Corpo Inteiro", "Flexibilidade Articular"],
+        steps: [
+            "Realize alongamentos suaves para quadríceps, posterior de coxa, peitoral e ombros.",
+            "Sustente cada posição por 20 a 30 segundos mantendo respiração profunda.",
+            "Evite dores agudas; foque na sensação de alívio e mobilidade."
         ]
     },
     "bananeira": {
-        name: "Bananeira (Handstand Wall)",
-        purpose: "Condição dos céus inversos ombrais mestre supremo força ginasta suprema base de mestria calistênica sem qual o peso em pé cabeça baixa falhará da estética bruta insuperável atlética das calistenias mundiais reinantes gloriosas.",
-        muscles: ["Corpo Inverso Ombral Deltoide Romboidal Intelecto Neural Eletro Acrobacia Core Core Trava Cervical Estabilizadora Antebraço Monstro Falanges Garrado"],
+        name: "Bananeira na Parede (Handstand)",
+        category: "mobility",
+        categoryName: "Habilidade",
+        level: "avancado",
+        levelName: "Avançado",
+        purpose: "Desenvolver equilíbrio invertido, força estabilizadora de ombros e consciência corporal.",
+        muscles: ["Deltoides", "Trapézio", "Core", "Antebraços", "Punhos"],
         steps: [
-            "Parece cão pra baixo parede frente. Engate salto leve alinhador ou escale paredão peito roçando no reboco inverso de barriga colada escalonando a montada sem pânico medroso pra frente travar no ar e suportar sua vida pelas mãos suadas e firmadas de falanges de garra firme fincadas na vida até se empurrar calmo devolta a terrinha firme da humanidade bípede desvirada das mortes mentais infundadas caindas e despencares medrosos dominados pela prática e destreza das flexibilidades do pavor superado."
+            "Coloque as mãos no chão a cerca de 20-30 cm de uma parede.",
+            "Dê um impulso leve para elevar as pernas até encostar os pés na parede.",
+            "Mantenha os braços esticados e empurre o chão ativamente.",
+            "Sustente com estabilidade e retorne descendo um pé de cada vez."
+        ]
+    },
+    "descanso": {
+        name: "Dia de Descanso & Recuperação Ativa",
+        category: "mobility",
+        categoryName: "Recuperação",
+        level: "iniciante",
+        levelName: "Todos os Níveis",
+        purpose: "Permitir a síntese proteica, reparo das fibras musculares e regeneração do sistema nervoso central.",
+        muscles: ["Recuperação Muscular", "Sistema Nervoso Central", "Hidratação"],
+        steps: [
+            "Beba pelo menos 2 a 3 litros de água para manter o corpo e articulações bem hidratadas.",
+            "Faça uma caminhada leve de 15 a 20 minutos ou alongamentos suaves.",
+            "Alimente-se com proteínas de boa qualidade e carboidratos limpos para repor o glicogênio.",
+            "Priorize uma boa noite de sono reparador (7 a 9 horas)."
         ]
     }
 };
 
-/** Função Auxiliar da Página **/
+/**
+ * Mapeia qualquer query string de exercício para a chave exata em exerciseDB
+ */
 function processIdStr(str) {
-    if(!str) return "flexao-de-braco";
-    let normalized = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    
-    // Mapeamentos para chaves JS cruas (Específicos PRIMEIRO, Genéricos DEPOIS)
-    
-    // Flexões Específicas
-    if(normalized.includes('declinada') || normalized.includes('pes elevados')) return "flexao-declinada";
-    if(normalized.includes('diamante') || normalized.includes('fechada')) return "flexao-fechada";
-    if(normalized.includes('apoiada') || normalized.includes('joelho')) return "flexao-de-braco-apoiada";
-    if(normalized.includes('flexao')) return "flexao-de-braco";
-    
-    // Agachamentos Específicos
-    if(normalized.includes('bulgaro')) return "agachamento-bulgaro";
-    if(normalized.includes('isometrico')) return "agachamento-isometrico";
-    if(normalized.includes('salto') || normalized.includes('jump')) return "agachamento-salto";
-    if(normalized.includes('pistol')) return "agachamento-pistol";
-    if(normalized.includes('sumo')) return "agachamento-sumo";
-    if(normalized.includes('agachamento') || normalized.includes('squat')) return "agachamento-livre";
+    if (!str) return "flexao-de-braco";
+    let normalized = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
-    // Pranchas / Core Acima
-    if(normalized.includes('lateral') && normalized.includes('prancha')) return "prancha-lateral";
-    if(normalized.includes('prancha alta') || normalized.includes('ombro')) return "prancha-alta-toque";
-    if(normalized.includes('prancha')) return "prancha-abdominal";
-    if(normalized.includes('russian') || normalized.includes('twist')) return "russian-twist";
-    if(normalized.includes('bicycle') || normalized.includes('bicicleta')) return "bicycle-crunch";
-    if(normalized.includes('infra') || normalized.includes('elevacao') && !normalized.includes('panturrilha') && !normalized.includes('lateral')) return "abdominal-infra";
-    
-    // Costas / Barra
-    if(normalized.includes('barra fixa')) return "barra-fixa-isometria";
-    if(normalized.includes('superman')) return "superman";
-    
-    // Tríceps
-    if(normalized.includes('triceps') || normalized.includes('banco') || normalized.includes('mergulho')) return "mergulho-no-banco";
-    
-    // Pernas (Outros)
-    if(normalized.includes('afundo') || normalized.includes('lunge') || normalized.includes('passada')) return "afundo";
-    if(normalized.includes('panturrilha')) return "elevacao-de-panturrilha";
-    if(normalized.includes('ponte') || normalized.includes('gluteo')) return "ponte-gluteos";
-    
-    // Cardio / Isometria
-    if(normalized.includes('polichinelos')) return "polichinelos";
-    if(normalized.includes('corrida')) return "corrida-estacionaria";
-    if(normalized.includes('caminhada')) return "caminhada-leve";
-    if(normalized.includes('burpees') || normalized.includes('burpee')) return "burpees";
-    if(normalized.includes('mountain')) return "mountain-climbers";
-    
-    // Misc
-    if(normalized.includes('alongamento') || normalized.includes('yoga')) return "alongamento-geral";
-    if(normalized.includes('lateral') && !normalized.includes('prancha')) return "elevacao-lateral";
-    if(normalized.includes('lsit') || normalized.includes('l-sit') || normalized.includes('l sit')) return "treino-lsit";
-    if(normalized.includes('bananeira') || normalized.includes('handstand')) return "bananeira";
-    
-    // Fallback Return
-    return "flexao-de-braco";
+    // Dias de descanso ou especiais
+    if (["descanso", "celebre", "favorito", "recuperacao", "livre"].some(k => normalized.includes(k))) {
+        return "descanso";
+    }
+
+    // Push específico
+    if (normalized.includes("declinada") || normalized.includes("pes elevados")) return "flexao-declinada";
+    if (normalized.includes("fechada") || normalized.includes("diamante")) return "flexao-fechada";
+    if (normalized.includes("apoiada") || normalized.includes("joelho") || normalized.includes("joalho")) return "flexao-de-braco-apoiada";
+    if (normalized.includes("pike")) return "pike-push-up";
+    if (normalized.includes("triceps") || normalized.includes("mergulho") || (normalized.includes("banco") && !normalized.includes("flexao"))) return "mergulho-no-banco";
+    if (normalized.includes("flexao") || normalized.includes("flexoes")) return "flexao-de-braco";
+
+    // Pernas / Legs
+    if (normalized.includes("bulgaro")) return "agachamento-bulgaro";
+    if (normalized.includes("isometrico")) return "agachamento-isometrico";
+    if (normalized.includes("salto") || normalized.includes("jump")) return "agachamento-salto";
+    if (normalized.includes("pistol")) return "agachamento-pistol";
+    if (normalized.includes("sumo")) return "agachamento-sumo";
+    if (normalized.includes("agachamento") || normalized.includes("squat")) return "agachamento-livre";
+    if (normalized.includes("afundo") || normalized.includes("lunge") || normalized.includes("passada")) return "afundo";
+    if (normalized.includes("panturrilha") || normalized.includes("panturrilhas")) return "elevacao-de-panturrilha";
+    if (normalized.includes("ponte") || normalized.includes("gluteo") || normalized.includes("gluteos")) return "ponte-gluteos";
+
+    // Core
+    if (normalized.includes("lateral") && (normalized.includes("prancha") || normalized.includes("side"))) return "prancha-lateral";
+    if (normalized.includes("prancha alta") || normalized.includes("toque no ombro")) return "prancha-alta-toque";
+    if (normalized.includes("prancha")) return "prancha-abdominal";
+    if (normalized.includes("russian") || normalized.includes("twist")) return "russian-twist";
+    if (normalized.includes("bicycle") || normalized.includes("bicicleta")) return "bicycle-crunch";
+    if (normalized.includes("infra") || normalized.includes("elevacao de pernas")) return "abdominal-infra";
+    if (normalized.includes("lsit") || normalized.includes("l-sit") || normalized.includes("l sit")) return "treino-lsit";
+
+    // Puxar / Pull
+    if (normalized.includes("barra") || normalized.includes("remada")) return "barra-fixa-isometria";
+    if (normalized.includes("superman")) return "superman";
+
+    // Cardio
+    if (normalized.includes("polichinelos") || normalized.includes("polichinelo")) return "polichinelos";
+    if (normalized.includes("corrida")) return "corrida-estacionaria";
+    if (normalized.includes("caminhada")) return "caminhada-leve";
+    if (normalized.includes("burpee") || normalized.includes("burpees")) return "burpees";
+    if (normalized.includes("mountain") || normalized.includes("climber")) return "mountain-climbers";
+
+    // Mobilidade & Skills
+    if (normalized.includes("alongamento") || normalized.includes("yoga") || normalized.includes("mobilidade")) return "alongamento-geral";
+    if (normalized.includes("bananeira") || normalized.includes("handstand")) return "bananeira";
+    if (normalized.includes("lateral")) return "elevacao-lateral";
+
+    return "descanso";
 }
 
-// Injeta logicamente quando carregar a página Dynamic
+// Injeta dinamicamente quando carregar exercise.html
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Logica da Page Exercise Details (exercise.html)
     const exerciseTitle = document.getElementById('ex-title');
     if (exerciseTitle) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -401,57 +557,90 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const data = exerciseDB[exId] || exerciseDB["flexao-de-braco"];
         
+        // Atualiza Titulo do Documento e da Pagina
+        document.title = `${data.name} - Calistenia Pro`;
         exerciseTitle.textContent = data.name;
-        document.getElementById('ex-purpose').textContent = data.purpose;
         
-        // Render Muscles
+        const purposeEl = document.getElementById('ex-purpose');
+        if (purposeEl) purposeEl.textContent = data.purpose;
+        
+        // Renderiza Badges de Categoria e Nivel
         const musContainer = document.getElementById('ex-muscles');
-        musContainer.innerHTML = '';
-        data.muscles.forEach(m => {
-            let badge = document.createElement('span');
-            badge.className = 'label success';
-            badge.style.marginRight = '5px';
-            badge.style.display = 'inline-block';
-            badge.textContent = m;
-            musContainer.appendChild(badge);
-        });
+        if (musContainer) {
+            musContainer.innerHTML = '';
+            
+            // Badge Categoria
+            const catBadge = document.createElement('span');
+            catBadge.className = 'label success';
+            catBadge.style.fontSize = '0.9rem';
+            catBadge.style.padding = '0.4rem 0.9rem';
+            catBadge.textContent = `🎯 ${data.categoryName}`;
+            musContainer.appendChild(catBadge);
 
-        // Render Steps
+            // Badge Nivel
+            const levelBadge = document.createElement('span');
+            levelBadge.className = 'label success';
+            levelBadge.style.background = '#FEF3C7';
+            levelBadge.style.color = '#D97706';
+            levelBadge.style.fontSize = '0.9rem';
+            levelBadge.style.padding = '0.4rem 0.9rem';
+            levelBadge.textContent = `⚡ ${data.levelName}`;
+            musContainer.appendChild(levelBadge);
+
+            // Musculos Alvo
+            data.muscles.forEach(m => {
+                let badge = document.createElement('span');
+                badge.className = 'label success';
+                badge.style.background = '#E2E8F0';
+                badge.style.color = '#334155';
+                badge.style.fontSize = '0.85rem';
+                badge.textContent = m;
+                musContainer.appendChild(badge);
+            });
+        }
+
+        // Renderiza Passos
         const stepsContainer = document.getElementById('ex-steps');
-        stepsContainer.innerHTML = '';
-        
-        data.steps.forEach((step, idx) => {
-            let li = document.createElement('li');
-            li.innerHTML = `<strong>Passo ${idx + 1}:</strong> ${step}`;
-            li.style.marginBottom = '1rem';
-            stepsContainer.appendChild(li);
-        });
+        if (stepsContainer) {
+            stepsContainer.innerHTML = '';
+            data.steps.forEach((step, idx) => {
+                let li = document.createElement('li');
+                li.innerHTML = `<strong>Passo ${idx + 1}:</strong> ${step}`;
+                li.style.marginBottom = '1rem';
+                li.style.lineHeight = '1.6';
+                stepsContainer.appendChild(li);
+            });
+        }
 
-        // Mapeamento de Imagens Específicas
+        // Mapeamento de Imagens
         const imageMap = {
             "agachamento-livre": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
             "agachamento-sumo": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
+            "agachamento-bulgaro": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
+            "agachamento-isometrico": ["assets/img/squat.png"],
+            "agachamento-salto": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
+            "agachamento-pistol": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
             
             "flexao-de-braco": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
             "flexao-fechada": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
             "flexao-declinada": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
             "flexao-de-braco-apoiada": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
+            "pike-push-up": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
             
             "barra-fixa-isometria": ["assets/img/pullup_start.png", "assets/img/pullup_end.png"],
             
             "mergulho-no-banco": ["assets/img/dip_start.png", "assets/img/dip_end.png"],
-            "triceps-banco": ["assets/img/dip_start.png", "assets/img/dip_end.png"],
-
             "afundo": ["assets/img/lunge_start.png", "assets/img/lunge_end.png"],
+            
+            "prancha-abdominal": ["assets/img/plank.png"],
+            "prancha-lateral": ["assets/img/plank.png"],
+            "prancha-alta-toque": ["assets/img/plank.png"],
 
-            // Restante cai no genérico por conta da cota ou isometria por enquanto
             "default": ["assets/img/generic.png"]
         };
         
         let targetImgs = imageMap[exId] || imageMap["default"];
-        if (!Array.isArray(targetImgs)) {
-            targetImgs = [targetImgs]; // Fallback pra 1 imagem
-        }
+        if (!Array.isArray(targetImgs)) targetImgs = [targetImgs];
         
         const imgContainer = document.getElementById('ex-image-container');
         if (imgContainer) {
@@ -461,10 +650,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.src = srcImg;
                 img.alt = `${data.name} - Posição ${index + 1}`;
                 img.style.width = '100%';
-                img.style.height = 'auto';
-                img.style.objectFit = 'cover';
+                img.style.maxHeight = '280px';
+                img.style.objectFit = 'contain';
                 img.style.borderRadius = '8px';
                 img.style.border = '1px solid rgba(255,255,255,0.1)';
+                img.style.background = '#1E293B';
                 imgContainer.appendChild(img);
             });
         }
