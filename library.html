@@ -1,522 +1,338 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca & Mapa Anatômico - Calistenia Pro</title>
-    <meta name="description" content="Explore todos os exercícios de calistenia por grupo muscular no mapa anatômico interativo e crie suas próprias rotinas personalizadas.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .library-hero {
-            text-align: center;
-            border-bottom: 1px solid var(--color-border);
-        }
-        .search-container {
-            max-width: 600px;
-            margin: 2rem auto 0 auto;
-            position: relative;
-        }
-        .search-input {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            font-size: 1rem;
-            border-radius: var(--border-radius);
-            border: 2px solid var(--color-border);
-            background-color: var(--color-bg-alt);
-            color: var(--color-text-dark);
-            outline: none;
-            transition: var(--transition);
-        }
-        .search-input:focus {
-            border-color: var(--color-cta);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-        
-        /* Layout com Mapa Anatômico + Filtros */
-        .anatomy-section {
-            background: var(--color-bg-alt);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            margin-bottom: 3rem;
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 2rem;
-            align-items: center;
-        }
-        .body-map-svg {
-            width: 100%;
-            height: auto;
-            max-height: 380px;
-        }
-        .muscle-node {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            fill: #CBD5E1;
-            stroke: #475569;
-            stroke-width: 1.5;
-        }
-        .muscle-node:hover, .muscle-node.selected {
-            fill: var(--color-cta);
-            stroke: #1D4ED8;
-            filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.6));
-        }
-
-        .filter-section {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .filter-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        .filter-pill {
-            background-color: var(--color-bg-main);
-            border: 1px solid var(--color-border);
-            color: var(--color-text-dark);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .filter-pill:hover, .filter-pill.active {
-            background-color: var(--color-cta);
-            color: #FFFFFF !important;
-            border-color: var(--color-cta);
-        }
-
-        .library-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-        .ex-card {
-            background-color: var(--color-bg-alt);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--shadow-soft);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .ex-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--color-cta);
-        }
-        .ex-card-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-        .ex-card-title {
-            font-size: 1.3rem;
-            margin-bottom: 0.75rem;
-        }
-        .ex-card-purpose {
-            font-size: 0.95rem;
-            color: var(--color-text-muted);
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
-        }
-
-        @media (max-width: 900px) {
-            .anatomy-section {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca & Mapa Anatômico — 32 Exercícios Guiados | Calistenia Pro</title>
+<meta name="description" content="Explore 32 exercícios por grupo muscular no mapa interativo, filtre por nível, favorite e crie rotinas personalizadas com timer.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.library-hero{text-align:center;border-bottom:1px solid var(--color-border);position:relative;overflow:hidden;background:var(--color-bg-alt)}
+.library-hero::before{content:'';position:absolute;inset:0;background:var(--gradient-mesh);opacity:0.5;pointer-events:none}
+.search-container{max-width:640px;margin:1.6rem auto 0 auto;position:relative}
+.search-input{width:100%;padding:1rem 1.4rem 1rem 3rem;font-size:1rem;border-radius:999px;border:1.8px solid var(--color-border);background:var(--color-bg-main);color:var(--color-text-dark);outline:none;transition:var(--transition-fast);font-weight:600}
+.search-input:focus{border-color:var(--color-cta);box-shadow:0 0 0 4px rgba(37,99,235,0.12);background:var(--color-bg-alt)}
+.search-icon{position:absolute;left:1.1rem;top:50%;transform:translateY(-50%);font-size:1.1rem;opacity:0.6}
+.anatomy-section{background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:16px;padding:1.6rem;margin-bottom:2rem;display:grid;grid-template-columns:320px 1fr;gap:1.6rem;align-items:center;box-shadow:var(--shadow-soft)}
+.body-map-svg{width:100%;height:auto;max-height:380px}
+.muscle-node{cursor:pointer;transition:all 0.2s ease;fill:#CBD5E1;stroke:#475569;stroke-width:1.5}
+.muscle-node:hover,.muscle-node.selected{fill:var(--color-cta);stroke:#1D4ED8;filter:drop-shadow(0 0 10px rgba(37,99,235,0.45))}
+.filter-section{display:flex;flex-direction:column;gap:1rem}
+.filter-group{display:flex;gap:0.45rem;flex-wrap:wrap}
+.filter-pill{background:var(--color-bg-main);border:1.8px solid var(--color-border);color:var(--color-text-dark);padding:0.5rem 0.9rem;border-radius:999px;font-size:0.85rem;font-weight:700;cursor:pointer;transition:var(--transition-fast)}
+.filter-pill:hover,.filter-pill.active{background:var(--color-text-dark);color:white !important;border-color:var(--color-text-dark)}
+[data-theme="dark"] .filter-pill.active{background:white;color:#0F172A !important}
+.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem}
+.ex-card{background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:16px;padding:1.5rem;box-shadow:var(--shadow-soft);transition:var(--transition);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.ex-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient-primary);opacity:0;transition:opacity 0.3s}
+.ex-card:hover::before{opacity:1}
+.ex-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:rgba(37,99,235,0.15)}
+.ex-card-tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.7rem}
+.ex-card-title{font-size:1.15rem;margin-bottom:0.4rem;line-height:1.2}
+.ex-card-purpose{font-size:0.92rem;color:var(--color-text-muted);margin-bottom:1rem;line-height:1.55;flex:1}
+.ex-card-meta{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;font-size:0.78rem;font-weight:700;color:var(--color-text-muted)}
+.ex-card-meta span{background:var(--color-bg-main);border:1px solid var(--color-border);padding:0.25rem 0.6rem;border-radius:999px}
+.fav-star{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:var(--color-bg-main);border:1.8px solid var(--color-border);display:grid;place-items:center;cursor:pointer;transition:var(--transition-fast);font-size:1rem}
+.fav-star.faved{background:#FEF3C7;border-color:#FDE68A;color:#D97706}
+@media(max-width:900px){.anatomy-section{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
+<nav class="navbar">
+<div class="container nav-content">
+<div class="logo"><a href="index.html" style="color:inherit">Calistenia<span class="highlight">Pro</span></a></div>
+<ul class="nav-links">
+<li><a href="index.html">Início</a></li>
+<li><a href="program.html">Programa 30 Dias</a></li>
+<li><a href="library.html" class="active-link">Biblioteca</a></li>
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="calculator.html">Calculadora</a></li>
+</ul>
+<div style="display:flex;align-items:center;gap:0.6rem">
+<button class="theme-toggle-btn btn-outline btn-sm">🌙</button>
+<button class="hamburger" aria-label="Abrir Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+</div>
+</nav>
 
-    <!-- Navegação -->
-    <nav class="navbar">
-        <div class="container nav-content">
-            <div class="logo"><a href="index.html" style="color: inherit;">Calistenia<span class="highlight">Pro</span></a></div>
-            <ul class="nav-links">
-                <li><a href="index.html">Início</a></li>
-                <li><a href="program.html">Programa 30 Dias</a></li>
-                <li><a href="library.html" class="active-link">Biblioteca</a></li>
-                <li><a href="calculator.html">Calculadora</a></li>
-            </ul>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="theme-toggle-btn btn-outline btn-sm">🌙 Modo Escuro</button>
-                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </div>
-    </nav>
+<header class="library-hero section-spacing" style="padding:64px 0 36px">
+<div class="container" style="position:relative">
+<span class="label success" style="background:white;border:1px solid #BFDBFE">📚 32 exercícios • 6 categorias • 3 níveis</span>
+<h1 style="margin-top:0.8rem">Biblioteca & <span style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Mapa Anatômico</span></h1>
+<p style="max-width:680px;margin:0 auto">Clique no músculo no mapa, filtre por categoria ou busque por nome. Favorite ⭐, crie rotinas e execute com <strong>Treino Ativo</strong>.</p>
+<div class="search-container">
+<span class="search-icon">🔍</span>
+<input type="text" id="librarySearch" class="search-input" placeholder="Buscar por nome, músculo ou objetivo (ex: flexão, peitoral, core)...">
+</div>
+<div style="margin-top:1rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap">
+<button id="openCustomBuilderBtn" class="btn-cta btn-sm">⚙️ Criar Rotina Personalizada</button>
+<button id="showFavBtn" class="btn-outline btn-sm">⭐ Favoritos (<span id="favCount">0</span>)</button>
+<button class="btn-outline btn-sm" data-open-timer>⏱️ Timer Pro</button>
+</div>
+</div>
+</header>
 
-    <!-- Header da Biblioteca -->
-    <header class="library-hero section-spacing bg-light">
-        <div class="container">
-            <h1>Biblioteca & <span class="highlight" style="color: var(--color-cta)">Mapa Anatômico</span></h1>
-            <p>Clique em um músculo no mapa corporais ou use os filtros para encontrar seus exercícios e criar rotinas personalizadas.</p>
-            
-            <div class="search-container">
-                <input type="text" id="librarySearch" class="search-input" placeholder="🔍 Buscar exercício por nome, músculo ou objetivo (ex: flexão, peitoral, core)...">
-            </div>
-            
-            <div style="margin-top: 1.5rem;">
-                <button id="openCustomBuilderBtn" class="btn-cta btn-sm">⚙️ Criar Rotina Personalizada</button>
-            </div>
-        </div>
-    </header>
+<section class="section-spacing" style="padding-top:32px">
+<div class="container">
+<div class="anatomy-section">
+<div>
+<h3 style="font-size:1.1rem;text-align:center;margin-bottom:0.3rem">🧍 Mapa Muscular Interativo</h3>
+<p style="font-size:0.82rem;text-align:center;color:var(--color-text-muted);margin-bottom:0.8rem">Clique para filtrar • Toque novamente para limpar</p>
+<svg class="body-map-svg" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa corporal">
+<circle cx="100" cy="30" r="18" fill="#94A3B8" />
+<rect x="94" y="48" width="12" height="12" fill="#94A3B8" />
+<path class="muscle-node" data-muscle="Peitoral" d="M 75 60 Q 100 65 125 60 Q 125 90 100 95 Q 75 90 75 60 Z" />
+<path class="muscle-node" data-muscle="Deltoide" d="M 60 60 Q 75 60 75 80 Q 55 80 60 60 Z" />
+<path class="muscle-node" data-muscle="Deltoide" d="M 140 60 Q 125 60 125 80 Q 145 80 140 60 Z" />
+<path class="muscle-node" data-muscle="Bíceps" d="M 55 82 Q 70 82 65 115 Q 50 115 55 82 Z" />
+<path class="muscle-node" data-muscle="Bíceps" d="M 145 82 Q 130 82 135 115 Q 150 115 145 82 Z" />
+<rect class="muscle-node" data-muscle="Core" x="78" y="98" width="44" height="50" rx="4" />
+<path class="muscle-node" data-muscle="Quadríceps" d="M 72 152 Q 100 152 98 220 Q 70 220 72 152 Z" />
+<path class="muscle-node" data-muscle="Quadríceps" d="M 128 152 Q 100 152 102 220 Q 130 220 128 152 Z" />
+<path class="muscle-node" data-muscle="Panturrilha" d="M 75 228 Q 95 228 92 285 Q 72 285 75 228 Z" />
+<path class="muscle-node" data-muscle="Panturrilha" d="M 125 228 Q 105 228 108 285 Q 128 285 125 228 Z" />
+</svg>
+<div style="text-align:center;margin-top:0.6rem"><span id="selectedMuscleTag" class="label success" style="display:none;font-size:0.8rem">Filtro muscular</span></div>
+<div style="text-align:center;margin-top:0.8rem"><button id="clearMuscleBtn" class="btn-outline btn-sm" style="font-size:0.78rem;padding:0.35rem 0.7rem;display:none">Limpar filtro</button></div>
+</div>
+<div class="filter-section">
+<h3 style="font-size:1.15rem;margin-bottom:0.2rem">Filtros Inteligentes</h3>
+<div>
+<label style="font-size:0.75rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-text-muted);display:block;margin-bottom:0.4rem">Categoria</label>
+<div class="filter-group" id="categoryFilters">
+<button class="filter-pill active" data-category="all">Todos</button>
+<button class="filter-pill" data-category="push">Empurrar</button>
+<button class="filter-pill" data-category="pull">Puxar</button>
+<button class="filter-pill" data-category="legs">Pernas</button>
+<button class="filter-pill" data-category="core">Core</button>
+<button class="filter-pill" data-category="cardio">Cardio</button>
+<button class="filter-pill" data-category="mobility">Mobilidade</button>
+</div>
+</div>
+<div>
+<label style="font-size:0.75rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-text-muted);display:block;margin-bottom:0.4rem">Nível</label>
+<div class="filter-group" id="levelFilters">
+<button class="filter-pill active" data-level="all">Todos</button>
+<button class="filter-pill" data-level="iniciante">Iniciante</button>
+<button class="filter-pill" data-level="intermediario">Intermediário</button>
+<button class="filter-pill" data-level="avancado">Avançado</button>
+</div>
+</div>
+<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.4rem">
+<span style="font-size:0.78rem;font-weight:700;color:var(--color-text-muted);align-self:center" id="resultCount">Mostrando todos</span>
+</div>
+</div>
+</div>
 
-    <!-- Conteúdo com Mapa Anatômico e Filtros -->
-    <section class="section-spacing">
-        <div class="container">
-            
-            <!-- Seção do Mapa Anatômico Interativo -->
-            <div class="anatomy-section shadow-sm">
-                <div>
-                    <h3 style="font-size: 1.2rem; text-align: center; margin-bottom: 0.5rem;">🧍 Mapa Muscular Interativo</h3>
-                    <p style="font-size: 0.85rem; text-align: center; color: var(--color-text-muted); margin-bottom: 1rem;">Clique no músculo para filtrar:</p>
-                    
-                    <!-- SVG do Corpo Humano com Nós Clicáveis -->
-                    <svg class="body-map-svg" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Cabeça e Pescoço -->
-                        <circle cx="100" cy="30" r="18" fill="#94A3B8" />
-                        <rect x="94" y="48" width="12" height="12" fill="#94A3B8" />
-                        
-                        <!-- Peitoral -->
-                        <path class="muscle-node" data-muscle="Peitoral" d="M 75 60 Q 100 65 125 60 Q 125 90 100 95 Q 75 90 75 60 Z" title="Peitoral" />
-                        
-                        <!-- Deltoides / Ombros -->
-                        <path class="muscle-node" data-muscle="Deltoide" d="M 60 60 Q 75 60 75 80 Q 55 80 60 60 Z" title="Deltoides / Ombros" />
-                        <path class="muscle-node" data-muscle="Deltoide" d="M 140 60 Q 125 60 125 80 Q 145 80 140 60 Z" title="Deltoides / Ombros" />
-                        
-                        <!-- Tríceps e Bíceps -->
-                        <path class="muscle-node" data-muscle="Bíceps" d="M 55 82 Q 70 82 65 115 Q 50 115 55 82 Z" title="Bíceps / Tríceps" />
-                        <path class="muscle-node" data-muscle="Bíceps" d="M 145 82 Q 130 82 135 115 Q 150 115 145 82 Z" title="Bíceps / Tríceps" />
-                        
-                        <!-- Abdômen / Core -->
-                        <rect class="muscle-node" data-muscle="Core" x="78" y="98" width="44" height="50" rx="4" title="Core / Abdômen" />
-                        
-                        <!-- Quadríceps (Coxas) -->
-                        <path class="muscle-node" data-muscle="Quadríceps" d="M 72 152 Q 100 152 98 220 Q 70 220 72 152 Z" title="Quadríceps / Pernas" />
-                        <path class="muscle-node" data-muscle="Quadríceps" d="M 128 152 Q 100 152 102 220 Q 130 220 128 152 Z" title="Quadríceps / Pernas" />
-                        
-                        <!-- Panturrilhas -->
-                        <path class="muscle-node" data-muscle="Panturrilha" d="M 75 228 Q 95 228 92 285 Q 72 285 75 228 Z" title="Panturrilhas" />
-                        <path class="muscle-node" data-muscle="Panturrilha" d="M 125 228 Q 105 228 108 285 Q 128 285 125 228 Z" title="Panturrilhas" />
-                    </svg>
-                    <div style="text-align: center; margin-top: 0.5rem;">
-                        <span id="selectedMuscleTag" class="label success" style="display: none; font-size: 0.85rem;">Filtro: Nível Selecionado</span>
-                    </div>
-                </div>
+<div id="customRoutinesSection" style="display:none;margin-bottom:2rem">
+<h2 style="font-size:1.5rem;margin-bottom:1rem">⚙️ Minhas Rotinas Personalizadas</h2>
+<div class="library-grid" id="customRoutinesGrid"></div>
+</div>
 
-                <div class="filter-section">
-                    <h3 style="font-size: 1.3rem;">Filtros de Exercícios</h3>
-                    <div>
-                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem;">GRUPO MUSCULAR / CATEGORIA</label>
-                        <div class="filter-group" id="categoryFilters">
-                            <button class="filter-pill active" data-category="all">Todos os Grupos</button>
-                            <button class="filter-pill" data-category="push">Empurrar (Push)</button>
-                            <button class="filter-pill" data-category="pull">Puxar (Pull)</button>
-                            <button class="filter-pill" data-category="legs">Pernas (Legs)</button>
-                            <button class="filter-pill" data-category="core">Core / Abdômen</button>
-                            <button class="filter-pill" data-category="cardio">Cardio</button>
-                            <button class="filter-pill" data-category="mobility">Mobilidade</button>
-                        </div>
-                    </div>
+<div id="favoritesSection" style="display:none;margin-bottom:2rem">
+<h2 style="font-size:1.5rem;margin-bottom:1rem">⭐ Meus Favoritos</h2>
+<div class="library-grid" id="favoritesGrid"></div>
+</div>
 
-                    <div>
-                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem;">NÍVEL DE DIFICULDADE</label>
-                        <div class="filter-group" id="levelFilters">
-                            <button class="filter-pill active" data-level="all">Todos os Níveis</button>
-                            <button class="filter-pill" data-level="iniciante">Iniciante</button>
-                            <button class="filter-pill" data-level="intermediario">Intermediário</button>
-                            <button class="filter-pill" data-level="avancado">Avançado</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="library-grid" id="libraryGrid"></div>
+<div id="noResultsMsg" style="display:none;text-align:center;padding:3rem 0">
+<h3>Nenhum exercício encontrado</h3>
+<p>Tente ajustar filtros ou busca.</p>
+<button class="btn-outline btn-sm" onclick="clearAllFilters()">Limpar filtros</button>
+</div>
+</div>
+</section>
 
-            <!-- Minhas Rotinas Personalizadas (Se Houver) -->
-            <div id="customRoutinesSection" style="display: none; margin-bottom: 3rem;">
-                <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">⚙️ Minhas Rotinas Personalizadas</h2>
-                <div class="library-grid" id="customRoutinesGrid"></div>
-            </div>
+<div id="customBuilderModal" class="modal-overlay" style="display:none">
+<div class="modal-content">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem"><h2 style="margin:0">⚙️ Criar Rotina</h2><button id="closeBuilderBtn" class="btn-outline btn-sm">✕</button></div>
+<div class="form-group"><label for="customRoutineName">Nome da Rotina</label><input type="text" id="customRoutineName" class="form-control" placeholder="Ex: Treino de Parque 20min"></div>
+<p style="font-size:0.88rem;font-weight:700;margin-bottom:0.4rem">Selecione exercícios:</p>
+<div id="builderExerciseList" style="max-height:260px;overflow-y:auto;border:1.8px solid var(--color-border);border-radius:12px;padding:0.8rem;margin-bottom:1rem;background:var(--color-bg-main)"></div>
+<button id="saveCustomRoutineBtn" class="btn-cta" style="width:100%">💾 Salvar Rotina</button>
+<p style="font-size:0.78rem;color:var(--color-text-muted);margin-top:0.6rem;text-align:center">Dica: rotinas salvas ganham estimativa de tempo e calorias.</p>
+</div>
+</div>
 
-            <div class="library-grid" id="libraryGrid">
-                <!-- Preenchido via JavaScript -->
-            </div>
-            <div id="noResultsMsg" style="display: none; text-align: center; padding: 4rem 0;">
-                <h3>Nenhum exercício encontrado</h3>
-                <p>Tente ajustar os termos da sua busca ou resetar o filtro muscular.</p>
-            </div>
-        </div>
-    </section>
+<footer class="footer"><div class="container foot-content"><div class="logo">Calistenia<span class="highlight">Pro</span></div><p>© 2026 Calistenia Pro • <a href="index.html">Início</a> • <a href="dashboard.html">Dashboard</a></p></div></footer>
 
-    <!-- Modal do Construtor de Treino Customizado -->
-    <div id="customBuilderModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content shadow-sm">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2>⚙️ Criar Rotina Personalizada</h2>
-                <button id="closeBuilderBtn" class="btn-outline btn-sm">✕ Fechar</button>
-            </div>
-            
-            <div class="form-group">
-                <label for="customRoutineName">Nome da Rotina</label>
-                <input type="text" id="customRoutineName" class="form-control" placeholder="Ex: Treino Rápido de Parque ou Focus Peito">
-            </div>
-
-            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">Selecione os exercícios para sua rotina:</p>
-            <div id="builderExerciseList" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 1rem; margin-bottom: 1.5rem;">
-                <!-- Lista de checkboxes criada dinamicamente -->
-            </div>
-
-            <button id="saveCustomRoutineBtn" class="btn-cta btn-large" style="width: 100%;">💾 Salvar Rotina no Navegador</button>
-        </div>
-    </div>
-
-    <footer class="footer">
-        <div class="container foot-content">
-            <div class="logo">Calistenia<span class="highlight">Pro</span></div>
-            <p>&copy; 2026 Calistenia Pro. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
-    <script src="exercises-data.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const grid = document.getElementById('libraryGrid');
-            const searchInput = document.getElementById('librarySearch');
-            const noResults = document.getElementById('noResultsMsg');
-            const muscleTag = document.getElementById('selectedMuscleTag');
-            
-            let selectedCategory = 'all';
-            let selectedLevel = 'all';
-            let selectedMuscleFilter = '';
-            let searchTerm = '';
-
-            function renderLibrary() {
-                grid.innerHTML = '';
-                let count = 0;
-
-                Object.keys(exerciseDB).forEach(key => {
-                    if (key === 'descanso') return;
-                    const ex = exerciseDB[key];
-
-                    const matchCat = selectedCategory === 'all' || ex.category === selectedCategory;
-                    const matchLevel = selectedLevel === 'all' || ex.level === selectedLevel;
-                    
-                    // Match do músculo do SVG
-                    const muscleStr = ex.muscles.join(' ').toLowerCase();
-                    const matchMuscle = !selectedMuscleFilter || muscleStr.includes(selectedMuscleFilter.toLowerCase());
-
-                    const textStr = `${ex.name} ${ex.purpose} ${ex.muscles.join(' ')} ${ex.categoryName}`.toLowerCase();
-                    const matchSearch = !searchTerm || textStr.includes(searchTerm.toLowerCase());
-
-                    if (matchCat && matchLevel && matchMuscle && matchSearch) {
-                        count++;
-                        const card = document.createElement('div');
-                        card.className = 'ex-card';
-                        
-                        card.innerHTML = `
-                            <div>
-                                <div class="ex-card-tags">
-                                    <span class="label success">${ex.categoryName}</span>
-                                    <span class="label" style="background:#FEF3C7; color:#D97706;">${ex.levelName}</span>
-                                </div>
-                                <h3 class="ex-card-title">${ex.name}</h3>
-                                <p class="ex-card-purpose">${ex.purpose}</p>
-                            </div>
-                            <a href="exercise.html?id=${encodeURIComponent(ex.name)}" class="btn-cta btn-sm" style="width: 100%; text-align: center;">Ver Detalhes do Exercício →</a>
-                        `;
-                        grid.appendChild(card);
-                    }
-                });
-
-                if (count === 0) {
-                    noResults.style.display = 'block';
-                } else {
-                    noResults.style.display = 'none';
-                }
-            }
-
-            // Click nos nós do Mapa Anatômico SVG
-            document.querySelectorAll('.muscle-node').forEach(node => {
-                node.addEventListener('click', () => {
-                    const muscle = node.getAttribute('data-muscle');
-                    if (selectedMuscleFilter === muscle) {
-                        selectedMuscleFilter = '';
-                        node.classList.remove('selected');
-                        muscleTag.style.display = 'none';
-                    } else {
-                        document.querySelectorAll('.muscle-node').forEach(n => n.classList.remove('selected'));
-                        node.classList.add('selected');
-                        selectedMuscleFilter = muscle;
-                        muscleTag.style.display = 'inline-block';
-                        muscleTag.textContent = `🎯 Filtro Muscular: ${muscle}`;
-                    }
-                    renderLibrary();
-                });
-            });
-
-            // Listeners de Busca
-            searchInput.addEventListener('input', (e) => {
-                searchTerm = e.target.value.trim();
-                renderLibrary();
-            });
-
-            // Listeners de Categoria
-            document.querySelectorAll('#categoryFilters .filter-pill').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('#categoryFilters .filter-pill').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selectedCategory = btn.getAttribute('data-category');
-                    renderLibrary();
-                });
-            });
-
-            // Listeners de Nível
-            document.querySelectorAll('#levelFilters .filter-pill').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('#levelFilters .filter-pill').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selectedLevel = btn.getAttribute('data-level');
-                    renderLibrary();
-                });
-            });
-
-            // Custom Routine Builder Modal logic
-            const builderModal = document.getElementById('customBuilderModal');
-            const openBuilderBtn = document.getElementById('openCustomBuilderBtn');
-            const closeBuilderBtn = document.getElementById('closeBuilderBtn');
-            const saveCustomRoutineBtn = document.getElementById('saveCustomRoutineBtn');
-            const builderExerciseList = document.getElementById('builderExerciseList');
-
-            function populateBuilderList() {
-                builderExerciseList.innerHTML = '';
-                Object.keys(exerciseDB).forEach(key => {
-                    if (key === 'descanso') return;
-                    const ex = exerciseDB[key];
-                    const item = document.createElement('div');
-                    item.style.display = 'flex';
-                    item.style.alignItems = 'center';
-                    item.style.justifySpaceBetween = 'space-between';
-                    item.style.padding = '0.5rem 0';
-                    item.style.borderBottom = '1px solid var(--color-border)';
-
-                    item.innerHTML = `
-                        <label style="font-size: 0.95rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="builder-ex-check" value="${ex.name}">
-                            ${ex.name}
-                        </label>
-                        <span style="font-size: 0.8rem; color: var(--color-text-muted);">${ex.categoryName}</span>
-                    `;
-                    builderExerciseList.appendChild(item);
-                });
-            }
-
-            openBuilderBtn.addEventListener('click', () => {
-                populateBuilderList();
-                builderModal.style.display = 'flex';
-            });
-
-            closeBuilderBtn.addEventListener('click', () => {
-                builderModal.style.display = 'none';
-            });
-
-            saveCustomRoutineBtn.addEventListener('click', () => {
-                const name = document.getElementById('customRoutineName').value.trim() || 'Minha Rotina Personalizada';
-                const checkedNodes = document.querySelectorAll('.builder-ex-check:checked');
-                
-                if (checkedNodes.length === 0) {
-                    alert('Selecione pelo menos 1 exercício para sua rotina.');
-                    return;
-                }
-
-                const exercises = [];
-                checkedNodes.forEach(chk => {
-                    exercises.push({
-                        name: chk.value,
-                        reps: "3 séries de 10-12"
-                    });
-                });
-
-                if (window.CustomRoutines) {
-                    window.CustomRoutines.saveRoutine(name, exercises);
-                    showToast(`Rotina "${name}" salva com sucesso!`, 'success');
-                    builderModal.style.display = 'none';
-                    renderCustomRoutines();
-                }
-            });
-
-            function renderCustomRoutines() {
-                const customSec = document.getElementById('customRoutinesSection');
-                const customGrid = document.getElementById('customRoutinesGrid');
-                if (!customSec || !customGrid || !window.CustomRoutines) return;
-
-                const routines = window.CustomRoutines.getRoutines();
-                if (routines.length === 0) {
-                    customSec.style.display = 'none';
-                    return;
-                }
-
-                customSec.style.display = 'block';
-                customGrid.innerHTML = '';
-
-                routines.forEach((rt, idx) => {
-                    const card = document.createElement('div');
-                    card.className = 'ex-card';
-                    card.style.borderTop = '4px solid #10B981';
-
-                    let exList = rt.exercises.map(e => `<li>🎯 ${e.name}</li>`).join('');
-
-                    card.innerHTML = `
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span class="label success" style="background:#D1FAE5; color:#065F46;">Rotina Custom</span>
-                                <button class="btn-outline btn-sm delete-rt-btn" data-idx="${idx}" style="color: #EF4444 !important; border-color: #EF4444; padding: 0.2rem 0.5rem; font-size: 0.75rem;">Excluir</button>
-                            </div>
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">${rt.name}</h3>
-                            <ul style="list-style: none; padding: 0; margin-bottom: 1rem; font-size: 0.9rem;">
-                                ${exList}
-                            </ul>
-                        </div>
-                        <button class="btn-cta btn-sm start-custom-player-btn" data-idx="${idx}" style="width: 100%;">▶️ Executar Treino Ativo</button>
-                    `;
-                    customGrid.appendChild(card);
-                });
-
-                document.querySelectorAll('.delete-rt-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const i = parseInt(btn.getAttribute('data-idx'), 10);
-                        window.CustomRoutines.deleteRoutine(i);
-                        renderCustomRoutines();
-                        showToast('Rotina excluída.', 'info');
-                    });
-                });
-
-                document.querySelectorAll('.start-custom-player-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const i = parseInt(btn.getAttribute('data-idx'), 10);
-                        const rt = window.CustomRoutines.getRoutines()[i];
-                        if (rt && window.WorkoutPlayer) {
-                            window.WorkoutPlayer.start(rt.name, rt.exercises, null);
-                        }
-                    });
-                });
-            }
-
-            renderLibrary();
-            renderCustomRoutines();
+<script src="script.js"></script>
+<script src="exercises-data.js"></script>
+<script>
+let selectedCategory='all', selectedLevel='all', selectedMuscleFilter='', searchTerm='', showOnlyFav=false;
+function clearAllFilters(){
+    selectedCategory='all'; selectedLevel='all'; selectedMuscleFilter=''; searchTerm=''; showOnlyFav=false;
+    document.querySelectorAll('.filter-pill').forEach(b=> b.classList.remove('active'));
+    document.querySelectorAll('[data-category="all"],[data-level="all"]').forEach(b=> b.classList.add('active'));
+    document.querySelectorAll('.muscle-node').forEach(n=> n.classList.remove('selected'));
+    document.getElementById('selectedMuscleTag').style.display='none';
+    document.getElementById('clearMuscleBtn').style.display='none';
+    document.getElementById('librarySearch').value='';
+    showOnlyFav=false;
+    renderLibrary();
+}
+function renderLibrary(){
+    const grid=document.getElementById('libraryGrid');
+    const noResults=document.getElementById('noResultsMsg');
+    const resultCount=document.getElementById('resultCount');
+    grid.innerHTML=''; let count=0;
+    const favSection=document.getElementById('favoritesSection');
+    if(showOnlyFav){
+        grid.style.display='none'; favSection.style.display='block';
+        const favGrid=document.getElementById('favoritesGrid'); favGrid.innerHTML='';
+        const favs=FavoritesManager.getAll();
+        if(favs.length===0){
+            favGrid.innerHTML='<p style="color:var(--color-text-muted);padding:1rem">Nenhum favorito ainda. Toque na ☆ dos cards para favoritar.</p>';
+            noResults.style.display='none'; resultCount.textContent='Favoritos: 0';
+            return;
+        }
+        favs.forEach(name=>{
+            const key=typeof processIdStr==='function'? processIdStr(name) : null;
+            const ex=window.exerciseDB[key] || Object.values(window.exerciseDB).find(e=> e.name===name);
+            if(ex){ favGrid.appendChild(createCard(ex)); count++; }
         });
-    </script>
+        resultCount.textContent=`Favoritos: ${count}`;
+        noResults.style.display='none';
+        return;
+    } else {
+        grid.style.display='grid'; favSection.style.display='none';
+    }
+    Object.keys(exerciseDB).forEach(key=>{
+        if(key==='descanso') return;
+        const ex=exerciseDB[key];
+        const matchCat=selectedCategory==='all' || ex.category===selectedCategory;
+        const matchLevel=selectedLevel==='all' || ex.level===selectedLevel;
+        const muscleStr=ex.muscles.join(' ').toLowerCase();
+        const matchMuscle=!selectedMuscleFilter || muscleStr.includes(selectedMuscleFilter.toLowerCase());
+        const textStr=`${ex.name} ${ex.purpose} ${ex.muscles.join(' ')} ${ex.categoryName}`.toLowerCase();
+        const matchSearch=!searchTerm || textStr.includes(searchTerm.toLowerCase());
+        if(matchCat && matchLevel && matchMuscle && matchSearch){
+            count++; grid.appendChild(createCard(ex, key));
+        }
+    });
+    resultCount.textContent = count===Object.keys(exerciseDB).length-1 ? `Mostrando todos • ${count} exercícios` : `${count} exercícios encontrados`;
+    noResults.style.display = count===0 ? 'block' : 'none';
+    document.getElementById('favCount').textContent=FavoritesManager.count();
+}
+function createCard(ex, key){
+    const card=document.createElement('div'); card.className='ex-card';
+    const isFav=FavoritesManager.isFav(ex.name);
+    const caloriesMap={push:8, pull:7, legs:10, core:6, cardio:12, mobility:3};
+    const estCal=(caloriesMap[ex.category]||6)*4;
+    const estTime='8-12 min';
+    card.innerHTML=`
+        <button class="fav-star ${isFav?'faved':''}" title="Favoritar" data-name="${ex.name.replace(/"/g,'&quot;')}">${isFav?'★':'☆'}</button>
+        <div>
+            <div class="ex-card-tags">
+                <span class="label success" style="margin:0;font-size:0.7rem">${ex.categoryName}</span>
+                <span class="label" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;margin:0;font-size:0.7rem">${ex.levelName}</span>
+            </div>
+            <h3 class="ex-card-title">${ex.name}</h3>
+            <p class="ex-card-purpose">${ex.purpose}</p>
+            <div class="ex-card-meta">
+                <span>⏱️ ${estTime}</span><span>🔥 ~${estCal} kcal</span><span>🎯 ${ex.muscles[0]}</span>
+            </div>
+        </div>
+        <div style="display:flex;gap:0.5rem">
+            <a href="exercise.html?id=${encodeURIComponent(ex.name)}" class="btn-cta btn-sm" style="flex:1;justify-content:center">Ver Detalhes →</a>
+            <button class="btn-outline btn-sm start-quick-btn" data-name="${ex.name.replace(/"/g,'&quot;')}" style="padding:0.5rem 0.7rem" title="Treino rápido">▶️</button>
+        </div>
+    `;
+    card.querySelector('.fav-star').addEventListener('click', ()=>{
+        const now=FavoritesManager.toggle(ex.name);
+        renderLibrary(); renderCustomRoutines(); showToast(now?`⭐ ${ex.name} favoritado`:`☆ Removido dos favoritos`, 'info'); Achievements.checkAll();
+    });
+    card.querySelector('.start-quick-btn').addEventListener('click', ()=>{
+        WorkoutPlayer.start(ex.name, [{name: ex.name, reps: '3 séries de 10'}], null);
+    });
+    return card;
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+    const grid=document.getElementById('libraryGrid'); const searchInput=document.getElementById('librarySearch');
+    const muscleTag=document.getElementById('selectedMuscleTag'); const clearBtn=document.getElementById('clearMuscleBtn');
+    document.querySelectorAll('.muscle-node').forEach(node=>{
+        node.addEventListener('click', ()=>{
+            const muscle=node.getAttribute('data-muscle');
+            if(selectedMuscleFilter===muscle){
+                selectedMuscleFilter=''; node.classList.remove('selected'); muscleTag.style.display='none'; clearBtn.style.display='none';
+            } else {
+                document.querySelectorAll('.muscle-node').forEach(n=> n.classList.remove('selected'));
+                node.classList.add('selected'); selectedMuscleFilter=muscle;
+                muscleTag.style.display='inline-flex'; muscleTag.textContent=`🎯 ${muscle}`; clearBtn.style.display='inline-flex';
+            }
+            renderLibrary();
+        });
+    });
+    clearBtn.addEventListener('click', ()=>{ selectedMuscleFilter=''; document.querySelectorAll('.muscle-node').forEach(n=> n.classList.remove('selected')); muscleTag.style.display='none'; clearBtn.style.display='none'; renderLibrary(); });
+    searchInput.addEventListener('input', e=>{ searchTerm=e.target.value.trim(); renderLibrary(); });
+    document.querySelectorAll('#categoryFilters .filter-pill').forEach(btn=>{
+        btn.addEventListener('click', ()=>{ document.querySelectorAll('#categoryFilters .filter-pill').forEach(b=> b.classList.remove('active')); btn.classList.add('active'); selectedCategory=btn.dataset.category; renderLibrary(); });
+    });
+    document.querySelectorAll('#levelFilters .filter-pill').forEach(btn=>{
+        btn.addEventListener('click', ()=>{ document.querySelectorAll('#levelFilters .filter-pill').forEach(b=> b.classList.remove('active')); btn.classList.add('active'); selectedLevel=btn.dataset.level; renderLibrary(); });
+    });
+    document.getElementById('showFavBtn').addEventListener('click', ()=>{
+        showOnlyFav=!showOnlyFav;
+        document.getElementById('showFavBtn').textContent= showOnlyFav ? '📚 Ver todos' : `⭐ Favoritos (${FavoritesManager.count()})`;
+        renderLibrary();
+    });
+    const builderModal=document.getElementById('customBuilderModal');
+    const openBuilderBtn=document.getElementById('openCustomBuilderBtn');
+    const closeBuilderBtn=document.getElementById('closeBuilderBtn');
+    const saveCustomRoutineBtn=document.getElementById('saveCustomRoutineBtn');
+    const builderExerciseList=document.getElementById('builderExerciseList');
+    function populateBuilderList(){
+        builderExerciseList.innerHTML='';
+        Object.keys(exerciseDB).forEach(key=>{
+            if(key==='descanso') return; const ex=exerciseDB[key];
+            const item=document.createElement('label');
+            item.style.display='flex'; item.style.alignItems='center'; item.style.justifyContent='space-between'; item.style.padding='0.6rem 0.4rem'; item.style.borderBottom='1px solid var(--color-border)'; item.style.cursor='pointer'; item.style.gap='0.6rem';
+            item.innerHTML=`<span style="display:flex;align-items:center;gap:0.6rem;font-weight:600;font-size:0.92rem"><input type="checkbox" class="builder-ex-check" value="${ex.name.replace(/"/g,'&quot;')}" style="accent-color:var(--color-cta)"> ${ex.name}</span><span style="font-size:0.75rem;color:var(--color-text-muted);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.2rem 0.5rem;border-radius:999px">${ex.categoryName}</span>`;
+            builderExerciseList.appendChild(item);
+        });
+    }
+    openBuilderBtn.addEventListener('click', ()=>{ populateBuilderList(); builderModal.style.display='flex'; });
+    closeBuilderBtn.addEventListener('click', ()=> builderModal.style.display='none');
+    builderModal.addEventListener('click', e=>{ if(e.target===builderModal) builderModal.style.display='none'; });
+    saveCustomRoutineBtn.addEventListener('click', ()=>{
+        const name=document.getElementById('customRoutineName').value.trim() || 'Minha Rotina Personalizada';
+        const checked=document.querySelectorAll('.builder-ex-check:checked');
+        if(checked.length===0){ showToast('Selecione pelo menos 1 exercício','warning'); return; }
+        const exercises=[...checked].map(c=> ({name:c.value, reps:"3 séries de 10-12"}));
+        CustomRoutines.saveRoutine(name, exercises); showToast(`Rotina "${name}" salva!`,'success'); builderModal.style.display='none'; renderCustomRoutines(); Achievements.checkAll();
+    });
+    function renderCustomRoutines(){
+        const sec=document.getElementById('customRoutinesSection'); const grid2=document.getElementById('customRoutinesGrid');
+        if(!sec||!grid2) return;
+        const routines=CustomRoutines.getRoutines();
+        if(routines.length===0){ sec.style.display='none'; return; }
+        sec.style.display='block'; grid2.innerHTML='';
+        routines.forEach((rt, idx)=>{
+            const card=document.createElement('div'); card.className='ex-card'; card.style.borderTop='4px solid #10B981';
+            const estTime=rt.exercises.length*4;
+            card.innerHTML=`
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+                        <span class="label success" style="background:#ECFDF5;color:#065F46;border-color:#A7F3D0;margin:0">Rotina • ${estTime} min • ~${estTime*8} kcal</span>
+                        <button class="btn-outline btn-sm delete-rt-btn" data-idx="${idx}" style="color:#EF4444 !important;border-color:#FECACA;padding:0.25rem 0.6rem;font-size:0.75rem">Excluir</button>
+                    </div>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.6rem">${rt.name}</h3>
+                    <ul style="list-style:none;padding:0;margin-bottom:1rem;font-size:0.9rem;display:flex;flex-direction:column;gap:0.35rem">
+                        ${rt.exercises.map(e=> `<li style="display:flex;justify-content:space-between;gap:0.6rem"><span>🎯 ${e.name}</span><span style="color:var(--color-cta);font-weight:700;font-size:0.8rem">${e.reps}</span></li>`).join('')}
+                    </ul>
+                </div>
+                <button class="btn-cta btn-sm start-custom-player-btn" data-idx="${idx}" style="width:100%">▶️ Executar Treino Ativo</button>
+            `;
+            grid2.appendChild(card);
+        });
+        grid2.querySelectorAll('.delete-rt-btn').forEach(btn=> btn.addEventListener('click', ()=>{ CustomRoutines.deleteRoutine(parseInt(btn.dataset.idx,10)); renderCustomRoutines(); showToast('Rotina excluída','info') }));
+        grid2.querySelectorAll('.start-custom-player-btn').forEach(btn=> btn.addEventListener('click', ()=>{ const rt=CustomRoutines.getRoutines()[parseInt(btn.dataset.idx,10)]; if(rt) WorkoutPlayer.start(rt.name, rt.exercises, null)}));
+    }
+    renderLibrary(); renderCustomRoutines();
+    window.clearAllFilters=clearAllFilters;
+    window.renderCustomRoutines=renderCustomRoutines;
+});
+</script>
 </body>
 </html>
