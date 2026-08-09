@@ -1,22 +1,70 @@
 {
-  "name": "Calistenia Pro - Domine Seu Corpo",
+  "name": "Calistenia Pro — Domine Seu Corpo (Premium 2.0)",
   "short_name": "CalisteniaPro",
-  "description": "Desafio de 30 dias de treino com o peso do próprio corpo, biblioteca de exercícios e ferramentas de nutrição.",
+  "description": "Programa 30 dias de calistenia com zero equipamentos, dashboard XP, calendário, timer pro, biblioteca interativa e calculadora TDEE.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0F172A",
+  "background_color": "#020617",
   "theme_color": "#2563EB",
   "orientation": "portrait-primary",
+  "categories": ["health", "fitness", "lifestyle"],
+  "lang": "pt-BR",
   "icons": [
+    {
+      "src": "assets/img/hero-athlete.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/og-cover.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
     {
       "src": "assets/img/generic.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "assets/img/generic.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Programa 30 Dias",
+      "short_name": "Treinar",
+      "description": "Continuar desafio diário com XP e conquistas",
+      "url": "./program.html",
+      "icons": [{ "src": "assets/img/generic.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Ver progresso, calendário, água e peso",
+      "url": "./dashboard.html",
+      "icons": [{ "src": "assets/img/generic.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Biblioteca",
+      "short_name": "Biblioteca",
+      "description": "32 exercícios com mapa anatômico",
+      "url": "./library.html",
+      "icons": [{ "src": "assets/img/generic.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/img/og-cover.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Calistenia Pro — Treine em qualquer lugar"
     }
   ]
 }

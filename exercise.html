@@ -1,229 +1,188 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Exercício - Calistenia Pro</title>
-    <meta name="description" content="Biblioteca de detalhes anatômicos e passos rigorosos de como realizar seus exercícios perfeitamente.">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563EB">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .ex-hero {
-            background-color: var(--color-bg-alt);
-            border-bottom: 1px solid var(--color-border);
-            text-align: center;
-        }
-        .ex-content-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-        }
-        .ex-steps-card {
-            background: var(--color-bg-alt);
-            padding: 2.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--color-border);
-            border-top: 4px solid var(--color-cta);
-        }
-        .ex-steps-list {
-            margin-top: 1.5rem;
-            padding-left: 1.2rem;
-            list-style: decimal;
-        }
-        .visual-demo {
-            height: 100%;
-            min-height: 380px;
-            background: var(--color-bg-alt);
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            border: 1px solid var(--color-border);
-        }
-        @media (max-width: 900px) {
-            .ex-content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalhes do Exercício — Calistenia Pro</title>
+<meta name="description" content="Detalhes anatômicos, passos rigorosos e timer integrado para executar com perfeição.">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.ex-hero{background:var(--color-bg-alt);border-bottom:1px solid var(--color-border);text-align:center;padding:64px 0 36px;position:relative;overflow:hidden}
+.ex-hero::before{content:'';position:absolute;inset:0;background:var(--gradient-mesh);opacity:0.45;pointer-events:none}
+.ex-content-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:2rem}
+.ex-steps-card{background:var(--color-bg-alt);padding:2rem;border-radius:16px;box-shadow:var(--shadow-soft);border:1px solid var(--color-border);position:relative;overflow:hidden}
+.ex-steps-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-primary)}
+.ex-steps-list{margin-top:1.2rem;padding-left:1.1rem;list-style:decimal;display:flex;flex-direction:column;gap:0.8rem}
+.ex-steps-list li{background:var(--color-bg-main);border:1px solid var(--color-border);padding:0.9rem 1rem;border-radius:12px;line-height:1.6}
+.visual-demo{min-height:360px;background:var(--color-bg-alt);border-radius:16px;display:flex;align-items:center;justify-content:center;padding:1.2rem;border:1px solid var(--color-border);flex-direction:column;gap:1rem;box-shadow:var(--shadow-soft)}
+@media(max-width:900px){.ex-content-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
+<nav class="navbar">
+<div class="container nav-content">
+<div class="logo"><a href="index.html" style="color:inherit">Calistenia<span class="highlight">Pro</span></a></div>
+<ul class="nav-links">
+<li><a href="index.html">Início</a></li>
+<li><a href="program.html">Programa 30 Dias</a></li>
+<li><a href="library.html">Biblioteca</a></li>
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="calculator.html">Calculadora</a></li>
+</ul>
+<div style="display:flex;align-items:center;gap:0.6rem">
+<button class="theme-toggle-btn btn-outline btn-sm">🌙</button>
+<button class="hamburger" aria-label="Abrir Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+</div>
+</nav>
 
-    <!-- Navegação -->
-    <nav class="navbar">
-        <div class="container nav-content">
-            <div class="logo"><a href="index.html" style="color: inherit;">Calistenia<span class="highlight">Pro</span></a></div>
-            <ul class="nav-links">
-                <li><a href="index.html">Início</a></li>
-                <li><a href="program.html">Programa 30 Dias</a></li>
-                <li><a href="library.html">Biblioteca</a></li>
-                <li><a href="calculator.html">Calculadora</a></li>
-            </ul>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="theme-toggle-btn btn-outline btn-sm">🌙 Modo Escuro</button>
-                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </div>
-    </nav>
+<header class="ex-hero">
+<div class="container" style="position:relative">
+<div style="margin-bottom:1rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap">
+<a href="javascript:history.back()" style="font-weight:700;font-size:0.9rem;color:var(--color-cta);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.4rem 0.8rem;border-radius:999px">← Voltar</a>
+<a href="library.html" style="font-weight:700;font-size:0.9rem;color:var(--color-text-muted);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.4rem 0.8rem;border-radius:999px">📚 Biblioteca</a>
+</div>
+<h1 id="ex-title" style="margin-bottom:0.6rem">Carregando Movimento...</h1>
+<div id="ex-meta" style="display:flex;justify-content:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;font-size:0.82rem;font-weight:700;color:var(--color-text-muted)"></div>
+<div id="ex-muscles" style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px"></div>
+<div style="display:flex;gap:0.6rem;justify-content:center;margin-top:1.2rem;flex-wrap:wrap">
+<button id="favToggleBtn" class="btn-outline btn-sm">☆ Favoritar</button>
+<button id="quickStartBtn" class="btn-cta btn-sm">▶️ Treino Rápido</button>
+<button class="btn-outline btn-sm" data-open-timer>⏱️ Timer Pro</button>
+</div>
+</div>
+</header>
 
-    <!-- Header Dinâmico -->
-    <header class="ex-hero section-spacing">
-        <div class="container">
-            <div style="margin-bottom: 1rem;">
-                <a href="javascript:history.back()" style="font-weight: 600; font-size: 0.95rem; color: var(--color-cta);">← Voltar</a>
-            </div>
-            <h1 id="ex-title">Carregando Movimento...</h1>
-            <div id="ex-muscles" style="margin-top: 1.5rem; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <!-- Badges criados dinamicamente pelo JS -->
-            </div>
-        </div>
-    </header>
+<section class="section-spacing" style="padding-top:32px">
+<div class="container">
+<div class="ex-content-grid">
+<div class="ex-steps-card">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+<h2 style="margin:0">Como Realizar & Objetivo</h2>
+<span id="ex-calories" style="background:var(--color-bg-main);border:1px solid var(--color-border);padding:0.35rem 0.7rem;border-radius:999px;font-size:0.78rem;font-weight:800;white-space:nowrap">🔥 ~32 kcal • 8 min</span>
+</div>
+<p id="ex-purpose" style="font-weight:600;color:var(--color-text-dark);border-bottom:1px solid var(--color-border);padding-bottom:1rem;margin-top:1rem;line-height:1.6">Carregando objetivo...</p>
+<ol id="ex-steps" class="ex-steps-list"></ol>
+<div style="margin-top:1.4rem;background:var(--color-bg-main);border:1px solid var(--color-border);border-radius:12px;padding:1rem">
+<h4 style="margin:0 0 0.4rem 0;font-size:0.95rem">💡 Dicas de Ouro</h4>
+<ul id="ex-tips" style="font-size:0.9rem;color:var(--color-text-muted);padding-left:1.1rem;display:flex;flex-direction:column;gap:0.35rem">
+<li>Respire: inspire na descida, expire na subida.</li>
+<li>Mantenha core travado o tempo todo.</li>
+<li>Qualidade > quantidade. Forma limpa primeiro.</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="visual-demo" id="ex-image-container"></div>
+<div style="margin-top:1.2rem;background:var(--color-bg-alt);border:1px solid var(--color-border);padding:1.4rem;border-radius:16px;text-align:center;box-shadow:var(--shadow-soft)">
+<h3 style="margin-bottom:0.4rem">⏱️ Timer Inteligente</h3>
+<p style="font-size:0.88rem;color:var(--color-text-muted);margin-bottom:0.8rem">Para pranchas, isometrias ou descanso entre séries.</p>
+<div style="font-size:3rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;color:var(--color-cta);margin:0.6rem 0" id="timerDisplay">00:30</div>
+<div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem">
+<button class="btn-outline btn-sm timer-preset" data-sec="30">30s</button>
+<button class="btn-outline btn-sm timer-preset" data-sec="45">45s</button>
+<button class="btn-outline btn-sm timer-preset" data-sec="60">60s</button>
+<button class="btn-outline btn-sm timer-preset" data-sec="90">90s</button>
+<button class="btn-outline btn-sm timer-preset" data-sec="120">2'</button>
+<button class="btn-outline btn-sm" data-open-timer style="border-style:dashed">Pro →</button>
+</div>
+<div style="display:flex;gap:0.6rem;justify-content:center">
+<button id="timerStartBtn" class="btn-cta btn-sm">▶️ Iniciar</button>
+<button id="timerPauseBtn" class="btn-outline btn-sm" style="display:none">⏸️ Pausar</button>
+<button id="timerResetBtn" class="btn-outline btn-sm">🔄 Zerar</button>
+</div>
+</div>
+<div style="margin-top:1.2rem;background:var(--gradient-dark);color:white;border-radius:16px;padding:1.4rem;position:relative;overflow:hidden">
+<div style="position:absolute;inset:0;background:radial-gradient(400px circle at 80% 0%, rgba(37,99,235,0.25), transparent 60%);pointer-events:none"></div>
+<div style="position:relative">
+<h4 style="color:white;margin:0 0 0.3rem 0">Quer transformar em treino?</h4>
+<p style="color:#CBD5E1;font-size:0.9rem;margin:0 0 0.8rem 0">Adicione à sua rotina personalizada ou inicie Treino Ativo agora.</p>
+<div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+<button id="addToRoutineBtn" class="btn-cta btn-sm" style="background:white;color:#0F172A !important">⚙️ Add à Rotina</button>
+<button id="shareExBtn" class="btn-outline btn-sm" style="color:white !important;border-color:rgba(255,255,255,0.2)">⤴ Compartilhar</button>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-    <section class="section-spacing">
-        <div class="container">
-            <div class="ex-content-grid">
-                <div class="ex-steps-card">
-                    <h2>Como Realizar & Objetivo</h2>
-                    <p id="ex-purpose" style="font-weight: 500; color: var(--color-text-dark); border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; line-height: 1.6;">
-                        Carregando objetivo...
-                    </p>
-                    <ol id="ex-steps" class="ex-steps-list">
-                        <!-- Passos injetados via JS -->
-                    </ol>
-                </div>
-                
-                <div>
-                    <div class="visual-demo shadow-hover" id="ex-image-container" style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
-                        <!-- Imagens injetadas pelo script -->
-                    </div>
+<div style="margin-top:2rem">
+<h3 style="margin-bottom:1rem">🔗 Exercícios Relacionados</h3>
+<div class="library-grid" id="relatedGrid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))"></div>
+</div>
+</div>
+</section>
 
-                    <!-- Cronômetro / Temporizador de Série & Descanso -->
-                    <div class="shadow-sm" style="margin-top: 2rem; background: var(--color-bg-alt); border: 1px solid var(--color-border); padding: 2rem; border-radius: var(--border-radius); text-align: center;">
-                        <h3 style="margin-bottom: 0.5rem;">⏱️ Temporizador de Descanso & Isometria</h3>
-                        <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1rem;">Mapeie suas pranchas ou descanse entre séries com este cronômetro integrado.</p>
-                        
-                        <div style="font-size: 3.2rem; font-weight: 700; font-family: monospace; color: var(--color-cta); margin: 1rem 0;" id="timerDisplay">00:30</div>
-                        
-                        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                            <button class="btn-outline btn-sm timer-preset" data-sec="30">30s</button>
-                            <button class="btn-outline btn-sm timer-preset" data-sec="45">45s</button>
-                            <button class="btn-outline btn-sm timer-preset" data-sec="60">60s</button>
-                            <button class="btn-outline btn-sm timer-preset" data-sec="90">90s</button>
-                            <button class="btn-outline btn-sm timer-preset" data-sec="120">2 min</button>
-                        </div>
-                        
-                        <div style="display: flex; gap: 0.75rem; justify-content: center;">
-                            <button id="timerStartBtn" class="btn-cta btn-sm">▶️ Iniciar</button>
-                            <button id="timerPauseBtn" class="btn-outline btn-sm" style="display: none;">⏸️ Pausar</button>
-                            <button id="timerResetBtn" class="btn-outline btn-sm">🔄 Zerar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<footer class="footer"><div class="container foot-content"><div class="logo">Calistenia<span class="highlight">Pro</span></div><p>© 2026 Calistenia Pro</p></div></footer>
 
-    <footer class="footer">
-        <div class="container foot-content">
-            <div class="logo">Calistenia<span class="highlight">Pro</span></div>
-            <p>&copy; 2026 Calistenia Pro. Todos os direitos reservados.</p>
-        </div>
-    </footer>
+<script src="script.js"></script>
+<script src="exercises-data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+    let timerInterval=null, remainingSeconds=30, initialPreset=30;
+    const display=document.getElementById('timerDisplay');
+    const startBtn=document.getElementById('timerStartBtn'), pauseBtn=document.getElementById('timerPauseBtn'), resetBtn=document.getElementById('timerResetBtn');
+    function updateDisplay(){ const m=Math.floor(remainingSeconds/60), s=remainingSeconds%60; display.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+    function playBeep(){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=880; g.gain.value=0.25; o.start(); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.8); o.stop(ctx.currentTime+0.8);}catch(e){} try{ if(navigator.vibrate) navigator.vibrate([120,60,120])}catch(e){} }
+    function startTimer(){ if(timerInterval) return; startBtn.style.display='none'; pauseBtn.style.display='inline-flex'; timerInterval=setInterval(()=>{ if(remainingSeconds>0){ remainingSeconds--; updateDisplay(); } else { clearInterval(timerInterval); timerInterval=null; startBtn.style.display='inline-flex'; pauseBtn.style.display='none'; playBeep(); showToast('⏰ Tempo esgotado! Excelente!','success'); } },1000); }
+    function pauseTimer(){ clearInterval(timerInterval); timerInterval=null; startBtn.style.display='inline-flex'; pauseBtn.style.display='none'; }
+    function resetTimer(){ pauseTimer(); remainingSeconds=initialPreset; updateDisplay(); }
+    document.querySelectorAll('.timer-preset').forEach(b=> b.addEventListener('click', ()=>{ initialPreset=parseInt(b.dataset.sec,10); remainingSeconds=initialPreset; pauseTimer(); updateDisplay(); }));
+    startBtn?.addEventListener('click', startTimer); pauseBtn?.addEventListener('click', pauseTimer); resetBtn?.addEventListener('click', resetTimer); updateDisplay();
 
-    <!-- Scripts da aplicação -->
-    <script src="script.js"></script>
-    <script src="exercises-data.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let timerInterval = null;
-            let remainingSeconds = 30;
-            let initialPreset = 30;
-
-            const display = document.getElementById('timerDisplay');
-            const startBtn = document.getElementById('timerStartBtn');
-            const pauseBtn = document.getElementById('timerPauseBtn');
-            const resetBtn = document.getElementById('timerResetBtn');
-
-            function updateDisplay() {
-                const mins = Math.floor(remainingSeconds / 60);
-                const secs = remainingSeconds % 60;
-                display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            }
-
-            function playBeep() {
-                try {
-                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(880, ctx.currentTime);
-                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 1.2);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 1.2);
-                } catch(e) {}
-            }
-
-            function startTimer() {
-                if (timerInterval) return;
-                startBtn.style.display = 'none';
-                pauseBtn.style.display = 'inline-flex';
-
-                timerInterval = setInterval(() => {
-                    if (remainingSeconds > 0) {
-                        remainingSeconds--;
-                        updateDisplay();
-                    } else {
-                        clearInterval(timerInterval);
-                        timerInterval = null;
-                        startBtn.style.display = 'inline-flex';
-                        pauseBtn.style.display = 'none';
-                        playBeep();
-                        if (typeof showToast === 'function') {
-                            showToast('⏰ Tempo esgotado! Excelente trabalho!', 'success');
-                        }
-                    }
-                }, 1000);
-            }
-
-            function pauseTimer() {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                startBtn.style.display = 'inline-flex';
-                pauseBtn.style.display = 'none';
-            }
-
-            function resetTimer() {
-                pauseTimer();
-                remainingSeconds = initialPreset;
-                updateDisplay();
-            }
-
-            document.querySelectorAll('.timer-preset').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    initialPreset = parseInt(btn.getAttribute('data-sec'), 10);
-                    remainingSeconds = initialPreset;
-                    pauseTimer();
-                    updateDisplay();
-                });
-            });
-
-            startBtn?.addEventListener('click', startTimer);
-            pauseBtn?.addEventListener('click', pauseTimer);
-            resetBtn?.addEventListener('click', resetTimer);
-
-            updateDisplay();
+    // exercise data will be populated by exercises-data.js DOMContentLoaded, but we add enhancements after
+    setTimeout(()=>{
+        const urlParams=new URLSearchParams(window.location.search);
+        const rawId=urlParams.get('id'); const exId=typeof processIdStr==='function'? processIdStr(rawId): 'flexao-de-braco';
+        const data=window.exerciseDB[exId] || window.exerciseDB['flexao-de-braco'];
+        if(!data) return;
+        // meta calories
+        const calMap={push:32, pull:28, legs:40, core:22, cardio:48, mobility:12};
+        const cals=calMap[data.category]||28;
+        document.getElementById('ex-calories').textContent=`🔥 ~${cals} kcal • 3 séries • ${data.levelName}`;
+        document.getElementById('ex-meta').innerHTML=`<span style="background:var(--color-bg-main);border:1px solid var(--color-border);padding:0.3rem 0.7rem;border-radius:999px">📂 ${data.categoryName}</span><span style="background:${data.level==='avancado'?'#FEF2F2':'#FFFBEB'};color:${data.level==='avancado'?'#DC2626':'#D97706'};border:1px solid ${data.level==='avancado'?'#FECACA':'#FDE68A'};padding:0.3rem 0.7rem;border-radius:999px">${data.levelName}</span><span style="background:var(--color-bg-main);border:1px solid var(--color-border);padding:0.3rem 0.7rem;border-radius:999px">⏱️ 8-12 min</span>`;
+        // fav toggle
+        const favBtn=document.getElementById('favToggleBtn');
+        function refreshFav(){ const isFav=FavoritesManager.isFav(data.name); favBtn.textContent=isFav?'★ Favoritado':'☆ Favoritar'; favBtn.style.background=isFav?'#FEF3C7':''; favBtn.style.borderColor=isFav?'#FDE68A':''; }
+        refreshFav();
+        favBtn.addEventListener('click', ()=>{ const now=FavoritesManager.toggle(data.name); refreshFav(); showToast(now?'⭐ Favoritado!':'☆ Removido','info'); Achievements.checkAll(); });
+        document.getElementById('quickStartBtn').addEventListener('click', ()=> WorkoutPlayer.start(data.name, [{name:data.name, reps:'3 séries de 10'}], null));
+        document.getElementById('shareExBtn')?.addEventListener('click', async ()=>{
+            const text=`Confira este exercício Calistenia Pro: ${data.name} — ${data.purpose}`;
+            if(navigator.share){ try{ await navigator.share({title:data.name, text, url:location.href}); }catch(e){} } else { try{ await navigator.clipboard.writeText(location.href); showToast('Link copiado!','success')}catch(e){ showToast(text,'info') } }
         });
-    </script>
+        document.getElementById('addToRoutineBtn')?.addEventListener('click', ()=>{
+            const name=prompt('Nome da rotina para adicionar este exercício:', data.name+' Focus');
+            if(name===null) return;
+            const routineName=name.trim()||'Minha Rotina';
+            CustomRoutines.saveRoutine(routineName, [{name:data.name, reps:'3 séries de 10'}]); showToast(`Rotina "${routineName}" criada! Ver Biblioteca.`,'success'); Achievements.checkAll();
+        });
+        // related: same category 3 random
+        const relatedGrid=document.getElementById('relatedGrid');
+        if(relatedGrid){
+            const sameCat=Object.values(window.exerciseDB).filter(e=> e.category===data.category && e.name!==data.name).slice(0,3);
+            if(sameCat.length===0){
+                relatedGrid.innerHTML='<p style="color:var(--color-text-muted)">Explore mais na <a href="library.html">Biblioteca</a>.</p>';
+            } else {
+                relatedGrid.innerHTML='';
+                sameCat.forEach(ex=>{
+                    const card=document.createElement('a'); card.href=`exercise.html?id=${encodeURIComponent(ex.name)}`; card.className='ex-card'; card.style.textDecoration='none'; card.style.padding='1.2rem';
+                    card.innerHTML=`<span class="label success" style="font-size:0.7rem;margin:0 0 0.5rem 0">${ex.categoryName}</span><h4 style="margin:0.4rem 0 0.3rem 0;font-size:1rem;color:var(--color-text-dark)">${ex.name}</h4><p style="font-size:0.85rem;color:var(--color-text-muted);margin:0">${ex.purpose.slice(0,90)}...</p><span style="font-size:0.82rem;font-weight:800;color:var(--color-cta);margin-top:0.6rem;display:inline-block">Ver →</span>`;
+                    relatedGrid.appendChild(card);
+                });
+            }
+        }
+        // improve image container styling if needed
+        const imgContainer=document.getElementById('ex-image-container');
+        if(imgContainer){
+            imgContainer.style.background='var(--color-bg-main)';
+            // add caption
+            const cap=document.createElement('p'); cap.textContent='💡 Dica: observe o alinhamento da coluna e cotovelos a 45°. Qualidade > velocidade.'; cap.style.fontSize='0.82rem'; cap.style.color='var(--color-text-muted)'; cap.style.textAlign='center'; cap.style.margin='0'; imgContainer.appendChild(cap);
+        }
+    }, 200);
+});
+</script>
 </body>
 </html>

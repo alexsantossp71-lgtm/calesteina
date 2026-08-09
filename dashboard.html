@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Meu Progresso, XP e Conquistas | Calistenia Pro</title>
+<meta name="description" content="Seu centro de comando: progresso 30 dias, XP e níveis, calendário, hidratação, peso e 12 conquistas.">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.dashboard-hero { text-align:center; padding:64px 0 28px; background:var(--color-bg-alt); border-bottom:1px solid var(--color-border); position:relative; overflow:hidden }
+.dashboard-hero::before{content:'';position:absolute;inset:0;background:var(--gradient-mesh);opacity:0.6;pointer-events:none}
+</style>
+</head>
+<body>
+<nav class="navbar">
+<div class="container nav-content">
+<div class="logo"><a href="index.html" style="color:inherit">Calistenia<span class="highlight">Pro</span></a></div>
+<ul class="nav-links">
+<li><a href="index.html">Início</a></li>
+<li><a href="program.html">Programa 30 Dias</a></li>
+<li><a href="library.html">Biblioteca</a></li>
+<li><a href="dashboard.html" class="active-link">Dashboard</a></li>
+<li><a href="calculator.html">Calculadora</a></li>
+</ul>
+<div style="display:flex;align-items:center;gap:0.6rem">
+<button class="theme-toggle-btn btn-outline btn-sm">🌙</button>
+<button class="hamburger" aria-label="Abrir Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+</div>
+</nav>
+
+<header class="dashboard-hero">
+<div class="container" style="position:relative">
+<span class="label success">📊 Seu Centro de Comando</span>
+<h1>Dashboard <span style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Premium</span></h1>
+<p style="max-width:720px;margin:0 auto">Acompanhe XP, nível, sequência, calendário, hidratação, peso e conquistas. Tudo salvo localmente — exporte quando quiser.</p>
+<div style="display:flex;gap:0.6rem;justify-content:center;margin-top:1rem;flex-wrap:wrap">
+<button class="btn-cta btn-sm" onclick="ShareCardModal.open()">🏆 Cartão de Conquista</button>
+<button class="btn-outline btn-sm" data-open-timer>⏱️ Timer Pro</button>
+<button class="btn-outline btn-sm" onclick="DataManager.export()">📦 Exportar Backup</button>
+<label class="btn-outline btn-sm" style="cursor:pointer"><input type="file" id="dashImport" accept=".json" style="display:none">📥 Importar</label>
+</div>
+</div>
+</header>
+
+<section class="section-spacing" style="padding-top:32px">
+<div class="container">
+<div id="programProgressHeader" style="margin-bottom:1.6rem"></div>
+<div id="dashboardPremium"></div>
+
+<div style="margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem">
+<div class="dashboard-card" style="background:linear-gradient(135deg,#EFF6FF 0%,#FFFFFF 100%);border-color:#BFDBFE">
+<h3>🎯 Próximos Passos</h3>
+<ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;font-weight:600;font-size:0.92rem;color:var(--color-text-dark);margin-top:0.6rem">
+<li>1️⃣ Complete o próximo dia no <a href="program.html">Programa</a> (+100 XP)</li>
+<li>2️⃣ Beba 8 copos hoje para medalha <strong>Hidratado 💧</strong></li>
+<li>3️⃣ Favorite 5 exercícios na <a href="library.html">Biblioteca</a></li>
+<li>4️⃣ Registre peso 3x para desbloquear <strong>Foco na Evolução</strong></li>
+</ul>
+</div>
+<div class="dashboard-card">
+<h3>📚 Atalhos Rápidos</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.8rem">
+<a href="program.html" class="btn-cta btn-sm" style="justify-content:center">▶️ Treinar hoje</a>
+<a href="library.html" class="btn-outline btn-sm" style="justify-content:center">📖 Biblioteca</a>
+<a href="calculator.html" class="btn-outline btn-sm" style="justify-content:center">🧮 Macros</a>
+<button class="btn-outline btn-sm" data-open-timer style="justify-content:center">⏱️ Timer</button>
+</div>
+<p style="font-size:0.82rem;color:var(--color-text-muted);margin-top:0.8rem">💡 Dica: use o <strong>Modo Treino Ativo</strong> no Programa — ele marca o dia automaticamente ao concluir.</p>
+</div>
+<div class="dashboard-card" style="background:var(--color-text-dark);color:white;border-color:var(--color-text-dark)">
+<h3 style="color:white">Motivação diária</h3>
+<p id="dailyQuote" style="color:#CBD5E1;font-style:italic;margin:0.6rem 0;font-size:0.95rem;line-height:1.6">"A força não vem da capacidade física. Vem de uma vontade indomável." — Gandhi</p>
+<button class="btn-outline btn-sm" id="newQuoteBtn" style="color:white !important;border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.08)">↻ Nova frase</button>
+</div>
+</div>
+
+<div style="margin-top:2rem;background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:16px;padding:1.4rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+<div>
+<h3 style="margin:0 0 0.2rem 0">🔔 Lembrete diário</h3>
+<p style="margin:0;font-size:0.9rem">Ative notificações para não quebrar sua sequência 🔥</p>
+</div>
+<button class="btn-cta btn-sm" id="enableNotifyBtn">Ativar lembrete</button>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="container foot-content"><div class="logo">Calistenia<span class="highlight">Pro</span></div><p>© 2026 Calistenia Pro • <a href="index.html">Início</a> • <a href="program.html">Programa</a></p></div>
+</footer>
+
+<script src="script.js"></script>
+<script src="exercises-data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+    renderProgressHeader(); renderDashboardPremium(); Achievements.checkAll();
+    document.getElementById('dashImport')?.addEventListener('change', e=>{ if(e.target.files[0]) DataManager.importFile(e.target.files[0]) });
+    const quotes=[
+        '"O corpo alcança o que a mente acredita." — Arnold',
+        '"Suor é gordura chorando." — Provérbio fitness',
+        '"Consistência supera intensidade." — Calistenia Pro',
+        '"Você é mais forte do que imagina. Prove hoje."',
+        '"Um dia de cada vez, um rep de cada vez."',
+        '"A gravidade é apenas resistência. Supere-a."',
+        '"Não pare quando doer. Pare quando terminar." — Cort Nielsen'
+    ];
+    const qEl=document.getElementById('dailyQuote');
+    document.getElementById('newQuoteBtn')?.addEventListener('click', ()=>{ qEl.textContent= quotes[Math.floor(Math.random()*quotes.length)]; });
+    document.getElementById('enableNotifyBtn')?.addEventListener('click', async ()=>{
+        if(!('Notification' in window)){ showToast('Notificações não suportadas','warning'); return }
+        const perm=await Notification.requestPermission();
+        if(perm==='granted'){ showToast('🔔 Lembrete ativado! Você receberá incentivo diário','success'); localStorage.setItem('calistenia_pro_notify','1'); }
+        else showToast('Permissão negada','error');
+    });
+    // gentle daily reminder toast if not trained today
+    setTimeout(()=>{
+        const completed=CalisteniaTracker.getCompletedDays(); const next=(Math.max(...completed,0)+1);
+        if(next<=30 && !CalisteniaTracker.isDayCompleted(next)){
+            showToast(`💪 Lembrete: Dia ${next} te espera. Bora manter a sequência de ${CalisteniaTracker.getStreak()} dias?`,'info');
+        }
+    }, 1200);
+});
+</script>
+</body>
+</html>

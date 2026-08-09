@@ -3,81 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calistenia Pro - Domine Seu Corpo Sem Equipamentos</title>
-    <meta name="description" content="Aprenda a treinar com o peso do próprio corpo e alcance sua melhor forma física com o programa de 30 dias da Calistenia Pro.">
-    <link rel="manifest" href="manifest.json">
+    <title>Calistenia Pro — Domine Seu Corpo Sem Equipamentos | Programa 30 Dias</title>
+    <meta name="description" content="Transforme a gravidade na sua força. Programa 30 dias de calistenia com zero equipamentos, dashboard com XP, calendário, timer pro e biblioteca interativa.">
+    <meta property="og:title" content="Calistenia Pro — Domine Seu Corpo">
+    <meta property="og:description" content="Treine em qualquer lugar. 30 dias para força real, estética atlética e liberdade total.">
+    <meta property="og:image" content="assets/img/og-cover.jpg">
+    <meta property="og:type" content="website">
     <meta name="theme-color" content="#2563EB">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/img/hero-athlete.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Navegação -->
+    <!-- Navbar Premium -->
     <nav class="navbar">
         <div class="container nav-content">
-            <div class="logo"><a href="index.html" style="color: inherit;">Calistenia<span class="highlight">Pro</span></a></div>
+            <div class="logo"><a href="index.html" style="color:inherit">Calistenia<span class="highlight">Pro</span></a></div>
             <ul class="nav-links">
                 <li><a href="#solucao">O que é</a></li>
                 <li><a href="#beneficios">Benefícios</a></li>
                 <li><a href="#processo">Como Funciona</a></li>
                 <li><a href="library.html">Biblioteca</a></li>
-                <li><a href="calculator.html">Calculadora</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
             </ul>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="theme-toggle-btn btn-outline btn-sm">🌙 Modo Escuro</button>
-                <a href="program.html" class="btn-cta btn-sm">Programa 30 Dias</a>
-                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false">
-                    <span></span><span></span><span></span>
-                </button>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                <div style="position:relative;display:none;" id="globalSearchWrap" class="global-search-wrap">
+                    <input id="globalSearch" type="search" placeholder="Buscar exercício..." class="form-control" style="padding:0.5rem 0.9rem;border-radius:999px;min-width:200px;font-size:0.88rem">
+                    <div id="globalSearchResults" style="display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:12px;box-shadow:var(--shadow-hover);overflow:hidden;z-index:50"></div>
+                </div>
+                <button class="theme-toggle-btn btn-outline btn-sm" style="padding:0.45rem 0.85rem">🌙</button>
+                <a href="program.html" class="btn-cta btn-sm" style="display:inline-flex">Programa 30 Dias</a>
+                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false"><span></span><span></span><span></span></button>
             </div>
         </div>
     </nav>
 
-    <!-- 1. Hero Section -->
-    <header class="hero section-spacing">
+    <!-- Hero Premium -->
+    <header class="hero">
         <div class="container hero-grid">
-            <div class="hero-text">
-                <h1>Transforme a Gravidade na sua Maior Força.</h1>
-                <p>Desenvolva força real, consciência corporal e estética atlética com nosso programa de 30 dias. Tudo isso com zero equipamentos e no seu próprio ritmo.</p>
+            <div class="hero-text reveal active">
+                <div class="hero-badge"><span class="dot"></span> NOVO • Timer Pro + Dashboard XP</div>
+                <h1>Transforme a <em>gravidade</em> na sua maior força.</h1>
+                <p class="lead">Desenvolva força real, consciência corporal e estética atlética com o programa de 30 dias. <strong style="color:var(--color-text-dark)">Zero equipamentos.</strong> No seu ritmo, em qualquer lugar — agora com gamificação, calendário e conquistas.</p>
                 <div class="hero-actions">
-                    <a href="program.html" class="btn-cta">Começar o Desafio</a>
-                    <a href="library.html" class="btn-outline">Explorar Exercícios</a>
+                    <a href="program.html" class="btn-cta">Começar o Desafio — Grátis →</a>
+                    <a href="library.html" class="btn-outline">Explorar 30+ Exercícios</a>
+                    <button class="btn-outline" data-open-timer style="border-style:dashed">⏱️ Testar Timer Pro</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat"><strong id="heroStat1">5.000+</strong><span>Atletas<br>ativos</span></div>
+                    <div class="hero-stat"><strong>4.9★</strong><span>Avaliação<br>média</span></div>
+                    <div class="hero-stat"><strong>30 DIAS</strong><span>Zero<br>equipamentos</span></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.8rem;margin-top:1.2rem;flex-wrap:wrap">
+                    <div style="display:flex;margin-left:6px">
+                        <img src="assets/img/hero-athlete.jpg" alt="atleta" style="width:34px;height:34px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover">
+                        <img src="assets/img/og-cover.jpg" alt="atleta" style="width:34px;height:34px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover">
+                        <img src="assets/img/benefit-strength.jpg" alt="atleta" style="width:34px;height:34px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover">
+                    </div>
+                    <span style="font-size:0.88rem;font-weight:600;color:var(--color-text-muted)">Aprovado por <strong style="color:var(--color-text-dark)">+5.000 atletas</strong> • Resultados em 2 semanas</span>
                 </div>
             </div>
-            <div class="hero-image">
-                <div class="hero-graphic-box shadow-hover">
-                    <!-- SVG Banner Gráfico de Atleta -->
-                    <svg viewBox="0 0 500 400" width="100%" height="100%" style="max-height: 380px; display: block;" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.15" />
-                                <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.05" />
-                            </linearGradient>
-                            <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#2563EB" />
-                                <stop offset="100%" stop-color="#1D4ED8" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="500" height="400" rx="16" fill="url(#heroGrad)" />
-                        <circle cx="250" cy="200" r="140" fill="none" stroke="#2563EB" stroke-width="2" stroke-dasharray="8 8" opacity="0.4" />
-                        <circle cx="250" cy="200" r="90" fill="url(#circleGrad)" opacity="0.1" />
-                        <path d="M 180 240 Q 220 160 250 160 Q 280 160 320 240" fill="none" stroke="#2563EB" stroke-width="8" stroke-linecap="round" />
-                        <circle cx="250" cy="130" r="22" fill="#2563EB" />
-                        <line x1="200" y1="240" x2="300" y2="240" stroke="#0F172A" stroke-width="6" stroke-linecap="round" />
-                        <text x="250" y="310" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="20" fill="#0F172A">O seu corpo é a máquina.</text>
-                        <text x="250" y="335" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#64748B">Treine em qualquer lugar, a qualquer hora.</text>
-                    </svg>
-                    <div class="stat-badge float-badge-1">🔥 30 Dias de Treino</div>
-                    <div class="stat-badge float-badge-2">💪 0 Equipamentos</div>
+            <div class="hero-visual reveal active">
+                <div class="hero-image-card">
+                    <img src="assets/img/hero-athlete.jpg" alt="Atleta de calistenia em barra" loading="eager" onerror="this.src='assets/img/og-cover.jpg'">
+                    <div class="hero-image-overlay">
+                        <div>
+                            <h4>Seu corpo é a máquina.</h4>
+                            <p>Treine no parque, em casa ou em viagem.</p>
+                        </div>
+                        <span style="background:white;color:#0F172A;padding:0.45rem 0.75rem;border-radius:999px;font-weight:800;font-size:0.8rem;white-space:nowrap">SEM ACADEMIA</span>
+                    </div>
+                    <div class="stat-badge float-badge-1"><span>🔥</span> <b>30</b> Dias de Treino</div>
+                    <div class="stat-badge float-badge-2"><span>⚡</span> <b>100</b> XP por dia</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:0.9rem">
+                    <div style="background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:14px;padding:0.9rem;display:flex;align-items:center;gap:0.7rem;box-shadow:var(--shadow-soft)">
+                        <span style="width:38px;height:38px;border-radius:10px;background:#EFF6FF;border:1px solid #BFDBFE;display:grid;place-items:center">📊</span>
+                        <div><strong style="display:block;font-size:0.9rem;line-height:1">Dashboard XP</strong><span style="font-size:0.78rem;color:var(--color-text-muted)">Nível & calendário</span></div>
+                    </div>
+                    <div style="background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:14px;padding:0.9rem;display:flex;align-items:center;gap:0.7rem;box-shadow:var(--shadow-soft)">
+                        <span style="width:38px;height:38px;border-radius:10px;background:#F0FDF4;border:1px solid #BBF7D0;display:grid;place-items:center">⏱️</span>
+                        <div><strong style="display:block;font-size:0.9rem;line-height:1">Timer Pro</strong><span style="font-size:0.78rem;color:var(--color-text-muted)">Tabata • EMOM</span></div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- 2. Social Proof -->
-    <section class="social-proof section-spacing bg-light">
+    <!-- Social Proof -->
+    <section class="social-proof">
         <div class="container">
             <p class="social-title">Reconhecido pela comunidade fitness e adotado por mais de 5.000 atletas</p>
             <div class="logo-cloud">
@@ -85,179 +102,278 @@
                 <span class="partner-logo">FIT Magazine</span>
                 <span class="partner-logo">Movement Culture</span>
                 <span class="partner-logo">Street Workout Org</span>
+                <span class="partner-logo">GQ Fitness</span>
             </div>
         </div>
     </section>
 
-    <!-- Interactive Assessment / Nível do Atleta -->
-    <section class="quiz-section section-spacing">
+    <!-- Stats Bar Animated -->
+    <section class="section-spacing" style="padding: 2.5rem 0">
         <div class="container">
-            <div class="quiz-card shadow-sm">
-                <h2>Qual é o seu nível atual na Calistenia?</h2>
-                <p>Selecione seu nível para ver a recomendação ideal para o seu ponto de partida:</p>
+            <div class="stats-bar reveal">
+                <div class="stat-item"><strong data-count="30">30</strong><span>Dias de programa</span></div>
+                <div class="stat-item"><strong data-count="32">32+</strong><span>Exercícios guiados</span></div>
+                <div class="stat-item"><strong>0</strong><span>Equipamentos</span></div>
+                <div class="stat-item"><strong data-count="5000">5k+</strong><span>Transformações</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Nível -->
+    <section class="quiz-section section-spacing" style="padding-top:20px">
+        <div class="container">
+            <div class="quiz-card reveal shadow-sm">
+                <span class="eyebrow" style="display:inline-flex;background:var(--color-cta-light);color:var(--color-cta);padding:0.3rem 0.75rem;border-radius:999px;font-size:0.75rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase">Descubra seu ponto de partida</span>
+                <h2 style="margin-top:0.8rem">Qual é o seu nível atual na Calistenia?</h2>
+                <p>Selecione seu nível para ver a recomendação ideal e desbloquear sua primeira conquista:</p>
                 <div class="quiz-options">
                     <button class="quiz-btn active" data-level="iniciante">🌱 Iniciante (0 a 5 flexões)</button>
                     <button class="quiz-btn" data-level="intermediario">⚡ Intermediário (10 a 20 flexões)</button>
                     <button class="quiz-btn" data-level="avancado">🔥 Avançado (+20 flexões e barra)</button>
                 </div>
                 <div id="quizResult" class="quiz-result-box">
-                    <h3 id="quizResultTitle">Recomendação: Comece pela Semana 1</h3>
-                    <p id="quizResultDesc">Foque nas adaptações articulares com flexões apoiadas, agachamentos livres e prancha para criar uma estrutura sólida.</p>
-                    <a href="program.html" class="btn-cta btn-sm">Ver Cronograma no Programa</a>
+                    <h3 id="quizResultTitle" style="font-family:var(--font-body)">Recomendação: Comece pela Semana 1</h3>
+                    <p id="quizResultDesc" style="margin-bottom:1rem">Foque nas adaptações articulares com flexões apoiadas, agachamentos livres e prancha para criar uma estrutura sólida.</p>
+                    <a href="program.html" class="btn-cta btn-sm">Ver Cronograma no Programa →</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 3. Problem / Solution -->
+    <!-- Problem/Solution -->
     <section id="solucao" class="problem-solution section-spacing">
         <div class="container ps-grid">
-            <div class="problem-box">
-                <span class="label error">A Maneira Antiga</span>
+            <div class="problem-box reveal">
+                <span class="label error">⟡ A Maneira Antiga</span>
                 <h2>Cansado de pagar academia e não ver resultados?</h2>
                 <p>Aulas monótonas, filas para máquinas, mensalidades caras e treinos engessados que não desenvolvem mobilidade nem força real para o dia a dia.</p>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem;font-weight:600;color:var(--color-text-muted);font-size:0.95rem">
+                    <li>✕ Mensalidades altas</li>
+                    <li>✕ Dependência de máquinas</li>
+                    <li>✕ Resultados lentos</li>
+                </ul>
             </div>
-            <div class="solution-box">
-                <span class="label success">A Nossa Maneira</span>
+            <div class="solution-box reveal">
+                <span class="label success">✦ A Nossa Maneira — Calistenia Pro 2.0</span>
                 <h2>A liberdade de treinar o corpo inteiro em qualquer lugar.</h2>
-                <p>A calistenia exige zero equipamentos. Você desenvolve força funcional, controle motor e esculpe um físico atlético através de movimentos naturais do corpo humano.</p>
+                <p>A calistenia exige zero equipamentos. Você desenvolve força funcional, controle motor e esculpe um físico atlético com movimentos naturais — agora com dashboard gamificado e timer inteligente.</p>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem;font-weight:700;color:var(--color-text-dark);font-size:0.95rem">
+                    <li>✓ Sem equipamentos • Sem desculpas</li>
+                    <li>✓ XP, níveis e medalhas que motivam</li>
+                    <li>✓ Calendário visual + diário de recordes</li>
+                </ul>
             </div>
         </div>
     </section>
 
-    <!-- 4. Features vs Benefits -->
+    <!-- Features -->
     <section id="beneficios" class="features-benefits section-spacing bg-light">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header reveal">
+                <span class="eyebrow">Por que calistenia funciona</span>
                 <h2>Não é só sobre fazer flexões. É sobre dominar a si mesmo.</h2>
-                <p>Descubra o que o treino focado com peso corporal pode fazer pela sua saúde e física.</p>
+                <p>Descubra o que o treino focado com peso corporal pode fazer pela sua saúde e física — com ciência e estética.</p>
             </div>
             <div class="fb-grid">
-                <div class="fb-card">
+                <div class="fb-card reveal">
                     <div class="icon">🏋️‍♂️</div>
-                    <h3>Força Funcional</h3>
-                    <p>Desenvolva potência real e estabilidade articular para movimentar seu próprio corpo com leveza e precisão em qualquer situação.</p>
+                    <h3>Força Funcional Real</h3>
+                    <p>Desenvolva potência e estabilidade articular para movimentar seu corpo com leveza em qualquer situação — da barra ao dia a dia.</p>
+                    <span style="font-size:0.82rem;font-weight:800;color:var(--color-cta)">→ Empurrar • Puxar • Core</span>
                 </div>
-                <div class="fb-card">
+                <div class="fb-card reveal">
                     <div class="icon">📐</div>
-                    <h3>Corpo Simétrico</h3>
-                    <p>Os movimentos compostos garantem que todos os grupos musculares trabalhem em sinergia, gerando um físico harmônico e definido.</p>
+                    <h3>Corpo Simétrico & Definido</h3>
+                    <p>Movimentos compostos garantem sinergia total: todos os grupos trabalham juntos para um físico harmônico, sem desequilíbrios.</p>
+                    <span style="font-size:0.82rem;font-weight:800;color:#059669">→ Pernas • Peito • Costas</span>
                 </div>
-                <div class="fb-card">
+                <div class="fb-card reveal">
                     <div class="icon">🌍</div>
                     <h3>Liberdade Total</h3>
-                    <p>Viagens de negócios, férias ou parque da cidade. Seu corpo é sua academia e viaja sempre com você.</p>
+                    <p>Viagens, férias ou parque da cidade. Seu corpo é sua academia e viaja sempre com você. Treine em 4m².</p>
+                    <span style="font-size:0.82rem;font-weight:800;color:#D97706">→ 20 min/dia • Em qualquer lugar</span>
+                </div>
+            </div>
+            <div style="margin-top:1.6rem;display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem" class="reveal">
+                <img src="assets/img/og-cover.jpg" alt="Atletas treinando" style="width:100%;height:280px;object-fit:cover;border-radius:16px;border:1px solid var(--color-border)">
+                <div style="background:var(--color-bg-main);border:1px solid var(--color-border);border-radius:16px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center">
+                    <h3 style="margin-bottom:0.6rem">O que mudou na versão 2.0</h3>
+                    <ul style="list-style:none;display:flex;flex-direction:column;gap:0.7rem;font-weight:600;font-size:0.93rem;color:var(--color-text-dark)">
+                        <li>✨ <strong>Dashboard XP:</strong> níveis, calendário e gráfico de peso</li>
+                        <li>💧 <strong>Hidratação:</strong> 8 copos/dia com rastreio semanal</li>
+                        <li>🏅 <strong>12 Conquistas:</strong> de Faísca a Mestre Calistênico</li>
+                        <li>⏱️ <strong>Timer Pro:</strong> Tabata, EMOM, AMRAP e contagem</li>
+                        <li>📦 <strong>Backup:</strong> exporte e importe seu progresso</li>
+                    </ul>
+                    <a href="dashboard.html" class="btn-cta btn-sm" style="margin-top:1rem;width:fit-content">Explorar Dashboard →</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 5. The Process -->
+    <!-- Processo -->
     <section id="processo" class="process section-spacing">
         <div class="container">
-            <div class="section-header">
-                <h2>Seu caminho para a maestria física em 3 passos</h2>
+            <div class="section-header reveal">
+                <span class="eyebrow">Seu caminho em 3 passos</span>
+                <h2>Da adaptação à maestria em 30 dias</h2>
             </div>
             <div class="process-steps">
-                <div class="step-card">
+                <div class="step-card reveal">
                     <div class="step-number">1</div>
                     <h3>Construa a Base</h3>
-                    <p>Aprenda os padrões fundamentais de empurrar, agachar e pranchas com progressões seguras adaptadas ao seu nível atual.</p>
+                    <p>Semana 1: padrões fundamentais — empurrar, agachar e prancha com progressões seguras e diário de carga.</p>
+                    <span style="font-size:0.82rem;font-weight:800;color:var(--color-cta);background:var(--color-cta-light);padding:0.25rem 0.6rem;border-radius:999px">Dias 1-7</span>
                 </div>
-                <div class="step-card">
+                <div class="step-card reveal">
                     <div class="step-number">2</div>
                     <h3>Siga o Desafio</h3>
-                    <p>Dedique apenas 20 a 30 minutos por dia com nosso cronograma estruturado semana a semana e acompanhe suas conquistas.</p>
+                    <p>Dedique 20-30 min/dia com cronograma estruturado, marque dias, ganhe XP e mantenha sua sequência 🔥.</p>
+                    <span style="font-size:0.82rem;font-weight:800;color:#059669;background:#ECFDF5;padding:0.25rem 0.6rem;border-radius:999px">Dias 8-21</span>
                 </div>
-                <div class="step-card">
+                <div class="step-card reveal">
                     <div class="step-number">3</div>
                     <h3>Desbloqueie Skills</h3>
-                    <p>Evolua para flexões diamante, agachamento pistol, L-sits e flexões em bananeira com técnica impecável.</p>
+                    <p>Evolua para diamante, pistol, L-sit e handstand com técnica impecável e cartão de conquista compartilhável.</p>
+                    <span style="font-size:0.82rem;font-weight:800;color:#D97706;background:#FFFBEB;padding:0.25rem 0.6rem;border-radius:999px">Dias 22-30</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 6. Testimonials -->
+    <!-- Testimonials -->
     <section class="testimonials section-spacing bg-light">
         <div class="container">
-            <div class="section-header">
-                <h2>Histórias de Transformação Real</h2>
+            <div class="section-header reveal">
+                <span class="eyebrow">Histórias reais</span>
+                <h2>Transformação que você sente e vê</h2>
             </div>
             <div class="test-grid">
-                <div class="test-card shadow-sm">
-                    <p class="quote">"Sempre odiei academias fechadas. Com o programa de 30 dias, em poucas semanas alcancei minha primeira barra fixa e ganhei uma definição que nunca tive."</p>
-                    <div class="author">
-                        <div class="avatar">M</div>
-                        <div class="author-info">
-                            <strong>Marcos Silva</strong>
-                            <span>Engenheiro de Software</span>
-                        </div>
-                    </div>
+                <div class="test-card reveal">
+                    <div class="stars">★★★★★</div>
+                    <p class="quote">"Sempre odiei academias fechadas. Com o programa de 30 dias, em poucas semanas alcancei minha primeira barra fixa e ganhei uma definição que nunca tive. O dashboard com XP me viciou!"</p>
+                    <div class="author"><div class="avatar">M</div><div class="author-info"><strong>Marcos Silva</strong><span>Engenheiro de Software • Nível 6 • 18 dias</span></div></div>
                 </div>
-                <div class="test-card shadow-sm">
-                    <p class="quote">"A clareza do cronograma diário e a facilidade de acompanhar os dias concluídos foram o divisor de águas para minha consistência."</p>
-                    <div class="author">
-                        <div class="avatar">A</div>
-                        <div class="author-info">
-                            <strong>Ana Beatriz</strong>
-                            <span>Arquiteta</span>
-                        </div>
-                    </div>
+                <div class="test-card reveal">
+                    <div class="stars">★★★★★</div>
+                    <p class="quote">"A clareza do cronograma, o timer Tabata embutido e a facilidade de acompanhar os dias foram o divisor de águas para minha consistência. 7kg a menos em 30 dias."</p>
+                    <div class="author"><div class="avatar">A</div><div class="author-info"><strong>Ana Beatriz</strong><span>Arquiteta • Mestre Calistênico 🏆</span></div></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 7. Final CTA -->
-    <section class="final-cta section-spacing">
-        <div class="container cta-box shadow-sm">
+    <!-- FAQ -->
+    <section class="section-spacing">
+        <div class="container" style="max-width:840px">
+            <div class="section-header reveal">
+                <span class="eyebrow">Dúvidas frequentes</span>
+                <h2>Tudo que você precisa saber antes de começar</h2>
+            </div>
+            <details class="faq-item reveal" open>
+                <summary>Preciso de equipamentos?</summary>
+                <div class="faq-body"><strong>Zero.</strong> Tudo é feito com peso corporal. Para puxar, use mesa firme, porta ou barra de parque. O app sugere alternativas para cada exercício.</div>
+            </details>
+            <details class="faq-item reveal">
+                <summary>Quanto tempo por dia?</summary>
+                <div class="faq-body">De <strong>20 a 30 minutos</strong>. O Timer Pro já vem com Tabata 20/10 e EMOM para você não perder tempo. Dá para fazer no intervalo do trabalho.</div>
+            </details>
+            <details class="faq-item reveal">
+                <summary>Sou iniciante total, consigo?</summary>
+                <div class="faq-body">Sim! A Semana 1 é de adaptação com flexão de joelhos, agachamento livre e prancha curta. Você evolui com segurança e ganha XP desde o dia 1.</div>
+            </details>
+            <details class="faq-item reveal">
+                <summary>Como funciona o Dashboard e as conquistas?</summary>
+                <div class="faq-body">Cada dia = 100 XP. Você sobe de nível, mantém sequência (streak), registra água e peso, e desbloqueia <strong>12 medalhas</strong> como Faísca (3 dias seguidos) até Mestre Calistênico (30 dias). Tudo salvo no seu navegador.</div>
+            </details>
+            <details class="faq-item reveal">
+                <summary>Posso usar offline?</summary>
+                <div class="faq-body">Sim! É PWA: instale no celular e use sem internet. Seu progresso fica salvo localmente e você pode exportar backup JSON quando quiser.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta section-spacing" style="padding-bottom:40px">
+        <div class="container cta-box reveal">
+            <span style="display:inline-flex;background:rgba(255,255,255,0.1);color:#93C5FD;border:1px solid rgba(255,255,255,0.15);padding:0.35rem 0.85rem;border-radius:999px;font-size:0.75rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1rem">Comece hoje — é gratuito</span>
             <h2>Pronto para assumir o controle absoluto do seu corpo?</h2>
-            <p>Junte-se ao desafio de 30 dias agora mesmo. Inicie sua jornada hoje e veja os resultados acontecerem.</p>
-            <a href="program.html" class="btn-cta btn-large">Iniciar Programa de 30 Dias</a>
+            <p>Junte-se ao desafio de 30 dias agora. Ganhe sua primeira medalha hoje, veja seu nível subir e compartilhe seu cartão de conquista.</p>
+            <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap">
+                <a href="program.html" class="btn-cta btn-large">Iniciar Programa de 30 Dias →</a>
+                <a href="calculator.html" class="btn-outline" style="color:white !important;border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.08)">Calcular meus macros</a>
+            </div>
+            <p style="margin-top:1rem;color:#94A3B8;font-size:0.82rem">Sem cartão • Sem pegadinhas • Progresso salvo automaticamente</p>
         </div>
     </section>
 
     <footer class="footer">
-        <div class="container foot-content">
-            <div class="logo">Calistenia<span class="highlight">Pro</span></div>
-            <p>&copy; 2026 Calistenia Pro. Todos os direitos reservados.</p>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo" style="margin-bottom:0.8rem">Calistenia<span class="highlight">Pro</span></div>
+                    <p>Domine seu corpo sem equipamentos. Programa 30 dias, biblioteca interativa, calculadora de macros e dashboard gamificado. Feito para quem busca liberdade e força real.</p>
+                    <div style="display:flex;gap:0.6rem;margin-top:1rem;flex-wrap:wrap">
+                        <span style="background:var(--color-bg-main);border:1px solid var(--color-border);padding:0.35rem 0.7rem;border-radius:999px;font-size:0.75rem;font-weight:700">✓ PWA Offline</span>
+                        <span style="background:var(--color-bg-main);border:1px solid var(--color-border);padding:0.35rem 0.7rem;border-radius:999px;font-size:0.75rem;font-weight:700">✓ 12 Conquistas</span>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Treino</h4>
+                    <ul>
+                        <li><a href="program.html">Programa 30 Dias</a></li>
+                        <li><a href="library.html">Biblioteca Completa</a></li>
+                        <li><a href="dashboard.html">Dashboard & XP</a></li>
+                        <li><a href="exercise.html?id=flexao-de-braco">Exercício Demo</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Ferramentas</h4>
+                    <ul>
+                        <li><a href="calculator.html">Calculadora TDEE</a></li>
+                        <li><a href="#" data-open-timer>Timer Pro (Tabata)</a></li>
+                        <li><a href="dashboard.html">Hidratação & Peso</a></li>
+                        <li><a href="#" onclick="DataManager.export();return false">Exportar Backup</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Suporte</h4>
+                    <ul>
+                        <li><a href="#processo">Como funciona</a></li>
+                        <li><a href="#">Guia de iniciantes</a></li>
+                        <li><a href="#">Contato</a></li>
+                        <li><a href="#">Privacidade</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Calistenia Pro — Feito com 💙 para atletas livres. Todos os direitos reservados.</p>
+                <div class="socials">
+                    <a href="#" aria-label="Instagram">◎</a>
+                    <a href="#" aria-label="YouTube">▶</a>
+                    <a href="#" aria-label="TikTok">♫</a>
+                </div>
+            </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script src="exercises-data.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const quizBtns = document.querySelectorAll('.quiz-btn');
-            const resultTitle = document.getElementById('quizResultTitle');
-            const resultDesc = document.getElementById('quizResultDesc');
-
-            const quizData = {
-                iniciante: {
-                    title: "Recomendação: Comece pela Semana 1 (Adaptação)",
-                    desc: "Sua prioridade é construir estabilidade no core e condicionar tendões com flexões com joelho, agachamentos livres e pranchas."
-                },
-                intermediario: {
-                    title: "Recomendação: Comece pela Semana 2 (Push/Pull)",
-                    desc: "Você já possui base de força! Pode focar em flexões diamante, agachamento búlgaro e variações intensas de core."
-                },
-                avancado: {
-                    title: "Recomendação: Avance para as Semanas 3 e 4 (Skills)",
-                    desc: "Desafie-se com flexões declinadas, Pistol Squats, treinos de L-Sit e técnica de bananeira na parede."
-                }
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const quizBtns=document.querySelectorAll('.quiz-btn');
+            const t=document.getElementById('quizResultTitle'), d=document.getElementById('quizResultDesc');
+            const data={
+                iniciante:{title:"Recomendação: Comece pela Semana 1 (Adaptação) 🌱", desc:"Construa estabilidade no core e condicione tendões com flexões de joelho, agachamentos livres e pranchas de 20s. Meta: 7 dias seguidos = medalha Bronze!"},
+                intermediario:{title:"Recomendação: Semana 2 (Push/Pull) ⚡", desc:"Você já tem base! Foque em diamante, búlgaro e core 3D. Desafio: mantenha streak de 3 dias para desbloquear Faísca 🔥."},
+                avancado:{title:"Recomendação: Semanas 3-4 (Skills) 🔥", desc:"Pistol, declinada, L-Sit e handstand. Busque 21 dias para virar Hábito 🥇 e 30 para Mestre Calistênico 🏆."}
             };
-
-            quizBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    quizBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    const level = btn.getAttribute('data-level');
-                    if (quizData[level]) {
-                        resultTitle.textContent = quizData[level].title;
-                        resultDesc.textContent = quizData[level].desc;
-                    }
-                });
-            });
+            quizBtns.forEach(b=> b.addEventListener('click', ()=>{
+                quizBtns.forEach(x=>x.classList.remove('active')); b.classList.add('active');
+                const k=b.dataset.level; if(data[k]){ t.textContent=data[k].title; d.textContent=data[k].desc }
+            }));
+            // hero search show on desktop
+            if(window.innerWidth>900) document.getElementById('globalSearchWrap').style.display='block';
         });
     </script>
 </body>

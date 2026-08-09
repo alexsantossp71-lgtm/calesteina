@@ -1,73 +1,91 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programa 30 Dias - Calistenia Pro</title>
-    <meta name="description" content="Seu desafio diário de 30 dias para dominar a calistenia com acompanhamento de progresso.">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563EB">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programa 30 Dias — Treino Diário com XP & Conquistas | Calistenia Pro</title>
+    <meta name="description" content="Siga o cronograma 30 dias, ganhe XP, mantenha sequência, registre água e peso. Timer Pro integrado e modo treino ativo.">
+    <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Navegação -->
     <nav class="navbar">
         <div class="container nav-content">
-            <div class="logo"><a href="index.html" style="color: inherit;">Calistenia<span class="highlight">Pro</span></a></div>
+            <div class="logo"><a href="index.html" style="color:inherit">Calistenia<span class="highlight">Pro</span></a></div>
             <ul class="nav-links">
                 <li><a href="index.html">Início</a></li>
                 <li><a href="program.html" class="active-link">Programa 30 Dias</a></li>
                 <li><a href="library.html">Biblioteca</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
                 <li><a href="calculator.html">Calculadora</a></li>
             </ul>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="theme-toggle-btn btn-outline btn-sm">🌙 Modo Escuro</button>
-                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false">
-                    <span></span><span></span><span></span>
-                </button>
+            <div style="display:flex;align-items:center;gap:0.6rem">
+                <button class="theme-toggle-btn btn-outline btn-sm">🌙</button>
+                <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false"><span></span><span></span><span></span></button>
             </div>
         </div>
     </nav>
 
-    <!-- Header do Programa -->
-    <header class="program-header section-spacing bg-light">
-        <div class="container text-center">
-            <h1>Desafio de <span class="highlight" style="color: var(--color-cta)">Treino Diário</span></h1>
-            <p>Siga o cronograma, execute o Treino Ativo, anote seus recordes e transforme força em habilidade real.</p>
+    <header class="program-header section-spacing" style="padding:64px 0 36px">
+        <div class="container" style="position:relative">
+            <span class="label success" style="background:white;border:1px solid #BFDBFE">🔥 Desafio Ativo • Ganhe XP a cada dia</span>
+            <h1 style="margin-top:0.8rem">Desafio de <span style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Treino Diário</span></h1>
+            <p style="max-width:760px;margin:0 auto 1.2rem auto">Siga o cronograma, execute o <strong>Treino Ativo</strong> com descanso inteligente, anote recordes e transforme força em habilidade real. Tudo com <strong>gamificação</strong>.</p>
+            <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+                <a href="#programProgressHeader" class="btn-outline btn-sm">📊 Ver meu progresso</a>
+                <button class="btn-cta btn-sm" data-open-timer>⏱️ Abrir Timer Pro</button>
+                <a href="dashboard.html" class="btn-outline btn-sm">🏅 Conquistas</a>
+            </div>
         </div>
     </header>
 
-    <section class="program-container section-spacing">
+    <section class="program-container section-spacing" style="padding-top:36px">
         <div class="container">
-            
-            <!-- Widget de Progresso do Usuário (LocalStorage Tracker) -->
-            <div id="programProgressHeader" style="margin-bottom: 3rem;"></div>
+            <!-- Progresso + XP -->
+            <div id="programProgressHeader" style="margin-bottom:1.6rem"></div>
 
-            <!-- Seletor de Semanas -->
+            <!-- Dashboard Premium Embutido -->
+            <div id="dashboardPremium" style="margin-bottom:2.2rem"></div>
+
+            <!-- Seletor Semanas Premium -->
             <div class="week-selector">
-                <button class="btn-outline week-btn active" onclick="filterWeek(1)">Semana 1</button>
-                <button class="btn-outline week-btn" onclick="filterWeek(2)">Semana 2</button>
-                <button class="btn-outline week-btn" onclick="filterWeek(3)">Semana 3</button>
-                <button class="btn-outline week-btn" onclick="filterWeek(4)">Semana 4</button>
+                <button class="btn-outline week-btn active" onclick="filterWeek(1)">Semana 1 <span style="opacity:0.6">• Adaptação</span></button>
+                <button class="btn-outline week-btn" onclick="filterWeek(2)">Semana 2 <span style="opacity:0.6">• Push/Pull</span></button>
+                <button class="btn-outline week-btn" onclick="filterWeek(3)">Semana 3 <span style="opacity:0.6">• Intensidade</span></button>
+                <button class="btn-outline week-btn" onclick="filterWeek(4)">Semana 4 <span style="opacity:0.6">• Skills</span></button>
             </div>
 
             <div class="disclaimer">
-                <p>⚠️ Consulte um médico antes de iniciar qualquer atividade física. Hidrate-se bem e respeite seus limites corporais.</p>
+                <strong>⚠️ Segurança primeiro:</strong> Consulte um médico antes de iniciar. Hidrate-se (meta: 35ml/kg), respeite limites e use o diário para anotar dores ou recordes. O Timer Pro ajuda no descanso ideal de 30-60s.
             </div>
 
-            <!-- Preenchido pelo Javascript -->
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.8rem;margin-bottom:1.2rem">
+                <h2 style="margin:0;font-size:1.4rem">Cronograma da Semana</h2>
+                <div style="display:flex;gap:0.5rem;align-items:center">
+                    <span style="font-size:0.82rem;font-weight:700;color:var(--color-text-muted)">💡 Dica: clique no exercício para ver detalhes • ☆ para favoritar</span>
+                </div>
+            </div>
+
             <div class="days-grid" id="daysGrid"></div>
+
+            <div style="margin-top:2.5rem;background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:16px;padding:1.6rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+                <div>
+                    <h3 style="margin:0 0 0.3rem 0">Precisa de pausa guiada?</h3>
+                    <p style="margin:0;font-size:0.92rem">Use o Timer Pro: Tabata 20/10, EMOM ou contagem regressiva com som e vibração.</p>
+                </div>
+                <div style="display:flex;gap:0.6rem">
+                    <button class="btn-cta" data-open-timer>⏱️ Timer Pro</button>
+                    <a href="library.html" class="btn-outline">Explorar Biblioteca</a>
+                </div>
+            </div>
         </div>
     </section>
 
     <footer class="footer">
-        <div class="container foot-content">
+        <div class="container foot-content" style="flex-direction:column;gap:1rem;text-align:center">
             <div class="logo">Calistenia<span class="highlight">Pro</span></div>
-            <p>&copy; 2026 Calistenia Pro. Todos os direitos reservados.</p>
+            <p>© 2026 Calistenia Pro • Programa 100% com peso corporal • <a href="dashboard.html">Ver Dashboard</a> • <a href="index.html">Início</a></p>
         </div>
     </footer>
 
