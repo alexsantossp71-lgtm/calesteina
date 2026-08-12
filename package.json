@@ -1,0 +1,21 @@
+{
+  "name": "calesteina",
+  "version": "2.0.0",
+  "description": "Calistenia Pro - PWA de treino de calistenia com programa 30 dias, XP, conquistas e dashboard",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "calistenia",
+    "treino",
+    "pwa",
+    "fitness",
+    "saude"
+  ],
+  "license": "MIT",
+  "author": "Alex Santos <alexsantossp71@gmail.com>",
+  "engines": {
+    "node": ">=20"
+  }
+}

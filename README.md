@@ -1,5 +1,10 @@
 # Calistenia Pro 📊
 
+![CI](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/ci.yml?label=CI&logo=github)
+![Pages](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/pages.yml?label=Pages&logo=github)
+![Tests](https://img.shields.io/badge/testes-22%20passando-00ff88)
+![PWA](https://img.shields.io/badge/PWA-offline%20ready-5C2D91)
+
 PWA de **calistenia** com programa completo de 30 dias, gamificação (XP, níveis e conquistas) e dashboard de acompanhamento. Tudo funciona **sem equipamentos** e **offline**, com dados salvos localmente no navegador.
 
 ## ✨ Funcionalidades
@@ -30,6 +35,16 @@ npx serve
 
 Para instalar com Service Worker (PWA), use um servidor HTTP — não funciona via `file://`.
 
+## 🧪 Testes
+
+A suíte de testes valida o programa 30 dias, a base de 33 exercícios, XP/níveis, conquistas, favoritos, peso, hidratação e rotinas customizadas:
+
+```bash
+npm test
+```
+
+Há integração contínua via GitHub Actions (`.github/workflows/ci.yml`) e deploy automático de Pages (`.github/workflows/pages.yml`).
+
 ## 📁 Estrutura do projeto
 
 ```
@@ -43,7 +58,9 @@ Para instalar com Service Worker (PWA), use um servidor HTTP — não funciona v
 ├── exercises-data.js   # Base de dados dos 32 exercícios
 ├── style.css           # Estilos globais
 ├── manifest.json       # Manifest do PWA
-└── sw.js               # Service Worker (offline)
+├── sw.js               # Service Worker (offline)
+├── test/               # Testes automatizados (node --test)
+└── .github/workflows/  # CI + Deploy Pages
 ```
 
 ## 🛠️ Tecnologias

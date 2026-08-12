@@ -1,2 +1,4 @@
 .gemini/
 ~/
+%TEMP%/
+npm-debug.log*
