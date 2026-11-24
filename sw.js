@@ -1,4 +1,6 @@
-const CACHE_NAME = 'calistenia-pro-v4';
+const CACHE_NAME = 'calistenia-pro-v5';
+
+// Pré-cache do "shell" do app. Um asset bloqueado não pode impedir a instalação do SW.
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,35 +13,37 @@ const ASSETS_TO_CACHE = [
   './script.js',
   './exercises-data.js',
   './manifest.json',
-  './assets/img/hero-athlete.jpg',
+  './assets/fonts/inter-latin.woff2',
+  './assets/fonts/playfair-700.woff2',
+  './assets/fonts/playfair-700-italic.woff2',
+  './assets/img/hero-athlete.webp',
   './assets/img/og-cover.jpg',
-  './assets/img/benefit-strength.jpg',
+  './assets/img/benefit-strength.webp',
   './assets/img/icon-192.png',
   './assets/img/icon-512.png',
   './assets/img/icon-maskable-512.png',
   './assets/img/apple-touch-icon.png',
-  './assets/img/squat.png',
-  './assets/img/squat_start.png',
-  './assets/img/squat_end.png',
-  './assets/img/pushup.png',
-  './assets/img/pushup_start.png',
-  './assets/img/pushup_end.png',
-  './assets/img/pullup.png',
-  './assets/img/pullup_start.png',
-  './assets/img/pullup_end.png',
-  './assets/img/dip.png',
-  './assets/img/dip_start.png',
-  './assets/img/dip_end.png',
-  './assets/img/lunge_start.png',
-  './assets/img/lunge_end.png',
-  './assets/img/plank.png',
-  './assets/img/generic.png'
+  './assets/img/squat.webp',
+  './assets/img/squat_start.webp',
+  './assets/img/squat_end.webp',
+  './assets/img/pushup.webp',
+  './assets/img/pushup_start.webp',
+  './assets/img/pushup_end.webp',
+  './assets/img/pullup.webp',
+  './assets/img/pullup_start.webp',
+  './assets/img/pullup_end.webp',
+  './assets/img/dip.webp',
+  './assets/img/dip_start.webp',
+  './assets/img/dip_end.webp',
+  './assets/img/lunge_start.webp',
+  './assets/img/lunge_end.webp',
+  './assets/img/plank.webp',
+  './assets/img/generic.webp'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      // Um asset bloqueado não pode impedir a instalação do service worker.
       .then((cache) => Promise.all(ASSETS_TO_CACHE.map((asset) => cache.add(asset).catch(() => null))))
       .then(() => self.skipWaiting())
   );
@@ -66,6 +70,23 @@ function networkFirst(request) {
     .catch(() => caches.match(request).then((cached) => cached || (request.mode === 'navigate' ? caches.match('./index.html') : Response.error())));
 }
 
+// Imagens e fontes: mostra o cache na hora e atualiza em segundo plano.
+// Assim uma ilustração nova substitui a antiga sem precisar trocar o nome do arquivo.
+function staleWhileRevalidate(request) {
+  return caches.match(request).then((cached) => {
+    const network = fetch(request)
+      .then((response) => {
+        if (response && (response.status === 200 || response.type === 'opaque')) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone)).catch(() => {});
+        }
+        return response;
+      })
+      .catch(() => cached || Response.error());
+    return cached || network;
+  });
+}
+
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
@@ -81,19 +102,5 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Imagens e fontes: cache primeiro, rede como fallback.
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request)
-        .then((response) => {
-          if (response && (response.status === 200 || response.type === 'opaque')) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone)).catch(() => {});
-          }
-          return response;
-        })
-        .catch(() => Response.error());
-    })
-  );
+  event.respondWith(staleWhileRevalidate(request));
 });

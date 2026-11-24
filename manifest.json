@@ -2,8 +2,12 @@
   "name": "Calistenia Pro — Domine Seu Corpo (Premium 2.0)",
   "short_name": "CalisteniaPro",
   "description": "Programa 30 dias de calistenia com zero equipamentos, dashboard XP, calendário, timer pro, biblioteca interativa e calculadora TDEE.",
-  "start_url": "./index.html",
+  "id": "/calesteina/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "prefer_related_applications": false,
   "background_color": "#020617",
   "theme_color": "#2563EB",
   "orientation": "portrait-primary",
@@ -50,15 +54,6 @@
       "description": "32 exercícios com mapa anatômico",
       "url": "./library.html",
       "icons": [{ "src": "assets/img/icon-192.png", "sizes": "192x192", "type": "image/png" }]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "assets/img/og-cover.jpg",
-      "sizes": "1376x768",
-      "type": "image/jpeg",
-      "form_factor": "wide",
-      "label": "Calistenia Pro — Treine em qualquer lugar"
     }
   ]
 }

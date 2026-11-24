@@ -7,9 +7,10 @@
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
 <link rel="icon" href="assets/img/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
+<link rel="canonical" href="https://alexsantossp71-lgtm.github.io/calesteina/exercise.html">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 .ex-hero{background:var(--color-bg-alt);border-bottom:1px solid var(--color-border);text-align:center;padding:64px 0 36px;position:relative;overflow:hidden}
 .ex-hero::before{content:'';position:absolute;inset:0;background:var(--gradient-mesh);opacity:0.45;pointer-events:none}
@@ -23,6 +24,7 @@
 </style>
 </head>
 <body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 <nav class="navbar">
 <div class="container nav-content">
 <div class="logo"><a href="index.html" style="color:inherit">Calistenia<span class="highlight">Pro</span></a></div>
@@ -40,10 +42,12 @@
 </div>
 </nav>
 
+<main id="conteudo">
+
 <header class="ex-hero">
 <div class="container" style="position:relative">
 <div style="margin-bottom:1rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap">
-<a href="javascript:history.back()" style="font-weight:700;font-size:0.9rem;color:var(--color-cta);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.4rem 0.8rem;border-radius:999px">← Voltar</a>
+<a href="library.html" style="font-weight:700;font-size:0.9rem;color:var(--color-cta);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.4rem 0.8rem;border-radius:999px">← Voltar</a>
 <a href="library.html" style="font-weight:700;font-size:0.9rem;color:var(--color-text-muted);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.4rem 0.8rem;border-radius:999px">📚 Biblioteca</a>
 </div>
 <h1 id="ex-title" style="margin-bottom:0.6rem">Carregando Movimento...</h1>
@@ -96,6 +100,7 @@
 <button id="timerResetBtn" class="btn-outline btn-sm">🔄 Zerar</button>
 </div>
 </div>
+<div class="history-card" id="exerciseHistory" aria-live="polite"></div>
 <div style="margin-top:1.2rem;background:var(--gradient-dark);color:white;border-radius:16px;padding:1.4rem;position:relative;overflow:hidden">
 <div style="position:absolute;inset:0;background:radial-gradient(400px circle at 80% 0%, rgba(37,99,235,0.25), transparent 60%);pointer-events:none"></div>
 <div style="position:relative">
@@ -117,6 +122,8 @@
 </div>
 </section>
 
+</main>
+
 <footer class="footer"><div class="container foot-content"><div class="logo">Calistenia<span class="highlight">Pro</span></div><p>© 2026 Calistenia Pro</p></div></footer>
 
 <script src="script.js"></script>
@@ -134,11 +141,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     document.querySelectorAll('.timer-preset').forEach(b=> b.addEventListener('click', ()=>{ initialPreset=parseInt(b.dataset.sec,10); remainingSeconds=initialPreset; pauseTimer(); updateDisplay(); }));
     startBtn?.addEventListener('click', startTimer); pauseBtn?.addEventListener('click', pauseTimer); resetBtn?.addEventListener('click', resetTimer); updateDisplay();
 
-    // exercise data will be populated by exercises-data.js DOMContentLoaded, but we add enhancements after
-    setTimeout(()=>{
+    // exercises-data.js registra seu próprio listener antes deste: os dados já estão prontos aqui.
+    (function(){
+        if(window.__exerciseNotFound) return;
         const urlParams=new URLSearchParams(window.location.search);
         const rawId=urlParams.get('id'); const exId=typeof processIdStr==='function'? processIdStr(rawId): 'flexao-de-braco';
-        const data=window.exerciseDB[exId] || window.exerciseDB['flexao-de-braco'];
+        const data=(window.exerciseDB && (window.exerciseDB[exId] || window.exerciseDB['flexao-de-braco']));
         if(!data) return;
         // meta calories
         const calMap={push:32, pull:28, legs:40, core:22, cardio:48, mobility:12};
@@ -150,7 +158,37 @@ document.addEventListener('DOMContentLoaded', ()=>{
         function refreshFav(){ const isFav=FavoritesManager.isFav(data.name); favBtn.textContent=isFav?'★ Favoritado':'☆ Favoritar'; favBtn.style.background=isFav?'#FEF3C7':''; favBtn.style.borderColor=isFav?'#FDE68A':''; }
         refreshFav();
         favBtn.addEventListener('click', ()=>{ const now=FavoritesManager.toggle(data.name); refreshFav(); showToast(now?'⭐ Favoritado!':'☆ Removido','info'); Achievements.checkAll(); });
-        document.getElementById('quickStartBtn').addEventListener('click', ()=> WorkoutPlayer.start(data.name, [{name:data.name, reps:'3 séries de 10'}], null));
+        document.getElementById('quickStartBtn').addEventListener('click', ()=>{
+            const plan=typeof getExercisePrescription==='function' ? getExercisePrescription(data.name) : { name:data.name, reps:'3 séries de 10' };
+            WorkoutPlayer.start(data.name, [plan], null);
+        });
+        // Histórico local do exercício (sessões concluídas + recorde pessoal)
+        const historyEl=document.getElementById('exerciseHistory');
+        if(historyEl){
+            const renderHistory=()=>{
+                const hist=ExerciseHistory.get(data.name);
+                const last=hist.lastDate ? new Date(hist.lastDate+'T12:00:00').toLocaleDateString('pt-BR') : null;
+                historyEl.innerHTML=`
+                    <h3 style="margin:0 0 0.2rem 0;font-size:1.05rem">📈 Seu histórico neste exercício</h3>
+                    <p style="font-size:0.8rem;color:var(--color-text-muted);margin:0">Registrado só neste aparelho, sem conta.</p>
+                    <div class="history-grid">
+                        <div class="history-stat"><strong>${hist.sessions}</strong><span>Sessões</span></div>
+                        <div class="history-stat"><strong>${hist.best ? hist.best : '—'}</strong><span>Recorde (reps)</span></div>
+                        <div class="history-stat"><strong>${last || '—'}</strong><span>Último treino</span></div>
+                    </div>
+                    <div class="history-best">
+                        <label class="sr-only" for="bestRepsInput">Melhor série em repetições para ${escapeHtml(data.name)}</label>
+                        <input type="number" id="bestRepsInput" class="form-control" min="1" max="500" inputmode="numeric" placeholder="Melhor série (reps)">
+                        <button class="btn-outline btn-sm" id="saveBestBtn" type="button">Salvar recorde</button>
+                    </div>`;
+                document.getElementById('saveBestBtn')?.addEventListener('click', ()=>{
+                    const input=document.getElementById('bestRepsInput');
+                    if(!ExerciseHistory.setBest(data.name, input.value)){ showToast('Informe um número entre 1 e 500','warning'); return }
+                    renderHistory(); showToast('🏅 Recorde salvo!','success');
+                });
+            };
+            renderHistory();
+        }
         document.getElementById('shareExBtn')?.addEventListener('click', async ()=>{
             const text=`Confira este exercício Calistenia Pro: ${data.name} — ${data.purpose}`;
             if(navigator.share){ try{ await navigator.share({title:data.name, text, url:location.href}); }catch(e){} } else { try{ await navigator.clipboard.writeText(location.href); showToast('Link copiado!','success')}catch(e){ showToast(text,'info') } }
@@ -183,7 +221,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             // add caption
             const cap=document.createElement('p'); cap.textContent='💡 Dica: observe o alinhamento da coluna e cotovelos a 45°. Qualidade > velocidade.'; cap.style.fontSize='0.82rem'; cap.style.color='var(--color-text-muted)'; cap.style.textAlign='center'; cap.style.margin='0'; imgContainer.appendChild(cap);
         }
-    }, 200);
+    })();
 });
 </script>
 </body>

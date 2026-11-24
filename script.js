@@ -298,7 +298,7 @@ const ThemeManager = {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(this.STORAGE_KEY, theme);
         document.querySelectorAll('.theme-toggle-btn').forEach(btn=>{
-            btn.textContent = theme==='dark' ? '☀️ Modo Claro' : '🌙 Modo Escuro';
+            btn.innerHTML = `<span aria-hidden="true">${theme==='dark' ? '☀️' : '🌙'}</span><span class="theme-label"> ${theme==='dark' ? 'Modo Claro' : 'Modo Escuro'}</span>`;
             btn.setAttribute('aria-label', `Alternar para modo ${theme==='dark'?'claro':'escuro'}`);
         })
     },
@@ -391,6 +391,83 @@ const ModalA11y = {
 window.ModalA11y=ModalA11y;
 
 // ==================================================
+// Wake Lock (tela ativa durante treino/timer)
+// ==================================================
+// O navegador solta o lock ao trocar de aba/app; reativamos quando a página volta a ficar visível.
+const WakeLockManager = {
+    sentinel:null, wanted:false, listening:false,
+    async acquire(){
+        this.wanted=true;
+        if(!('wakeLock' in navigator) || document.visibilityState!=='visible' || this.sentinel) return;
+        try{
+            this.sentinel=await navigator.wakeLock.request('screen');
+            this.sentinel.addEventListener('release', ()=>{ this.sentinel=null; });
+        }catch(e){ this.sentinel=null; }
+    },
+    release(){
+        this.wanted=false;
+        try{ if(this.sentinel) this.sentinel.release(); }catch(e){}
+        this.sentinel=null;
+    },
+    init(){
+        if(this.listening) return; this.listening=true;
+        document.addEventListener('visibilitychange', ()=>{
+            if(this.wanted && document.visibilityState==='visible' && !this.sentinel) this.acquire();
+        });
+    }
+};
+WakeLockManager.init();
+window.WakeLockManager=WakeLockManager;
+
+// ==================================================
+// Histórico por exercício (sessões + recorde)
+// ==================================================
+const ExerciseHistory = {
+    STORAGE_KEY: 'calistenia_pro_exercise_history',
+    getAll(){ return readStoredObject(this.STORAGE_KEY) },
+    get(name){
+        const entry=this.getAll()[name];
+        const sessions=entry && Number.isInteger(entry.sessions) && entry.sessions>0 ? entry.sessions : 0;
+        return {
+            sessions,
+            lastDate: entry && /^\d{4}-\d{2}-\d{2}$/.test(String(entry.lastDate)) ? String(entry.lastDate) : null,
+            best: entry && Number.isFinite(entry.best) && entry.best>0 ? entry.best : null
+        };
+    },
+    recordSession(name, sets){
+        if(!name) return;
+        const all=this.getAll(); const prev=this.get(name);
+        all[name]={ sessions: prev.sessions+1, lastDate: localDateKey(), best: prev.best, lastSets: Math.max(1, parseInt(sets,10)||1) };
+        try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all)) }catch(e){}
+    },
+    setBest(name, value){
+        const reps=parseInt(value,10);
+        if(!name || !Number.isFinite(reps) || reps<1 || reps>500) return false;
+        const all=this.getAll(); const prev=this.get(name);
+        all[name]={ sessions: prev.sessions, lastDate: prev.lastDate, best: Math.max(prev.best||0, reps), lastSets: (all[name]&&all[name].lastSets)||1 };
+        try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all)) }catch(e){}
+        return true;
+    },
+    totalSessions(){ return Object.values(this.getAll()).reduce((sum, e)=> sum + (e && Number.isInteger(e.sessions) ? e.sessions : 0), 0) }
+};
+window.ExerciseHistory=ExerciseHistory;
+
+// Prescrição real do exercício: usa a série prescrita no programa; se não houver, usa o nível.
+function getExercisePrescription(name){
+    for(const days of Object.values(programData)){
+        for(const day of days){
+            const found=day.exercises.find((ex)=> ex.name===name);
+            if(found) return { name: found.name, reps: found.reps };
+        }
+    }
+    let ex=null;
+    try{ const key=typeof processIdStr==='function' ? processIdStr(name) : null; ex=key && window.exerciseDB ? window.exerciseDB[key] : null; }catch(e){}
+    const byLevel={ iniciante:'3 séries de 8-10', intermediario:'3 séries de 10-12', avancado:'4 séries de 8-10' };
+    return { name, reps: (ex && byLevel[ex.level]) ? byLevel[ex.level] : '3 séries de 10' };
+}
+window.getExercisePrescription=getExercisePrescription;
+
+// ==================================================
 // WORKOUT PLAYER (compat + wake lock + vibration)
 // ==================================================
 // Cada exercício do programa vira uma sequência de séries/rounds.
@@ -455,7 +532,7 @@ const WorkoutPlayer = {
         document.getElementById('wpTitle').textContent=title;
         ModalA11y.open(this.overlay, ()=> this.close());
         this.renderStep();
-        try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen'); }catch(e){}
+        WakeLockManager.acquire();
     },
     renderStep(){
         this.stopRest(); this.restoreStepContent();
@@ -470,16 +547,16 @@ const WorkoutPlayer = {
         const data=(window.exerciseDB && window.exerciseDB[exId]) ? window.exerciseDB[exId] : null;
         document.getElementById('wpPurpose').textContent = data ? data.purpose : "Execute com controle respiratório e amplitude total.";
         const imgBox=document.getElementById('wpImgBox'); imgBox.innerHTML='';
-        const srcMap= { legs:"assets/img/squat_start.png", push:"assets/img/pushup_start.png", pull:"assets/img/pullup_start.png", core:"assets/img/plank.png", cardio:"assets/img/generic.png", mobility:"assets/img/generic.png" };
+        const srcMap= { legs:"assets/img/squat_start.webp", push:"assets/img/pushup_start.webp", pull:"assets/img/pullup_start.webp", core:"assets/img/plank.webp", cardio:"assets/img/generic.webp", mobility:"assets/img/generic.webp" };
         let cat = data ? data.category : 'push';
-        let srcImg = srcMap[cat] || "assets/img/pushup_start.png";
+        let srcImg = srcMap[cat] || "assets/img/pushup_start.webp";
         // show both start/end if exist
         const imageMapDup = {
-            "flexao-de-braco": ["assets/img/pushup_start.png","assets/img/pushup_end.png"],
-            "agachamento-livre": ["assets/img/squat_start.png","assets/img/squat_end.png"],
-            "barra-fixa-isometria": ["assets/img/pullup_start.png","assets/img/pullup_end.png"],
-            "mergulho-no-banco": ["assets/img/dip_start.png","assets/img/dip_end.png"],
-            "afundo": ["assets/img/lunge_start.png","assets/img/lunge_end.png"]
+            "flexao-de-braco": ["assets/img/pushup_start.webp","assets/img/pushup_end.webp"],
+            "agachamento-livre": ["assets/img/squat_start.webp","assets/img/squat_end.webp"],
+            "barra-fixa-isometria": ["assets/img/pullup_start.webp","assets/img/pullup_end.webp"],
+            "mergulho-no-banco": ["assets/img/dip_start.webp","assets/img/dip_end.webp"],
+            "afundo": ["assets/img/lunge_start.webp","assets/img/lunge_end.webp"]
         };
         let imgs = imageMapDup[exId] || [srcImg];
         imgs.forEach(s=>{
@@ -548,8 +625,10 @@ const WorkoutPlayer = {
                 </div>
             </div>`;
         document.getElementById('wpPrevBtn').style.display='none'; document.getElementById('wpNextBtn').style.display='none';
+        try{ this.currentExercises.forEach((ex)=> ExerciseHistory.recordSession(ex.name, getExerciseSets(ex))) }catch(e){}
         if(this.dayNum){
             CalisteniaTracker.setDayCompleted(this.dayNum, true);
+            try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
             syncTodayWorkoutButtons();
             if(typeof renderProgressHeader==='function') renderProgressHeader();
             if(typeof renderWeek==='function' && window.currentActiveWeek) renderWeek(window.currentActiveWeek);
@@ -560,7 +639,7 @@ const WorkoutPlayer = {
         document.getElementById('wpDashBtn')?.addEventListener('click', ()=>{ this.close(); window.location.href='dashboard.html'; });
         try{ confettiBurst(); }catch(e){}
     },
-    close(){ this.stopRest(); try{ stopConfetti(); }catch(e){} ModalA11y.close(this.overlay); }
+    close(){ this.stopRest(); WakeLockManager.release(); try{ stopConfetti(); }catch(e){} ModalA11y.close(this.overlay); }
 };
 window.WorkoutPlayer = WorkoutPlayer;
 
@@ -716,10 +795,11 @@ const TimerPro = {
         if(this.isRunning) return; this.isRunning=true;
         document.getElementById('timerProStart').style.display='none'; document.getElementById('timerProPause').style.display='inline-flex';
         this.interval=setInterval(()=> this.tick(), 1000);
-        try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen'); }catch(e){}
+        WakeLockManager.acquire();
     },
     pause(){
         this.isRunning=false; if(this.interval){ clearInterval(this.interval); this.interval=null }
+        WakeLockManager.release();
         const s=document.getElementById('timerProStart'); const p=document.getElementById('timerProPause'); if(s) s.style.display='inline-flex'; if(p) p.style.display='none';
     },
     tick(){
@@ -821,6 +901,20 @@ const DataManager = {
         }
         const favorites=cleanArray(raw.favorites);
         if(favorites) out.favorites=favorites.filter((f)=> typeof f==='string').map((f)=> f.slice(0,80));
+        if(raw.exerciseHistory && typeof raw.exerciseHistory==='object' && !Array.isArray(raw.exerciseHistory)){
+            out.exerciseHistory={};
+            Object.keys(raw.exerciseHistory).slice(0,200).forEach((name)=>{
+                const entry=raw.exerciseHistory[name];
+                if(!entry || typeof entry!=='object') return;
+                const sessions=Number(entry.sessions); const best=Number(entry.best);
+                out.exerciseHistory[String(name).slice(0,80)]={
+                    sessions: Number.isInteger(sessions) && sessions>0 ? Math.min(sessions, 10000) : 0,
+                    lastDate: /^\d{4}-\d{2}-\d{2}$/.test(String(entry.lastDate)) ? String(entry.lastDate) : null,
+                    best: Number.isFinite(best) && best>0 ? Math.min(best, 500) : null,
+                    lastSets: Number.isInteger(Number(entry.lastSets)) ? Math.max(1, Math.min(20, Number(entry.lastSets))) : 1
+                };
+            });
+        }
         const achievements=cleanArray(raw.achievements);
         if(achievements) out.achievements=achievements.filter((a)=> typeof a==='string').slice(0,50);
         if(raw.theme==='dark' || raw.theme==='light') out.theme=raw.theme;
@@ -836,6 +930,7 @@ const DataManager = {
             weight: WeightTracker.getHistory(),
             water: readStoredObject('calistenia_pro_water'),
             favorites: FavoritesManager.getAll(),
+            exerciseHistory: ExerciseHistory.getAll(),
             achievements: Achievements.getUnlocked(),
             used_calc: readStoredValue('calistenia_pro_used_calc')==='1',
             theme: readStoredValue('calistenia_pro_theme'),
@@ -847,6 +942,7 @@ const DataManager = {
         document.body.appendChild(a); a.click(); a.remove();
         // Revogar imediatamente pode descartar o blob antes do navegador gravar o arquivo.
         setTimeout(()=> URL.revokeObjectURL(url), 4000);
+        try{ StorageHealth.markBackup(); }catch(e){}
         showToast('📦 Backup exportado com sucesso!','success');
     },
     importFile(file){
@@ -864,6 +960,7 @@ const DataManager = {
                 set('calistenia_pro_weight', data.weight);
                 set('calistenia_pro_water', data.water);
                 set('calistenia_pro_favorites', data.favorites);
+                set('calistenia_pro_exercise_history', data.exerciseHistory);
                 set('calistenia_pro_ach_unlocked', data.achievements);
                 localStorage.removeItem('calistenia_pro_xp_bonus'); // chave legada (XP agora é derivado)
                 if(data.theme) localStorage.setItem('calistenia_pro_theme', data.theme);
@@ -1212,6 +1309,86 @@ function drawWeightChart(){
 window.renderDashboardPremium=renderDashboardPremium;
 function renderAchievementsPremium(){ try{renderDashboardPremium()}catch(e){} }
 
+// ==================================================
+// Instalação do PWA (botão no navbar)
+// ==================================================
+const InstallPrompt = {
+    deferred:null, dismissed:false,
+    isStandalone(){ try{ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true }catch(e){ return false } },
+    isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent || '') },
+    init(){
+        window.addEventListener('beforeinstallprompt', (e)=>{
+            e.preventDefault(); this.deferred=e; this.render();
+        });
+        window.addEventListener('appinstalled', ()=>{ this.deferred=null; this.removeButton(); showToast('📲 App instalado! Abra pelo ícone na tela inicial.','success') });
+        this.render();
+    },
+    render(){
+        if(this.isStandalone() || this.dismissed || document.getElementById('installAppBtn')) return;
+        if(!this.deferred && !this.isIOS()) return;
+        const host=document.querySelector('.nav-content > div:last-child') || document.querySelector('.nav-content');
+        if(!host) return;
+        const btn=document.createElement('button');
+        btn.id='installAppBtn'; btn.type='button';
+        btn.className='btn-outline btn-sm install-btn';
+        btn.innerHTML='<span aria-hidden="true">📲</span><span class="install-label"> Instalar</span>';
+        btn.setAttribute('aria-label','Instalar o Calistenia Pro na tela inicial');
+        btn.addEventListener('click', ()=> this.prompt());
+        const ham=host.querySelector('.hamburger');
+        if(ham) host.insertBefore(btn, ham); else host.appendChild(btn);
+    },
+    removeButton(){ const b=document.getElementById('installAppBtn'); if(b) b.remove() },
+    async prompt(){
+        if(this.deferred){
+            this.deferred.prompt();
+            let choice={};
+            try{ choice=await this.deferred.userChoice }catch(e){}
+            this.deferred=null;
+            if(choice && choice.outcome==='accepted'){ this.removeButton(); showToast('📲 Instalando o Calistenia Pro…','success') }
+            else { this.dismissed=true; this.removeButton() }
+            return;
+        }
+        if(this.isIOS()) showToast('No iPhone/iPad: toque em Compartilhar e depois em “Adicionar à Tela de Início”.','info');
+    }
+};
+window.InstallPrompt=InstallPrompt;
+
+// ==================================================
+// Saúde dos dados (persistência + lembrete de backup)
+// ==================================================
+const StorageHealth = {
+    BACKUP_KEY: 'calistenia_pro_last_backup',
+    BACKUP_INTERVAL_DAYS: 14,
+    requestPersistence(){
+        if(!navigator.storage || !navigator.storage.persist) return;
+        if(CalisteniaTracker.getCompletedDays().length===0) return;
+        try{ navigator.storage.persist().catch(()=>{}) }catch(e){}
+    },
+    markBackup(){ try{ localStorage.setItem(this.BACKUP_KEY, String(Date.now())) }catch(e){} },
+    daysSinceBackup(){
+        let raw=null; try{ raw=localStorage.getItem(this.BACKUP_KEY) }catch(e){}
+        if(!raw){ return null }
+        const ts=Number(raw); if(!Number.isFinite(ts) || ts<=0) return null;
+        return Math.floor((Date.now()-ts)/86400000);
+    },
+    needsBackup(){
+        const hasProgress=CalisteniaTracker.getCompletedDays().length>0 || CalisteniaTracker.getStreak()>0;
+        if(!hasProgress) return false;
+        const days=this.daysSinceBackup();
+        return days===null || days>=this.BACKUP_INTERVAL_DAYS;
+    },
+    renderBanner(){
+        const host=document.getElementById('backupReminder'); if(!host) return;
+        if(!this.needsBackup()){ host.innerHTML=''; host.style.display='none'; return; }
+        const days=this.daysSinceBackup();
+        const who=days===null ? 'Você ainda não exportou um backup.' : `Seu último backup foi há ${days} dias.`;
+        host.style.display='flex';
+        host.innerHTML=`<span>💾 <strong>Seus dados vivem só neste navegador.</strong> ${who} Exporte para não perder seu progresso.</span><button type="button" class="btn-outline btn-sm" id="backupNowBtn">📦 Exportar agora</button>`;
+        document.getElementById('backupNowBtn')?.addEventListener('click', ()=>{ DataManager.export(); this.renderBanner() });
+    }
+};
+window.StorageHealth=StorageHealth;
+
 // Scroll progress + reveal + navbar
 function initGlobalEnhancements(){
     // scroll progress
@@ -1226,7 +1403,7 @@ function initGlobalEnhancements(){
         const observer=new IntersectionObserver((entries)=> entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('active') }), {threshold:0.12});
         document.querySelectorAll('.reveal').forEach(el=> observer.observe(el));
         // lazy add reveal to sections if missing
-        document.querySelectorAll('.fb-card, .step-card, .test-card, .day-card, .dashboard-card').forEach(el=>{ if(!el.classList.contains('reveal')){ el.classList.add('reveal'); observer.observe(el)} });
+        document.querySelectorAll('.fb-card, .step-card, .day-card, .dashboard-card').forEach(el=>{ if(!el.classList.contains('reveal')){ el.classList.add('reveal'); observer.observe(el)} });
     } else {
         document.querySelectorAll('.reveal').forEach(el=> el.classList.add('active'));
     }
@@ -1238,6 +1415,9 @@ if('serviceWorker' in navigator){
 
 document.addEventListener('DOMContentLoaded', ()=>{
     ThemeManager.init(); initGlobalEnhancements();
+    InstallPrompt.init();
+    StorageHealth.requestPersistence();
+    StorageHealth.renderBanner();
     if(document.getElementById('daysGrid')){ renderProgressHeader(); renderWeek(1); renderDashboardPremium(); Achievements.checkAll(); }
     if(document.getElementById('dashboardPremium') && !document.getElementById('daysGrid')){ renderDashboardPremium(); Achievements.checkAll(); }
     // hamburger

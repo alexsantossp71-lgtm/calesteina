@@ -547,6 +547,10 @@ function processIdStr(str) {
     return "descanso";
 }
 
+// Os outros scripts (script.js) acessam a base via window.exerciseDB.
+window.exerciseDB = exerciseDB;
+window.processIdStr = processIdStr;
+
 // Injeta dinamicamente quando carregar exercise.html
 document.addEventListener('DOMContentLoaded', () => {
     const exerciseTitle = document.getElementById('ex-title');
@@ -554,7 +558,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const rawId = urlParams.get('id');
         const exId = processIdStr(rawId);
-        
+
+        // Query desconhecida não deve exibir outro exercício silenciosamente.
+        const normalizedQuery = String(rawId || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const restWords = ['descanso', 'celebre', 'recuperacao', 'livre', 'favorito'];
+        const unknown = !rawId || (exId === 'descanso' && !restWords.some((w) => normalizedQuery.includes(w)));
+        if (unknown) {
+            window.__exerciseNotFound = true;
+            document.title = 'Exercício não encontrado — Calistenia Pro';
+            exerciseTitle.textContent = 'Exercício não encontrado';
+            const purposeEl = document.getElementById('ex-purpose');
+            if (purposeEl) purposeEl.innerHTML = 'Esse endereço não corresponde a nenhum exercício da biblioteca. <a href="library.html">Ver os 32 exercícios</a>.';
+            const stepsEl = document.getElementById('ex-steps');
+            if (stepsEl) stepsEl.innerHTML = '';
+            document.querySelectorAll('.ex-hero .btn-cta, #quickStartBtn, #favToggleBtn').forEach((el) => { el.style.display = 'none' });
+            const imgContainer = document.getElementById('ex-image-container');
+            if (imgContainer) imgContainer.innerHTML = '<p style="font-weight:700">🔎 Nenhum exercício com esse identificador.</p><a class="btn-cta btn-sm" href="library.html">Abrir biblioteca</a>';
+            return;
+        }
+
         const data = exerciseDB[exId] || exerciseDB["flexao-de-braco"];
         
         // Atualiza Titulo do Documento e da Pagina
@@ -614,29 +636,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Mapeamento de Imagens
         const imageMap = {
-            "agachamento-livre": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
-            "agachamento-sumo": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
-            "agachamento-bulgaro": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
-            "agachamento-isometrico": ["assets/img/squat.png"],
-            "agachamento-salto": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
-            "agachamento-pistol": ["assets/img/squat_start.png", "assets/img/squat_end.png"],
+            "agachamento-livre": ["assets/img/squat_start.webp", "assets/img/squat_end.webp"],
+            "agachamento-sumo": ["assets/img/squat_start.webp", "assets/img/squat_end.webp"],
+            "agachamento-bulgaro": ["assets/img/squat_start.webp", "assets/img/squat_end.webp"],
+            "agachamento-isometrico": ["assets/img/squat.webp"],
+            "agachamento-salto": ["assets/img/squat_start.webp", "assets/img/squat_end.webp"],
+            "agachamento-pistol": ["assets/img/squat_start.webp", "assets/img/squat_end.webp"],
             
-            "flexao-de-braco": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
-            "flexao-fechada": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
-            "flexao-declinada": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
-            "flexao-de-braco-apoiada": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
-            "pike-push-up": ["assets/img/pushup_start.png", "assets/img/pushup_end.png"],
+            "flexao-de-braco": ["assets/img/pushup_start.webp", "assets/img/pushup_end.webp"],
+            "flexao-fechada": ["assets/img/pushup_start.webp", "assets/img/pushup_end.webp"],
+            "flexao-declinada": ["assets/img/pushup_start.webp", "assets/img/pushup_end.webp"],
+            "flexao-de-braco-apoiada": ["assets/img/pushup_start.webp", "assets/img/pushup_end.webp"],
+            "pike-push-up": ["assets/img/pushup_start.webp", "assets/img/pushup_end.webp"],
             
-            "barra-fixa-isometria": ["assets/img/pullup_start.png", "assets/img/pullup_end.png"],
+            "barra-fixa-isometria": ["assets/img/pullup_start.webp", "assets/img/pullup_end.webp"],
             
-            "mergulho-no-banco": ["assets/img/dip_start.png", "assets/img/dip_end.png"],
-            "afundo": ["assets/img/lunge_start.png", "assets/img/lunge_end.png"],
+            "mergulho-no-banco": ["assets/img/dip_start.webp", "assets/img/dip_end.webp"],
+            "afundo": ["assets/img/lunge_start.webp", "assets/img/lunge_end.webp"],
             
-            "prancha-abdominal": ["assets/img/plank.png"],
-            "prancha-lateral": ["assets/img/plank.png"],
-            "prancha-alta-toque": ["assets/img/plank.png"],
+            "prancha-abdominal": ["assets/img/plank.webp"],
+            "prancha-lateral": ["assets/img/plank.webp"],
+            "prancha-alta-toque": ["assets/img/plank.webp"],
 
-            "default": ["assets/img/generic.png"]
+            "default": ["assets/img/generic.webp"]
         };
         
         let targetImgs = imageMap[exId] || imageMap["default"];

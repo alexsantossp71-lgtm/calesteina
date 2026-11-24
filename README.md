@@ -2,14 +2,17 @@
 
 ![CI](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/ci.yml?label=CI&logo=github)
 ![Pages](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/pages.yml?label=Pages&logo=github)
-![Tests](https://img.shields.io/badge/testes-43%20passando-00ff88)
+![Tests](https://img.shields.io/badge/testes-69%20passando-00ff88)
 ![PWA](https://img.shields.io/badge/PWA-offline%20ready-5C2D91)
 
 PWA de **calistenia** com programa completo de 30 dias, gamificação (XP, níveis e conquistas) e dashboard de acompanhamento. Tudo funciona **sem equipamentos** e **offline**, com dados salvos localmente no navegador.
 
 ## ✨ Funcionalidades
 
-- 🏋️ **Programa 30 Dias** — rotina progressiva dividida em 4 fases (adaptação, volume, intensidade e skills)
+- 🏋️ **Programa 30 Dias** — rotina progressiva dividida em 4 fases (adaptação, volume, intensidade e skills), com dias de descanso ativo já no cronograma
+- 📲 **Instalável** — botão de instalação do PWA (instruções próprias no iPhone/iPad)
+- 📈 **Histórico por exercício** — sessões concluídas, último treino e recorde pessoal de repetições
+- 💾 **Backup com lembrete** — aviso quando o progresso está sem exportação há 14 dias, além de pedido de persistência ao navegador
 - ⭐ **Sistema de XP e Níveis** — ganhe pontos ao concluir treinos e acompanhe sua evolução
 - 📈 **Dashboard Premium** — progresso, sequência (streak), calendário, hidratação e peso
 - 🏆 **12 Conquistas** — metas desbloqueáveis ao longo da jornada
@@ -18,11 +21,12 @@ PWA de **calistenia** com programa completo de 30 dias, gamificação (XP, níve
 - ⏱️ **Timer Pro** — temporizador de treino integrado
 - 🌙 **Tema claro/escuro** com persistência
 - 💾 **Backup/restauração** — exporte e importe seus dados em JSON
-- 📱 **PWA instalável** — funciona offline em qualquer dispositivo
+- 📱 **PWA instalável** — funciona offline em qualquer dispositivo, com fontes locais (sem Google Fonts)
+- ♿ **Acessibilidade** — skip link, landmark `main`, foco visível e respeito a `prefers-reduced-motion`
 
 ## 🚀 Como executar
 
-PWA não exige build — basta servir a pasta:
+PWA não exige build nem dependências — basta servir a pasta:
 
 ```bash
 # Opção 1: Python
@@ -37,7 +41,7 @@ Para instalar com Service Worker (PWA), use um servidor HTTP — não funciona v
 
 ## 🧪 Testes
 
-A suíte de testes valida o programa 30 dias, a base de 32 exercícios, XP/níveis (100 XP por dia, sem duplicação), sequência por calendário, conquistas, favoritos, peso, hidratação, rotinas customizadas, datas locais e validação de backup:
+A suíte de testes valida o programa 30 dias, a base de 32 exercícios, XP/níveis (100 XP por dia, sem duplicação), sequência por calendário, conquistas, favoritos, peso, hidratação, rotinas customizadas, datas locais e validação de backup. Também cobre a estrutura das páginas (skip link, `main`, canonical, ausência de fontes externas), se todos os assets referenciados existem, o manifest/Service Worker e os módulos de histórico, instalação e backup:
 
 ```bash
 npm test
@@ -56,9 +60,13 @@ Há integração contínua via GitHub Actions (`.github/workflows/ci.yml`) e dep
 ├── exercise.html       # Detalhe de exercício
 ├── script.js           # Lógica principal + gamificação
 ├── exercises-data.js   # Base de dados dos 32 exercícios
-├── style.css           # Estilos globais
+├── style.css           # Estilos globais + @font-face locais
 ├── manifest.json       # Manifest do PWA
 ├── sw.js               # Service Worker (offline)
+├── robots.txt          # Indexação
+├── sitemap.xml         # Sitemap do site
+├── assets/fonts/       # Inter e Playfair Display (woff2, subset latin)
+├── assets/img/         # Ilustrações em WebP + ícones do PWA
 ├── test/               # Testes automatizados (node --test)
 └── .github/workflows/  # CI + Deploy Pages
 ```

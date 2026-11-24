@@ -10,31 +10,38 @@
     <meta property="og:image" content="https://alexsantossp71-lgtm.github.io/calesteina/assets/img/og-cover.jpg">
     <meta property="og:url" content="https://alexsantossp71-lgtm.github.io/calesteina/">
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Calistenia Pro — Domine Seu Corpo">
+    <meta name="twitter:description" content="Programa de 30 dias de calistenia com zero equipamentos, biblioteca de 32 exercícios e dashboard de progresso.">
+    <meta name="twitter:image" content="https://alexsantossp71-lgtm.github.io/calesteina/assets/img/og-cover.jpg">
     <meta name="theme-color" content="#2563EB">
+    <link rel="canonical" href="https://alexsantossp71-lgtm.github.io/calesteina/">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="assets/img/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+    <link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/playfair-700.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <!-- Navbar Premium -->
     <nav class="navbar">
         <div class="container nav-content">
             <div class="logo"><a href="index.html" style="color:inherit">Calistenia<span class="highlight">Pro</span></a></div>
             <ul class="nav-links">
+                <li class="nav-search" id="globalSearchWrap">
+                    <input id="globalSearch" type="search" aria-label="Buscar exercício" placeholder="Buscar exercício..." class="form-control global-search-input">
+                    <div id="globalSearchResults" class="global-search-results"></div>
+                </li>
                 <li><a href="#solucao">O que é</a></li>
                 <li><a href="#beneficios">Benefícios</a></li>
                 <li><a href="#processo">Como Funciona</a></li>
                 <li><a href="library.html">Biblioteca</a></li>
                 <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="calculator.html">Calculadora</a></li>
             </ul>
             <div style="display:flex;align-items:center;gap:0.6rem;">
-                <div style="position:relative;display:none;" id="globalSearchWrap" class="global-search-wrap">
-                    <input id="globalSearch" type="search" aria-label="Buscar exercício" placeholder="Buscar exercício..." class="form-control" style="padding:0.5rem 0.9rem;border-radius:999px;min-width:200px;font-size:0.88rem">
-                    <div id="globalSearchResults" style="display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:12px;box-shadow:var(--shadow-hover);overflow:hidden;z-index:50"></div>
-                </div>
                 <button class="theme-toggle-btn btn-outline btn-sm" style="padding:0.45rem 0.85rem">🌙</button>
                 <a href="program.html" class="btn-cta btn-sm" style="display:inline-flex">Programa 30 Dias</a>
                 <button class="hamburger" aria-label="Abrir Menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -43,6 +50,7 @@
     </nav>
 
     <!-- Hero Premium -->
+    <main id="conteudo">
     <header class="hero">
         <div class="container hero-grid">
             <div class="hero-text reveal active">
@@ -55,22 +63,15 @@
                     <button class="btn-outline" data-open-timer style="border-style:dashed">⏱️ Testar Timer Pro</button>
                 </div>
                 <div class="hero-stats">
-                    <div class="hero-stat"><strong id="heroStat1">5.000+</strong><span>Atletas<br>ativos</span></div>
-                    <div class="hero-stat"><strong>4.9★</strong><span>Avaliação<br>média</span></div>
-                    <div class="hero-stat"><strong>30 DIAS</strong><span>Zero<br>equipamentos</span></div>
+                    <div class="hero-stat"><strong>30 DIAS</strong><span>Programa<br>completo</span></div>
+                    <div class="hero-stat"><strong>32</strong><span>Exercícios<br>guiados</span></div>
+                    <div class="hero-stat"><strong>100%</strong><span>Offline e<br>gratuito</span></div>
                 </div>
-                <div style="display:flex;align-items:center;gap:0.8rem;margin-top:1.2rem;flex-wrap:wrap">
-                    <div style="display:flex;margin-left:6px">
-                        <img src="assets/img/hero-athlete.jpg" alt="atleta" style="width:34px;height:34px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover">
-                        <img src="assets/img/og-cover.jpg" alt="atleta" style="width:34px;height:34px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover">
-                        <img src="assets/img/benefit-strength.jpg" alt="atleta" style="width:34px;height:34px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover">
-                    </div>
-                    <span style="font-size:0.88rem;font-weight:600;color:var(--color-text-muted)">Aprovado por <strong style="color:var(--color-text-dark)">+5.000 atletas</strong> • Resultados em 2 semanas</span>
-                </div>
+                <p style="font-size:0.88rem;font-weight:600;color:var(--color-text-muted);margin-top:1.2rem">📱 Funciona offline e seus dados ficam só no seu aparelho — nenhum cadastro, nenhuma conta.</p>
             </div>
             <div class="hero-visual reveal active">
                 <div class="hero-image-card">
-                    <img src="assets/img/hero-athlete.jpg" alt="Atleta de calistenia em barra" loading="eager" onerror="this.src='assets/img/og-cover.jpg'">
+                    <img src="assets/img/hero-athlete.webp" alt="Atleta de calistenia treinando em barra" width="1408" height="768" loading="eager" decoding="async" onerror="this.src='assets/img/og-cover.jpg'">
                     <div class="hero-image-overlay">
                         <div>
                             <h4>Seu corpo é a máquina.</h4>
@@ -95,20 +96,6 @@
         </div>
     </header>
 
-    <!-- Social Proof -->
-    <section class="social-proof">
-        <div class="container">
-            <p class="social-title">Reconhecido pela comunidade fitness e adotado por mais de 5.000 atletas</p>
-            <div class="logo-cloud">
-                <span class="partner-logo">Health Today</span>
-                <span class="partner-logo">FIT Magazine</span>
-                <span class="partner-logo">Movement Culture</span>
-                <span class="partner-logo">Street Workout Org</span>
-                <span class="partner-logo">GQ Fitness</span>
-            </div>
-        </div>
-    </section>
-
     <!-- Stats Bar Animated -->
     <section class="section-spacing" style="padding: 2.5rem 0">
         <div class="container">
@@ -116,7 +103,7 @@
                 <div class="stat-item"><strong data-count="30">30</strong><span>Dias de programa</span></div>
                 <div class="stat-item"><strong data-count="32">32</strong><span>Exercícios guiados</span></div>
                 <div class="stat-item"><strong>0</strong><span>Equipamentos</span></div>
-                <div class="stat-item"><strong data-count="5000">5k+</strong><span>Transformações</span></div>
+                <div class="stat-item"><strong>100%</strong><span>Offline e gratuito</span></div>
             </div>
         </div>
     </section>
@@ -197,7 +184,7 @@
                 </div>
             </div>
             <div style="margin-top:1.6rem;display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem" class="reveal">
-                <img src="assets/img/og-cover.jpg" alt="Atletas treinando" style="width:100%;height:280px;object-fit:cover;border-radius:16px;border:1px solid var(--color-border)">
+                <img src="assets/img/og-cover.jpg" alt="Atletas treinando calistenia" width="1376" height="768" loading="lazy" decoding="async" style="width:100%;height:280px;object-fit:cover;border-radius:16px;border:1px solid var(--color-border)">
                 <div style="background:var(--color-bg-main);border:1px solid var(--color-border);border-radius:16px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center">
                     <h3 style="margin-bottom:0.6rem">O que mudou na versão 2.0</h3>
                     <ul style="list-style:none;display:flex;flex-direction:column;gap:0.7rem;font-weight:600;font-size:0.93rem;color:var(--color-text-dark)">
@@ -243,30 +230,8 @@
         </div>
     </section>
 
-    <!-- Testimonials -->
-    <section class="testimonials section-spacing bg-light">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="eyebrow">Histórias reais</span>
-                <h2>Transformação que você sente e vê</h2>
-            </div>
-            <div class="test-grid">
-                <div class="test-card reveal">
-                    <div class="stars">★★★★★</div>
-                    <p class="quote">"Sempre odiei academias fechadas. Com o programa de 30 dias, em poucas semanas alcancei minha primeira barra fixa e ganhei uma definição que nunca tive. O dashboard com XP me viciou!"</p>
-                    <div class="author"><div class="avatar">M</div><div class="author-info"><strong>Marcos Silva</strong><span>Engenheiro de Software • Nível 6 • 18 dias</span></div></div>
-                </div>
-                <div class="test-card reveal">
-                    <div class="stars">★★★★★</div>
-                    <p class="quote">"A clareza do cronograma, o timer Tabata embutido e a facilidade de acompanhar os dias foram o divisor de águas para minha consistência. 7kg a menos em 30 dias."</p>
-                    <div class="author"><div class="avatar">A</div><div class="author-info"><strong>Ana Beatriz</strong><span>Arquiteta • Mestre Calistênico 🏆</span></div></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- FAQ -->
-    <section class="section-spacing">
+    <section class="section-spacing" id="faq">
         <div class="container" style="max-width:840px">
             <div class="section-header reveal">
                 <span class="eyebrow">Dúvidas frequentes</span>
@@ -308,6 +273,7 @@
             <p style="margin-top:1rem;color:#94A3B8;font-size:0.82rem">Sem cartão • Sem pegadinhas • Progresso salvo automaticamente</p>
         </div>
     </section>
+    </main>
 
     <footer class="footer">
         <div class="container">
@@ -342,19 +308,14 @@
                     <h4>Suporte</h4>
                     <ul>
                         <li><a href="#processo">Como funciona</a></li>
-                        <li><a href="#">Guia de iniciantes</a></li>
-                        <li><a href="#">Contato</a></li>
-                        <li><a href="#">Privacidade</a></li>
+                        <li><a href="#faq">Dúvidas frequentes</a></li>
+                        <li><a href="program.html">Guia de iniciantes</a></li>
+                        <li><a href="library.html">Todos os exercícios</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2026 Calistenia Pro — Feito com 💙 para atletas livres. Todos os direitos reservados.</p>
-                <div class="socials">
-                    <a href="#" aria-label="Instagram">◎</a>
-                    <a href="#" aria-label="YouTube">▶</a>
-                    <a href="#" aria-label="TikTok">♫</a>
-                </div>
+                <p>© 2026 Calistenia Pro — Feito com 💙 para atletas livres. Projeto aberto sob licença MIT.</p>
             </div>
         </div>
     </footer>
@@ -374,8 +335,6 @@
                 quizBtns.forEach(x=>x.classList.remove('active')); b.classList.add('active');
                 const k=b.dataset.level; if(data[k]){ t.textContent=data[k].title; d.textContent=data[k].desc }
             }));
-            // hero search show on desktop
-            if(window.innerWidth>900) document.getElementById('globalSearchWrap').style.display='block';
         });
     </script>
 </body>

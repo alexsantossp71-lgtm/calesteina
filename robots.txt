@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://alexsantossp71-lgtm.github.io/calesteina/sitemap.xml
