@@ -2,7 +2,7 @@
 
 ![CI](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/ci.yml?label=CI&logo=github)
 ![Pages](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/pages.yml?label=Pages&logo=github)
-![Tests](https://img.shields.io/badge/testes-22%20passando-00ff88)
+![Tests](https://img.shields.io/badge/testes-38%20passando-00ff88)
 ![PWA](https://img.shields.io/badge/PWA-offline%20ready-5C2D91)
 
 PWA de **calistenia** com programa completo de 30 dias, gamificação (XP, níveis e conquistas) e dashboard de acompanhamento. Tudo funciona **sem equipamentos** e **offline**, com dados salvos localmente no navegador.
@@ -37,7 +37,7 @@ Para instalar com Service Worker (PWA), use um servidor HTTP — não funciona v
 
 ## 🧪 Testes
 
-A suíte de testes valida o programa 30 dias, a base de 33 exercícios, XP/níveis, conquistas, favoritos, peso, hidratação e rotinas customizadas:
+A suíte de testes valida o programa 30 dias, a base de 32 exercícios, XP/níveis (100 XP por dia, sem duplicação), sequência por calendário, conquistas, favoritos, peso, hidratação, rotinas customizadas, datas locais e validação de backup:
 
 ```bash
 npm test
@@ -73,4 +73,4 @@ Há integração contínua via GitHub Actions (`.github/workflows/ci.yml`) e dep
 
 ## 📄 Licença
 
-Projeto de estudo — aberto para aprendizado e contribuições.
+MIT — veja [LICENSE](LICENSE). Projeto de estudo, aberto para aprendizado e contribuições.

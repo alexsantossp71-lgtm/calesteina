@@ -5,6 +5,8 @@
     <title>Programa 30 Dias — Treino Diário com XP & Conquistas | Calistenia Pro</title>
     <meta name="description" content="Siga o cronograma 30 dias, ganhe XP, mantenha sequência, registre água e peso. Timer Pro integrado e modo treino ativo.">
     <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
+    <link rel="icon" href="assets/img/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -50,10 +52,10 @@
 
             <!-- Seletor Semanas Premium -->
             <div class="week-selector">
-                <button class="btn-outline week-btn active" onclick="filterWeek(1)">Semana 1 <span style="opacity:0.6">• Adaptação</span></button>
-                <button class="btn-outline week-btn" onclick="filterWeek(2)">Semana 2 <span style="opacity:0.6">• Push/Pull</span></button>
-                <button class="btn-outline week-btn" onclick="filterWeek(3)">Semana 3 <span style="opacity:0.6">• Intensidade</span></button>
-                <button class="btn-outline week-btn" onclick="filterWeek(4)">Semana 4 <span style="opacity:0.6">• Skills</span></button>
+                <button type="button" class="btn-outline week-btn active" aria-pressed="true" onclick="filterWeek(1)">Semana 1 <span style="opacity:0.6">• Adaptação</span></button>
+                <button type="button" class="btn-outline week-btn" aria-pressed="false" onclick="filterWeek(2)">Semana 2 <span style="opacity:0.6">• Push/Pull</span></button>
+                <button type="button" class="btn-outline week-btn" aria-pressed="false" onclick="filterWeek(3)">Semana 3 <span style="opacity:0.6">• Intensidade</span></button>
+                <button type="button" class="btn-outline week-btn" aria-pressed="false" onclick="filterWeek(4)">Semana 4 <span style="opacity:0.6">• Skills</span></button>
             </div>
 
             <div class="disclaimer">

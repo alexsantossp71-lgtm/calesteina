@@ -41,26 +41,110 @@ const programData = {
 };
 
 // ==================================================
+// Utilidades compartilhadas
+// ==================================================
+function localDateKey(date = new Date()) {
+    const d = date instanceof Date ? date : new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function escapeHtml(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+}
+
+function readStoredArray(key) {
+    try {
+        const raw = localStorage.getItem(key);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+}
+
+function readStoredObject(key) {
+    try {
+        const raw = localStorage.getItem(key);
+        const parsed = raw ? JSON.parse(raw) : {};
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch (e) { return {}; }
+}
+
+function readStoredValue(key) {
+    try { return localStorage.getItem(key) } catch (e) { return null }
+}
+
+const MAX_BACKUP_ITEMS = 5000;
+
+// ==================================================
 // LocalStorage Tracker Manager (compat)
 // ==================================================
 const CalisteniaTracker = {
     STORAGE_KEY: 'calistenia_pro_completed_days',
-    getCompletedDays() { try { const d=localStorage.getItem(this.STORAGE_KEY); return d?JSON.parse(d):[] } catch(e){ return [] }},
+    DATES_KEY: 'calistenia_pro_completed_dates',
+    getCompletedDays() {
+        return readStoredArray(this.STORAGE_KEY)
+            .filter((n) => Number.isInteger(n) && n >= 1 && n <= 30)
+            .filter((n, i, arr) => arr.indexOf(n) === i)
+            .sort((a, b) => a - b);
+    },
+    getCompletionDates() {
+        const raw = readStoredObject(this.DATES_KEY);
+        const out = {};
+        Object.keys(raw).forEach((day) => {
+            const n = Number(day);
+            if (Number.isInteger(n) && n >= 1 && n <= 30 && /^\d{4}-\d{2}-\d{2}$/.test(String(raw[day]))) out[n] = String(raw[day]);
+        });
+        return out;
+    },
     isDayCompleted(n){ return this.getCompletedDays().includes(n) },
+    // Fonte única de XP: o dia concluído vale 100 XP e nada mais. Reexecutar um dia já
+    // concluído não gera XP extra (idempotente).
     setDayCompleted(n, isCompleted=true){
-        let days=this.getCompletedDays(); const idx=days.indexOf(n);
-        if(isCompleted){ if(idx===-1) days.push(n)} else { if(idx>-1) days.splice(idx,1)}
+        if(!Number.isInteger(n) || n<1 || n>30) return false;
+        const days=this.getCompletedDays(); const alreadyDone=days.includes(n);
+        if(isCompleted === alreadyDone) return false;
+        if(isCompleted){ days.push(n) } else { days.splice(days.indexOf(n),1) }
+        days.sort((a,b)=>a-b);
         try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(days)) }catch(e){}
-        try{ XPSystem.addXP(isCompleted?100:-100); Achievements.checkAll(); WaterTracker.onDayInteraction(); }catch(e){}
+        const dates=this.getCompletionDates();
+        if(isCompleted){ dates[n]=localDateKey() } else { delete dates[n] }
+        try{ localStorage.setItem(this.DATES_KEY, JSON.stringify(dates)) }catch(e){}
+        try{ Achievements.checkAll(); }catch(e){}
+        return true;
     },
     toggleDayCompleted(n){ const isDone=this.isDayCompleted(n); this.setDayCompleted(n,!isDone); return !isDone},
-    resetProgress(){ try{ localStorage.removeItem(this.STORAGE_KEY); localStorage.removeItem('calistenia_pro_journal'); localStorage.removeItem('calistenia_pro_xp'); localStorage.removeItem('calistenia_pro_weight'); localStorage.removeItem('calistenia_pro_water'); localStorage.removeItem('calistenia_pro_favorites'); }catch(e){}},
+    resetProgress(){
+        // Lista única de chaves: reset apaga tudo o que o app grava (exceto o tema).
+        // xp_bonus não é mais escrito, mas continua aqui para limpar dados legados.
+        try{
+            [this.STORAGE_KEY, this.DATES_KEY, 'calistenia_pro_journal', 'calistenia_pro_xp_bonus',
+             'calistenia_pro_weight', 'calistenia_pro_water', 'calistenia_pro_favorites',
+             'calistenia_pro_custom_routines', 'calistenia_pro_ach_unlocked', 'calistenia_pro_used_calc',
+             'calistenia_pro_notify'].forEach((k)=> localStorage.removeItem(k));
+        }catch(e){}
+    },
+    // Sequência real: dias de calendário consecutivos com conclusão registrada.
     getStreak(){
-        const days=this.getCompletedDays().sort((a,b)=>a-b); if(!days.length) return 0;
+        const completed=this.getCompletedDays(); const dates=this.getCompletionDates();
+        if(!completed.length) return 0;
+        const markedDates=new Set(completed.map((day)=> dates[day]).filter(Boolean));
+        const daysWithDate=completed.filter((day)=> !!dates[day]).length;
+        // Dados antigos ou parciais, sem data para todos os dias: mantém o cálculo antigo.
+        if(daysWithDate < completed.length) return this.getLegacyStreak();
+        const cursor=new Date(); cursor.setHours(12,0,0,0);
+        // Se o dia ainda não foi marcado hoje, a sequência de ontem continua valendo.
+        if(!markedDates.has(localDateKey(cursor))) cursor.setDate(cursor.getDate()-1);
+        let streak=0;
+        while(markedDates.has(localDateKey(cursor))){ streak++; cursor.setDate(cursor.getDate()-1) }
+        return streak;
+    },
+    // Compatibilidade: dados antigos não têm data de conclusão registrada.
+    getLegacyStreak(){
+        const days=this.getCompletedDays(); if(!days.length) return 0;
         let streak=0,last=0; for(let d of days){ if(last===0||d===last+1){ streak++; last=d } else { streak=1; last=d } } return streak;
     },
-    getTotalXP(){ return this.getCompletedDays().length * 100 },
-    getLevel(){ const xp=this.getTotalXP(); return Math.floor(xp/500)+1 }
+    getTotalXP(){ return this.getCompletedDays().length * 100 }
 };
 
 // ==================================================
@@ -68,9 +152,13 @@ const CalisteniaTracker = {
 // ==================================================
 const CalisteniaJournal = {
     STORAGE_KEY: 'calistenia_pro_journal',
-    getJournal(){ try{ const d=localStorage.getItem(this.STORAGE_KEY); return d?JSON.parse(d):{} }catch(e){ return {}}},
-    getNote(n){ return this.getJournal()[n]||'' },
-    saveNote(n, t){ const j=this.getJournal(); j[n]=t; try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(j))}catch(e){}}
+    getJournal(){ return readStoredObject(this.STORAGE_KEY) },
+    getNote(n){ const v=this.getJournal()[n]; return typeof v==='string'?v:'' },
+    saveNote(n, t){
+        if(!Number.isInteger(n) || n<1 || n>30) return;
+        const j=this.getJournal(); j[n]=String(t).slice(0,1000);
+        try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(j))}catch(e){}
+    }
 };
 
 // ==================================================
@@ -78,7 +166,7 @@ const CalisteniaJournal = {
 // ==================================================
 const CustomRoutines = {
     STORAGE_KEY: 'calistenia_pro_custom_routines',
-    getRoutines(){ try{ const d=localStorage.getItem(this.STORAGE_KEY); return d?JSON.parse(d):[] }catch(e){ return []}},
+    getRoutines(){ return readStoredArray(this.STORAGE_KEY).filter((r)=> r && typeof r==='object' && typeof r.name==='string' && Array.isArray(r.exercises)) },
     saveRoutine(name, exercises){ const list=this.getRoutines(); list.push({ name, exercises, createdAt: new Date().toISOString(), duration: exercises.length*4 }); try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list))}catch(e){}},
     deleteRoutine(idx){ const list=this.getRoutines(); if(idx>=0&&idx<list.length){ list.splice(idx,1); try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list))}catch(e){}}}
 };
@@ -88,20 +176,21 @@ window.CustomRoutines = CustomRoutines;
 // NOVOS SISTEMAS PREMIUM
 // ==================================================
 
-// XP & Levels
+// XP & Levels (derivado dos dias concluídos: sem estado paralelo)
 const XPSystem = {
-    STORAGE_KEY: 'calistenia_pro_xp_bonus',
-    getBonus(){ try{ return parseInt(localStorage.getItem(this.STORAGE_KEY)||'0',10)}catch(e){return 0}},
-    addXP(v){ try{ const cur=this.getBonus(); localStorage.setItem(this.STORAGE_KEY, String(cur+v))}catch(e){}},
-    getTotalXP(){ return CalisteniaTracker.getTotalXP() + this.getBonus() },
+    getTotalXP(){ return CalisteniaTracker.getTotalXP() },
     getLevel(){ return Math.floor(this.getTotalXP()/500)+1 },
-    getXPForNext(){ const total=this.getTotalXP(); const curLevel=this.getLevel(); const nextThreshold=curLevel*500; return { current: total - (curLevel-1)*500, needed: 500, total, nextThreshold, progress: ((total - (curLevel-1)*500)/500)*100 } }
+    getXPForNext(){
+        const total=this.getTotalXP(); const level=this.getLevel(); const base=(level-1)*500;
+        const current=Math.max(0, total-base);
+        return { current, needed:500, total, nextThreshold: base+500, progress: Math.min(100, (current/500)*100) };
+    }
 };
 
 // Favorites
 const FavoritesManager = {
     STORAGE_KEY: 'calistenia_pro_favorites',
-    getAll(){ try{ const d=localStorage.getItem(this.STORAGE_KEY); return d?JSON.parse(d):[] }catch(e){return []}},
+    getAll(){ return readStoredArray(this.STORAGE_KEY).filter((name)=> typeof name==='string') },
     isFav(name){ return this.getAll().includes(name) },
     toggle(name){ let list=this.getAll(); const idx=list.indexOf(name); let nowFav=false; if(idx>-1){ list.splice(idx,1)} else { list.push(name); nowFav=true } try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list))}catch(e){} return nowFav },
     count(){ return this.getAll().length }
@@ -110,25 +199,42 @@ const FavoritesManager = {
 // Weight Tracker
 const WeightTracker = {
     STORAGE_KEY: 'calistenia_pro_weight',
-    getHistory(){ try{ const d=localStorage.getItem(this.STORAGE_KEY); return d?JSON.parse(d):[] }catch(e){return []}},
-    addEntry(weight){ const hist=this.getHistory(); hist.push({ date: new Date().toISOString().slice(0,10), weight: parseFloat(weight), ts: Date.now() }); // keep last 60
-        if(hist.length>60) hist.shift();
-        try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(hist))}catch(e){} Achievements.checkAll();
+    getHistory(){ return readStoredArray(this.STORAGE_KEY).filter((e)=> e && Number.isFinite(e.weight)) },
+    addEntry(weight){
+        const value=parseFloat(weight);
+        if(!Number.isFinite(value) || value<20 || value>400) return false;
+        const hist=this.getHistory();
+        hist.push({ date: localDateKey(), weight: Math.round(value*10)/10, ts: Date.now() }); // keep last 60
+        if(hist.length>60) hist.splice(0, hist.length-60);
+        try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(hist))}catch(e){}
+        try{ Achievements.checkAll(); }catch(e){}
+        return true;
     },
-    getLatest(){ const h=this.getHistory(); return h.length?h[h.length-1].weight:null },
-    getChartData(){ return this.getHistory().map(e=>({x:e.date.slice(5), y:e.weight})) }
+    getLatest(){ const h=this.getHistory(); return h.length?h[h.length-1].weight:null }
 };
 
 // Water Tracker
 const WaterTracker = {
     STORAGE_KEY: 'calistenia_pro_water',
-    getTodayKey(){ return new Date().toISOString().slice(0,10) },
-    getToday(){ try{ const d=localStorage.getItem(this.STORAGE_KEY); const obj=d?JSON.parse(d):{}; return obj[this.getTodayKey()]||0 }catch(e){return 0}},
-    setToday(n){ try{ const d=localStorage.getItem(this.STORAGE_KEY); const obj=d?JSON.parse(d):{}; obj[this.getTodayKey()]=n; localStorage.setItem(this.STORAGE_KEY, JSON.stringify(obj)) }catch(e){}},
-    addGlass(){ let cur=this.getToday(); if(cur<8){ cur++; this.setToday(cur); Achievements.checkAll(); return cur } return cur },
-    removeGlass(){ let cur=this.getToday(); if(cur>0){ cur--; this.setToday(cur)} return cur },
-    onDayInteraction(){},
-    getWeekTotal(){ try{ const d=localStorage.getItem(this.STORAGE_KEY); const obj=d?JSON.parse(d):{}; let total=0; for(let i=0;i<7;i++){ const date=new Date(); date.setDate(date.getDate()-i); const k=date.toISOString().slice(0,10); total+= (obj[k]||0)} return total }catch(e){return 0}}
+    // Chave no fuso local (UTC faria o dia virar às 21h no Brasil).
+    getTodayKey(){ return localDateKey() },
+    getToday(){
+        const obj=readStoredObject(this.STORAGE_KEY); const v=obj[this.getTodayKey()];
+        return Number.isInteger(v) && v>=0 && v<=8 ? v : 0;
+    },
+    setToday(n){
+        const value=Math.max(0, Math.min(8, parseInt(n,10)||0));
+        const obj=readStoredObject(this.STORAGE_KEY);
+        if(value===0) delete obj[this.getTodayKey()]; else obj[this.getTodayKey()]=value;
+        try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify(obj)) }catch(e){}
+    },
+    addGlass(){ const cur=this.getToday(); if(cur<8){ this.setToday(cur+1); Achievements.checkAll(); return cur+1 } return cur },
+    removeGlass(){ const cur=this.getToday(); if(cur>0){ this.setToday(cur-1); return cur-1 } return cur },
+    getWeekTotal(){
+        const obj=readStoredObject(this.STORAGE_KEY); let total=0;
+        for(let i=0;i<7;i++){ const date=new Date(); date.setDate(date.getDate()-i); const v=obj[localDateKey(date)]; if(Number.isInteger(v)&&v>=0&&v<=8) total+=v }
+        return total;
+    }
 };
 
 // Achievements System
@@ -148,7 +254,7 @@ const Achievements = {
         { id:'custom', icon:'🛠️', title:'Criador de Rotinas', desc:'Crie 1 rotina personalizada', check:()=> CustomRoutines.getRoutines().length>=1 },
     ],
     STORAGE_KEY_UNLOCKED: 'calistenia_pro_ach_unlocked',
-    getUnlocked(){ try{ const d=localStorage.getItem(this.STORAGE_KEY_UNLOCKED); return d?JSON.parse(d):[] }catch(e){return []}},
+    getUnlocked(){ return readStoredArray(this.STORAGE_KEY_UNLOCKED).filter((id)=> typeof id==='string') },
     isUnlocked(id){ return this.getUnlocked().includes(id) },
     checkAll(){
         const unlocked=this.getUnlocked(); let newOnes=[];
@@ -212,18 +318,77 @@ function showToast(message, type='success'){
     if(!container){
         container=document.createElement('div');
         container.id='toast-container';
+        container.setAttribute('role','status');
+        container.setAttribute('aria-live','polite');
         document.body.appendChild(container);
     }
     const toast=document.createElement('div');
     toast.className=`toast toast-${type}`;
     const icons={success:'✓', info:'ℹ', warning:'⚠', error:'✕'};
-    toast.innerHTML=`<span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.2);display:grid;place-items:center;font-weight:800;flex-shrink:0">${icons[type]||'✓'}</span><span style="flex:1;line-height:1.3">${message}</span><button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.18);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;display:grid;place-items:center">✕</button>`;
+    const icon=document.createElement('span');
+    icon.style.cssText='width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.2);display:grid;place-items:center;font-weight:800;flex-shrink:0';
+    icon.textContent=icons[type]||'✓';
+    const text=document.createElement('span');
+    text.style.cssText='flex:1;line-height:1.3';
+    text.textContent=String(message); // textContent evita HTML/XSS em mensagens
+    const close=document.createElement('button');
+    close.type='button';
+    close.setAttribute('aria-label','Fechar aviso');
+    close.style.cssText='background:rgba(255,255,255,0.18);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;display:grid;place-items:center';
+    close.textContent='✕';
+    close.addEventListener('click', ()=> toast.remove());
+    toast.append(icon, text, close);
     container.appendChild(toast);
     setTimeout(()=>{
         toast.style.opacity='0'; toast.style.transform='translateX(10px) scale(0.98)'; toast.style.transition='all 0.3s ease';
         setTimeout(()=> toast.remove(), 300);
     }, 3800);
 }
+
+// Acessibilidade dos modais: foco preso, Esc para fechar, foco devolvido ao abrir/fechar.
+const ModalA11y = {
+    _closeHandlers: new WeakMap(),
+    _lastFocused: null,
+    open(overlay, onClose){
+        if(!overlay) return;
+        if(typeof onClose==='function') this._closeHandlers.set(overlay, onClose);
+        overlay.setAttribute('role','dialog');
+        overlay.setAttribute('aria-modal','true');
+        if(!overlay.getAttribute('aria-label') && !overlay.getAttribute('aria-labelledby')) overlay.setAttribute('aria-label','Janela de diálogo');
+        this._lastFocused=document.activeElement;
+        overlay.style.display='flex';
+        if(!overlay.dataset.a11yBound){
+            overlay.dataset.a11yBound='1';
+            overlay.addEventListener('keydown', (e)=> this._handleKeydown(e, overlay));
+        }
+        const items=this._focusable(overlay);
+        if(items.length) items[0].focus(); else { overlay.setAttribute('tabindex','-1'); overlay.focus(); }
+    },
+    close(overlay){
+        if(!overlay) return;
+        overlay.style.display='none';
+        if(this._lastFocused && typeof this._lastFocused.focus==='function') this._lastFocused.focus();
+        this._lastFocused=null;
+    },
+    _focusable(overlay){
+        return [...overlay.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+            .filter((el)=> el.offsetParent!==null);
+    },
+    _handleKeydown(e, overlay){
+        if(e.key==='Escape'){
+            e.preventDefault();
+            const fn=this._closeHandlers.get(overlay);
+            if(fn) fn();
+            return;
+        }
+        if(e.key!=='Tab') return;
+        const items=this._focusable(overlay); if(!items.length) return;
+        const first=items[0], last=items[items.length-1];
+        if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    }
+};
+window.ModalA11y=ModalA11y;
 
 // ==================================================
 // WORKOUT PLAYER (compat + wake lock + vibration)
@@ -232,7 +397,7 @@ const WorkoutPlayer = {
     overlay:null, currentWorkoutTitle:'', currentExercises:[], currentIndex:0, restInterval:null, dayNum:null,
     init(){
         if(document.getElementById('workoutPlayerOverlay')) return;
-        const div=document.createElement('div'); div.id='workoutPlayerOverlay'; div.className='modal-overlay'; div.style.display='none';
+        const div=document.createElement('div'); div.id='workoutPlayerOverlay'; div.className='modal-overlay'; div.style.display='none'; div.setAttribute('aria-labelledby','wpTitle');
         div.innerHTML=`
             <div class="modal-content" style="max-width:660px;text-align:center;position:relative;">
                 <button id="wpCloseBtn" class="btn-outline btn-sm" style="position:absolute;top:14px;right:14px;">✕</button>
@@ -271,7 +436,9 @@ const WorkoutPlayer = {
     },
     start(title, exercises, dayNum=null){
         this.init(); this.currentWorkoutTitle=title; this.currentExercises=exercises; this.currentIndex=0; this.dayNum=dayNum;
-        document.getElementById('wpTitle').textContent=title; this.overlay.style.display='flex'; this.renderStep();
+        document.getElementById('wpTitle').textContent=title;
+        ModalA11y.open(this.overlay, ()=> this.close());
+        this.renderStep();
         try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen'); }catch(e){}
     },
     renderStep(){
@@ -305,7 +472,6 @@ const WorkoutPlayer = {
         document.getElementById('wpPrevBtn').style.display = this.currentIndex===0 ? 'none':'inline-flex';
         document.getElementById('wpNextBtn').textContent = this.currentIndex===total-1 ? 'Concluir Treino! 🎉' : 'Próximo / Descanso →';
         document.getElementById('wpNextBtn').style.display='inline-flex';
-        document.getElementById('wpPrevBtn').style.display = this.currentIndex===0?'none':'inline-flex';
     },
     next(){
         if(this.currentIndex < this.currentExercises.length -1){
@@ -354,12 +520,13 @@ const WorkoutPlayer = {
         document.getElementById('wpDashBtn')?.addEventListener('click', ()=>{ this.close(); window.location.href='dashboard.html'; });
         try{ confettiBurst(); }catch(e){}
     },
-    close(){ this.stopRest(); if(this.overlay) this.overlay.style.display='none'; try{ if(document.exitFullscreen) {} }catch(e){} }
+    close(){ this.stopRest(); ModalA11y.close(this.overlay); }
 };
 window.WorkoutPlayer = WorkoutPlayer;
 
 // tiny confetti
 function confettiBurst(){
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const c=document.createElement('canvas'); c.style.position='fixed'; c.style.inset='0'; c.style.pointerEvents='none'; c.style.zIndex='10001'; c.width=innerWidth; c.height=innerHeight; document.body.appendChild(c); const ctx=c.getContext('2d'); let parts=[]; for(let i=0;i<80;i++){ parts.push({x:Math.random()*c.width, y:Math.random()*c.height - c.height, r:Math.random()*6+4, c:`hsl(${200+Math.random()*40},90%,60%)`, vx:(Math.random()-0.5)*6, vy:Math.random()*4+3, rot:Math.random()*360}) } let f=0; function anim(){ ctx.clearRect(0,0,c.width,c.height); parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.rot+=4; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r); ctx.restore(); }); f++; if(f<140) requestAnimationFrame(anim); else c.remove(); } anim();
 }
 
@@ -370,7 +537,7 @@ const ShareCardModal = {
     overlay:null,
     init(){
         if(document.getElementById('shareCardOverlay')) return;
-        const div=document.createElement('div'); div.id='shareCardOverlay'; div.className='modal-overlay'; div.style.display='none';
+        const div=document.createElement('div'); div.id='shareCardOverlay'; div.className='modal-overlay'; div.style.display='none'; div.setAttribute('aria-label','Cartão de Conquista');
         div.innerHTML=`
             <div class="modal-content" style="max-width:520px;text-align:center;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
@@ -381,10 +548,10 @@ const ShareCardModal = {
                 <button id="shareNativeBtn" class="btn-outline" style="width:100%;margin-top:0.6rem;display:none">📤 Compartilhar</button>
             </div>`;
         document.body.appendChild(div); this.overlay=div;
-        document.getElementById('closeShareBtn').addEventListener('click', ()=> this.overlay.style.display='none');
-        div.addEventListener('click', (e)=>{ if(e.target===div) div.style.display='none' });
+        document.getElementById('closeShareBtn').addEventListener('click', ()=> ModalA11y.close(this.overlay));
+        div.addEventListener('click', (e)=>{ if(e.target===div) ModalA11y.close(this.overlay) });
     },
-    open(){ this.init(); this.overlay.style.display='flex'; this.drawCanvas(); },
+    open(){ this.init(); ModalA11y.open(this.overlay, ()=> ModalA11y.close(this.overlay)); this.drawCanvas(); },
     drawCanvas(){
         const canvas=document.getElementById('shareCanvas'); if(!canvas) return; const ctx=canvas.getContext('2d');
         const daysDone=CalisteniaTracker.getCompletedDays().length; const streak=CalisteniaTracker.getStreak(); const level=XPSystem.getLevel(); const xp=XPSystem.getTotalXP();
@@ -436,7 +603,7 @@ const TimerPro = {
     overlay:null, mode:'tabata', interval:null, remaining:0, total:0, round:1, isRunning:false,
     init(){
         if(document.getElementById('timerProOverlay')) return;
-        const div=document.createElement('div'); div.id='timerProOverlay'; div.className='modal-overlay timer-pro-modal'; div.style.display='none';
+        const div=document.createElement('div'); div.id='timerProOverlay'; div.className='modal-overlay timer-pro-modal'; div.style.display='none'; div.setAttribute('aria-label','Timer Pro');
         div.innerHTML=`
             <div class="modal-content">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
@@ -478,8 +645,8 @@ const TimerPro = {
         }));
         this.reset();
     },
-    open(){ this.init(); this.overlay.style.display='flex'; },
-    close(){ this.pause(); this.overlay.style.display='none'; },
+    open(){ this.init(); ModalA11y.open(this.overlay, ()=> this.close()); },
+    close(){ this.pause(); ModalA11y.close(this.overlay); },
     reset(){
         this.pause();
         if(this.mode==='tabata'){ this.round=1; this.remaining=20; this.total=20; this.isWork=true }
@@ -544,41 +711,111 @@ window.TimerPro=TimerPro;
 // Export / Import
 // ==================================================
 const DataManager = {
+    // Valida e sanitiza um backup antes de gravar qualquer coisa no localStorage.
+    validateBackup(raw){
+        if(!raw || typeof raw!=='object' || Array.isArray(raw)) throw new Error('Backup inválido');
+        const out={};
+        const cleanArray=(value, max=MAX_BACKUP_ITEMS)=> Array.isArray(value) ? value.slice(0, max) : undefined;
+        const completed=cleanArray(raw.completed);
+        if(completed){
+            out.completed=completed
+                .filter((n)=> Number.isInteger(n) && n>=1 && n<=30)
+                .filter((n,i,arr)=> arr.indexOf(n)===i);
+        }
+        if(raw.completedDates && typeof raw.completedDates==='object' && !Array.isArray(raw.completedDates)){
+            out.completedDates={};
+            Object.keys(raw.completedDates).slice(0,30).forEach((day)=>{
+                const n=Number(day); const value=String(raw.completedDates[day]);
+                if(Number.isInteger(n) && n>=1 && n<=30 && /^\d{4}-\d{2}-\d{2}$/.test(value)) out.completedDates[n]=value;
+            });
+        }
+        if(raw.journal && typeof raw.journal==='object' && !Array.isArray(raw.journal)){
+            out.journal={};
+            Object.keys(raw.journal).slice(0,30).forEach((day)=>{
+                const n=Number(day);
+                if(Number.isInteger(n) && n>=1 && n<=30 && typeof raw.journal[day]==='string') out.journal[n]=raw.journal[day].slice(0,1000);
+            });
+        }
+        const routines=cleanArray(raw.routines, 100);
+        if(routines){
+            out.routines=routines
+                .filter((r)=> r && typeof r==='object' && typeof r.name==='string' && Array.isArray(r.exercises))
+                .map((r)=>({
+                    name:r.name.slice(0,80),
+                    exercises:r.exercises.slice(0,50)
+                        .filter((e)=> e && typeof e.name==='string')
+                        .map((e)=>({ name:e.name.slice(0,80), reps: typeof e.reps==='string' ? e.reps.slice(0,60) : '3 séries de 10' })),
+                    createdAt: typeof r.createdAt==='string' ? r.createdAt : new Date().toISOString(),
+                    duration: Number.isFinite(r.duration) ? r.duration : 0
+                }));
+        }
+        const weight=cleanArray(raw.weight, 500);
+        if(weight){
+            out.weight=weight
+                .filter((e)=> e && typeof e==='object' && Number.isFinite(e.weight) && e.weight>=20 && e.weight<=400)
+                .map((e)=>({ date: typeof e.date==='string' ? e.date.slice(0,10) : localDateKey(), weight:e.weight, ts: Number.isFinite(e.ts)?e.ts:Date.now() }));
+        }
+        if(raw.water && typeof raw.water==='object' && !Array.isArray(raw.water)){
+            out.water={};
+            Object.keys(raw.water).slice(0,3660).forEach((k)=>{
+                const v=Number(raw.water[k]);
+                if(/^\d{4}-\d{2}-\d{2}$/.test(k) && Number.isInteger(v) && v>=0 && v<=8) out.water[k]=v;
+            });
+        }
+        const favorites=cleanArray(raw.favorites);
+        if(favorites) out.favorites=favorites.filter((f)=> typeof f==='string').map((f)=> f.slice(0,80));
+        const achievements=cleanArray(raw.achievements);
+        if(achievements) out.achievements=achievements.filter((a)=> typeof a==='string').slice(0,50);
+        if(raw.theme==='dark' || raw.theme==='light') out.theme=raw.theme;
+        if(raw.used_calc===true) out.used_calc=true;
+        return out;
+    },
     export(){
         const data={
             completed: CalisteniaTracker.getCompletedDays(),
+            completedDates: CalisteniaTracker.getCompletionDates(),
             journal: CalisteniaJournal.getJournal(),
             routines: CustomRoutines.getRoutines(),
             weight: WeightTracker.getHistory(),
-            water: (()=>{try{return JSON.parse(localStorage.getItem('calistenia_pro_water')||'{}')}catch(e){return {}}})(),
+            water: readStoredObject('calistenia_pro_water'),
             favorites: FavoritesManager.getAll(),
             achievements: Achievements.getUnlocked(),
-            xp_bonus: XPSystem.getBonus(),
-            theme: localStorage.getItem('calistenia_pro_theme'),
+            used_calc: readStoredValue('calistenia_pro_used_calc')==='1',
+            theme: readStoredValue('calistenia_pro_theme'),
             exportedAt: new Date().toISOString()
         };
         const blob=new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
         const url=URL.createObjectURL(blob);
-        const a=document.createElement('a'); a.href=url; a.download=`calistenia-pro-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+        const a=document.createElement('a'); a.href=url; a.download=`calistenia-pro-backup-${localDateKey()}.json`;
+        document.body.appendChild(a); a.click(); a.remove();
+        // Revogar imediatamente pode descartar o blob antes do navegador gravar o arquivo.
+        setTimeout(()=> URL.revokeObjectURL(url), 4000);
         showToast('📦 Backup exportado com sucesso!','success');
     },
     importFile(file){
         const reader=new FileReader();
         reader.onload=(e)=>{
+            let data;
+            try{ data=this.validateBackup(JSON.parse(e.target.result)); }
+            catch(err){ showToast('❌ Arquivo inválido ou corrompido','error'); return; }
             try{
-                const data=JSON.parse(e.target.result);
-                if(data.completed) localStorage.setItem('calistenia_pro_completed_days', JSON.stringify(data.completed));
-                if(data.journal) localStorage.setItem('calistenia_pro_journal', JSON.stringify(data.journal));
-                if(data.routines) localStorage.setItem('calistenia_pro_custom_routines', JSON.stringify(data.routines));
-                if(data.weight) localStorage.setItem('calistenia_pro_weight', JSON.stringify(data.weight));
-                if(data.water) localStorage.setItem('calistenia_pro_water', JSON.stringify(data.water));
-                if(data.favorites) localStorage.setItem('calistenia_pro_favorites', JSON.stringify(data.favorites));
-                if(data.xp_bonus!==undefined) localStorage.setItem('calistenia_pro_xp_bonus', String(data.xp_bonus));
+                const set=(key, value)=>{ if(value!==undefined) localStorage.setItem(key, JSON.stringify(value)); else localStorage.removeItem(key) };
+                set('calistenia_pro_completed_days', data.completed);
+                set('calistenia_pro_completed_dates', data.completedDates);
+                set('calistenia_pro_journal', data.journal);
+                set('calistenia_pro_custom_routines', data.routines);
+                set('calistenia_pro_weight', data.weight);
+                set('calistenia_pro_water', data.water);
+                set('calistenia_pro_favorites', data.favorites);
+                set('calistenia_pro_ach_unlocked', data.achievements);
+                localStorage.removeItem('calistenia_pro_xp_bonus'); // chave legada (XP agora é derivado)
                 if(data.theme) localStorage.setItem('calistenia_pro_theme', data.theme);
+                if(data.used_calc) localStorage.setItem('calistenia_pro_used_calc', '1'); else localStorage.removeItem('calistenia_pro_used_calc');
                 showToast('✅ Dados importados! Recarregando...','success');
                 setTimeout(()=> location.reload(), 1200);
-            }catch(err){ showToast('❌ Arquivo inválido','error')}
+            }catch(err){ showToast('❌ Não foi possível gravar os dados','error'); }
         };
+        reader.onerror=()=> showToast('❌ Falha ao ler o arquivo','error');
         reader.readAsText(file);
     }
 };
@@ -632,8 +869,8 @@ function renderProgressHeader(){
             </div>
         </div>`;
     document.getElementById('resetProgressBtn')?.addEventListener('click', ()=>{
-        if(confirm("Tem certeza que deseja resetar TODO o progresso? Isso apaga dias, diário, pesos e conquistas.")){
-            CalisteniaTracker.resetProgress(); try{ localStorage.removeItem('calistenia_pro_ach_unlocked');}catch(e){} renderProgressHeader(); renderWeek(currentActiveWeek); try{renderDashboardPremium()}catch(e){} showToast("Progresso resetado.","info");
+        if(confirm("Tem certeza que deseja resetar TODO o progresso? Isso apaga dias, diário, pesos, água, rotinas, XP e conquistas.")){
+            CalisteniaTracker.resetProgress(); renderProgressHeader(); renderWeek(currentActiveWeek); try{renderDashboardPremium()}catch(e){} showToast("Progresso resetado.","info");
         }
     });
     document.getElementById('btnOpenShareCard')?.addEventListener('click', ()=> ShareCardModal.open());
@@ -645,7 +882,7 @@ function renderProgressHeader(){
 function renderWeek(weekNum){
     currentActiveWeek=weekNum; window.currentActiveWeek=weekNum;
     const grid=document.getElementById('daysGrid'); if(!grid) return;
-    document.querySelectorAll('.week-btn').forEach((b,i)=>{ b.classList.toggle('active', i===weekNum-1)});
+    document.querySelectorAll('.week-btn').forEach((b,i)=>{ b.classList.toggle('active', i===weekNum-1); b.setAttribute('aria-pressed', String(i===weekNum-1)) });
     grid.innerHTML='';
     const days=programData[weekNum]; if(!days) return;
     days.forEach(day=>{
@@ -656,10 +893,10 @@ function renderWeek(weekNum){
             // add favorite star
             const isFav=FavoritesManager.isFav(ex.name);
             exHtml+=`<li class="exercise-item">
-                <a href="exercise.html?id=${qp}" class="exercise-name" title="Ver detalhes">🎯 ${ex.name}</a>
+                <a href="exercise.html?id=${qp}" class="exercise-name" title="Ver detalhes">🎯 ${escapeHtml(ex.name)}</a>
                 <div style="display:flex;align-items:center;gap:0.4rem">
-                    <button class="fav-btn" data-name="${ex.name.replace(/"/g,'&quot;')}" style="background:${isFav?'#FEF3C7':'var(--color-bg-main)'};border:1px solid ${isFav?'#FDE68A':'var(--color-border)'};width:28px;height:28px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:0.85rem;transition:all 0.2s">${isFav?'★':'☆'}</button>
-                    <span class="exercise-reps">${ex.reps}</span>
+                    <button class="fav-btn" type="button" aria-label="Favoritar ${escapeHtml(ex.name)}" data-name="${escapeHtml(ex.name)}" style="background:${isFav?'#FEF3C7':'var(--color-bg-main)'};border:1px solid ${isFav?'#FDE68A':'var(--color-border)'};width:28px;height:28px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:0.85rem;transition:all 0.2s">${isFav?'★':'☆'}</button>
+                    <span class="exercise-reps">${escapeHtml(ex.reps)}</span>
                 </div>
             </li>`;
         });
@@ -677,7 +914,7 @@ function renderWeek(weekNum){
                 </div>
                 <div style="margin-top:0.9rem;border-top:1px dashed var(--color-border);padding-top:0.7rem">
                     <label style="font-size:0.78rem;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-text-muted);display:block;margin-bottom:0.3rem">📝 Diário & Recorde</label>
-                    <input type="text" class="journal-input form-control" data-day="${day.day}" value="${saved.replace(/"/g,'&quot;')}" placeholder="Ex: 22 flexões limpas! Recorde!" style="font-size:0.85rem;padding:0.5rem 0.7rem;border-radius:10px">
+                    <input type="text" class="journal-input form-control" aria-label="Diário do dia ${day.day}" data-day="${day.day}" value="${escapeHtml(saved)}" placeholder="Ex: 22 flexões limpas! Recorde!" style="font-size:0.85rem;padding:0.5rem 0.7rem;border-radius:10px">
                 </div>
             </div>`;
         const toggleBtn=card.querySelector('.btn-toggle-day');
@@ -762,7 +999,7 @@ function renderDashboardPremium(){
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem"><h3 style="margin:0">⚖️ Peso & Evolução</h3><span style="font-size:0.78rem;font-weight:800;color:var(--color-text-muted)">Últimos 60 dias</span></div>
                 <div class="chart-wrap"><canvas id="weightChart"></canvas></div>
                 <div style="display:flex;gap:0.6rem;margin-top:1rem;align-items:center">
-                    <input type="number" id="weightInput" class="form-control" placeholder="Peso (kg)" step="0.1" style="max-width:130px;padding:0.55rem 0.8rem">
+                    <input type="number" id="weightInput" class="form-control" aria-label="Peso em quilogramas" placeholder="Peso (kg)" step="0.1" style="max-width:130px;padding:0.55rem 0.8rem">
                     <button class="btn-cta btn-sm" id="btnAddWeight">Registrar</button>
                     <span style="font-size:0.82rem;color:var(--color-text-muted);margin-left:auto">${WeightTracker.getHistory().length} registros</span>
                 </div>
@@ -778,15 +1015,16 @@ function renderDashboardPremium(){
     const calGrid=document.getElementById('calendarGrid');
     if(calGrid){
         calGrid.innerHTML='';
-        const todayDay = new Date().getDate() %30 || 1; // approximation, better use completed logic
+        const nextPending=completed.reduce((max, day)=> Math.max(max, day), 0)+1;
         for(let i=1;i<=30;i++){
             const isDone=CalisteniaTracker.isDayCompleted(i);
-            const isToday= i === (Math.max(...CalisteniaTracker.getCompletedDays(),0)+1) && !isDone && i<=30 ? true : false; // next pending is today visual
-            // Actually to make today meaningful, highlight the next uncompleted day as today
-            const div=document.createElement('div'); div.className='calendar-day';
-            if(isDone) div.classList.add('completed'); else if(isToday) div.classList.add('today'); else if(i>completed.length+5) div.classList.add('future');
+            const isNext= i===nextPending && i<=30;
+            const div=document.createElement('button'); div.type='button'; div.className='calendar-day';
+            if(isDone) div.classList.add('completed'); else if(isNext) div.classList.add('today'); else if(i>completed.length+5) div.classList.add('future');
             div.innerHTML=`<span>${i}</span>${isDone?'<span class="day-check">✓</span>':''}`;
             div.title=`Dia ${i} - ${isDone?'Concluído':'Pendente'}`;
+            div.setAttribute('aria-label',`Dia ${i} - ${isDone?'concluído':'pendente'}`);
+            div.setAttribute('aria-pressed', String(isDone));
             div.addEventListener('click', ()=>{
                 if(div.classList.contains('future')) return;
                 const now=CalisteniaTracker.toggleDayCompleted(i);
@@ -802,12 +1040,14 @@ function renderDashboardPremium(){
         waterGrid.innerHTML='';
         const cur=WaterTracker.getToday();
         for(let i=0;i<8;i++){
-            const g=document.createElement('div'); g.className='water-glass'+(i<cur?' filled':''); g.textContent= i<cur ? '💧' : '🥤';
+            const g=document.createElement('button'); g.type='button';
+            g.className='water-glass'+(i<cur?' filled':''); g.textContent= i<cur ? '💧' : '🥤';
             g.title=`Copo ${i+1}`;
+            g.setAttribute('aria-label',`Registrar ${i+1} ${i===0?'copo':'copos'} de água`);
+            g.setAttribute('aria-pressed', String(i<cur));
             g.addEventListener('click', ()=>{
-                const now= i<cur ? WaterTracker.removeGlass() : WaterTracker.addGlass();
-                // simplify: clicking sets to i+1
-                WaterTracker.setToday(i+1 > cur ? i+1 : i);
+                // Clicar no último copo cheio desmarca; nos demais define o total.
+                WaterTracker.setToday(i+1===cur ? i : i+1);
                 renderDashboardPremium();
             });
             waterGrid.appendChild(g);
@@ -836,9 +1076,10 @@ function renderDashboardPremium(){
     }
     // weight input
     document.getElementById('btnAddWeight')?.addEventListener('click', ()=>{
-        const v=document.getElementById('weightInput').value;
-        if(!v || parseFloat(v)<30){ showToast('Peso inválido','error'); return }
-        WeightTracker.addEntry(v); renderDashboardPremium(); showToast(`⚖️ ${v}kg registrado!`,'success'); document.getElementById('weightInput').value='';
+        const input=document.getElementById('weightInput');
+        const value=parseFloat(input.value);
+        if(!Number.isFinite(value) || value<20 || value>400){ showToast('Peso inválido (20-400 kg)','error'); return }
+        WeightTracker.addEntry(value); renderDashboardPremium(); showToast(`⚖️ ${value}kg registrado!`,'success'); input.value='';
     });
     // responsive stack helper
     if(window.innerWidth<1024){
@@ -892,10 +1133,14 @@ function initGlobalEnhancements(){
         const nav=document.querySelector('.navbar'); if(nav) nav.classList.toggle('scrolled', window.scrollY>10);
     });
     // reveal
-    const observer=new IntersectionObserver((entries)=> entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('active') }), {threshold:0.12});
-    document.querySelectorAll('.reveal').forEach(el=> observer.observe(el));
-    // lazy add reveal to sections if missing
-    document.querySelectorAll('.fb-card, .step-card, .test-card, .day-card, .dashboard-card').forEach(el=>{ if(!el.classList.contains('reveal')){ el.classList.add('reveal'); observer.observe(el)} });
+    if('IntersectionObserver' in window){
+        const observer=new IntersectionObserver((entries)=> entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('active') }), {threshold:0.12});
+        document.querySelectorAll('.reveal').forEach(el=> observer.observe(el));
+        // lazy add reveal to sections if missing
+        document.querySelectorAll('.fb-card, .step-card, .test-card, .day-card, .dashboard-card').forEach(el=>{ if(!el.classList.contains('reveal')){ el.classList.add('reveal'); observer.observe(el)} });
+    } else {
+        document.querySelectorAll('.reveal').forEach(el=> el.classList.add('active'));
+    }
 }
 
 if('serviceWorker' in navigator){
@@ -920,20 +1165,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
             const results=[]; if(window.exerciseDB){ Object.values(window.exerciseDB).forEach(ex=>{ if(ex.name.toLowerCase().includes(term) || ex.categoryName.toLowerCase().includes(term) || ex.muscles.join(' ').toLowerCase().includes(term)) results.push(ex)} )}
             const box=document.getElementById('globalSearchResults'); if(!box) return;
             if(results.length===0){ box.style.display='none'; return }
-            box.style.display='block'; box.innerHTML=results.slice(0,5).map(ex=>`<a href="exercise.html?id=${encodeURIComponent(ex.name)}" style="display:flex;justify-content:space-between;align-items:center;padding:0.7rem 1rem;border-bottom:1px solid var(--color-border);color:var(--color-text-dark);font-weight:600;font-size:0.9rem"><span>${ex.name}</span><span style="font-size:0.75rem;color:var(--color-text-muted)">${ex.categoryName}</span></a>`).join('');
+            box.style.display='block'; box.innerHTML=results.slice(0,5).map(ex=>`<a href="exercise.html?id=${encodeURIComponent(ex.name)}" style="display:flex;justify-content:space-between;align-items:center;padding:0.7rem 1rem;border-bottom:1px solid var(--color-border);color:var(--color-text-dark);font-weight:600;font-size:0.9rem"><span>${escapeHtml(ex.name)}</span><span style="font-size:0.75rem;color:var(--color-text-muted)">${escapeHtml(ex.categoryName)}</span></a>`).join('');
         });
         document.addEventListener('click', (e)=>{ if(!e.target.closest('#globalSearch') && !e.target.closest('#globalSearchResults')){ const r=document.getElementById('globalSearchResults'); if(r) r.style.display='none'}});
     }
-    // onboarding first visit
+    // Boas-vindas na primeira visita (sem confirm bloqueante)
     try{
         if(!localStorage.getItem('calistenia_pro_onboarded')){
-            setTimeout(()=>{
-                if(confirm('👋 Bem-vindo ao Calistenia Pro 2.0! Quer fazer um tour rápido de 20s pelas novidades?')){
-                    showToast('🎯 Explore: Dashboard, Timer Pro, Hidratação e Conquistas!','info');
-                    setTimeout(()=> showToast('📊 Seu progresso agora vale XP e desbloqueia medalhas!','success'), 1800);
-                }
-                localStorage.setItem('calistenia_pro_onboarded','1');
-            }, 900);
+            localStorage.setItem('calistenia_pro_onboarded','1');
+            setTimeout(()=> showToast('🎯 Explore: Dashboard, Timer Pro, Hidratação e Conquistas!','info'), 900);
         }
     }catch(e){}
     // timer pro trigger

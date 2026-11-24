@@ -4,6 +4,9 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora de Macros, TDEE & IMC — Calistenia Pro</title>
 <meta name="description" content="Calcule TDEE, macros, hidratação e IMC. Receba plano alimentar sugerido para hipertrofia ou definição na calistenia.">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
+<link rel="icon" href="assets/img/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -58,8 +61,11 @@
 <div class="calc-card">
 <h2 style="font-size:1.5rem;margin-bottom:1.2rem">1. Seus Dados Corporais</h2>
 <div class="form-group">
-<label>Sexo Biológico</label>
-<div class="radio-group" id="sexGroup"><div class="radio-btn active" data-value="male">👨 Masculino</div><div class="radio-btn" data-value="female">👩 Feminino</div></div>
+<label id="sexLabel">Sexo Biológico</label>
+<div class="radio-group" id="sexGroup" role="radiogroup" aria-labelledby="sexLabel">
+<button type="button" class="radio-btn active" role="radio" aria-checked="true" data-value="male">👨 Masculino</button>
+<button type="button" class="radio-btn" role="radio" aria-checked="false" data-value="female">👩 Feminino</button>
+</div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem">
 <div class="form-group"><label for="calcAge">Idade (anos)</label><input type="number" id="calcAge" class="form-control" value="25" min="12" max="90"></div>
@@ -148,7 +154,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     let selectedSex='male';
     const sexBtns=document.querySelectorAll('#sexGroup .radio-btn');
     sexBtns.forEach(b=> b.addEventListener('click', ()=>{
-        sexBtns.forEach(x=> x.classList.remove('active')); b.classList.add('active');
+        sexBtns.forEach(x=>{ x.classList.remove('active'); x.setAttribute('aria-checked','false'); });
+        b.classList.add('active'); b.setAttribute('aria-checked','true');
         selectedSex=b.dataset.value; calculateNutrition();
     }));
     function calculateNutrition(){
@@ -225,8 +232,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     document.getElementById('btnCalculate').addEventListener('click', calculateNutrition);
     document.querySelectorAll('.form-control').forEach(el=> el.addEventListener('change', calculateNutrition));
     document.getElementById('btnSaveWeight')?.addEventListener('click', ()=>{
-        const w=document.getElementById('calcWeight').value;
-        if(!w || parseFloat(w)<30){ showToast('Peso inválido','error'); return }
+        const w=parseFloat(document.getElementById('calcWeight').value);
+        if(!Number.isFinite(w) || w<20 || w>400){ showToast('Peso inválido (20-400 kg)','error'); return }
         WeightTracker.addEntry(w); showToast(`⚖️ ${w}kg salvo no Dashboard!`,'success'); Achievements.checkAll();
     });
     document.getElementById('calcWeight')?.addEventListener('change', calculateNutrition);

@@ -18,4 +18,7 @@ jobs:
         run: npm test
       - name: Verificar arquivos essenciais
         run: |
-          node -e "const fs = require('fs'); const files = ['index.html','style.css','manifest.json','sw.js','exercises-data.js','script.js']; for (const f of files) { if (!fs.existsSync(f)) { throw new Error('Faltando: ' + f); } } console.log('OK: arquivos essenciais presentes');"
+          node -e "const fs = require('fs'); const files = ['index.html','program.html','dashboard.html','library.html','calculator.html','exercise.html','style.css','script.js','exercises-data.js','manifest.json','sw.js','assets/img/icon-192.png','assets/img/icon-512.png','assets/img/icon-maskable-512.png']; for (const f of files) { if (!fs.existsSync(f)) { throw new Error('Faltando: ' + f); } } console.log('OK: arquivos essenciais presentes');"
+      - name: Validar manifest
+        run: |
+          node -e "const m = JSON.parse(require('fs').readFileSync('manifest.json','utf8')); if (!Array.isArray(m.icons) || m.icons.length < 3) throw new Error('Ícones do manifest incompletos'); if (!m.icons.some(i => i.purpose === 'maskable')) throw new Error('Falta ícone maskable'); console.log('OK: manifest válido');"

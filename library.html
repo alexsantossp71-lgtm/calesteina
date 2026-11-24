@@ -4,6 +4,9 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Biblioteca & Mapa Anatômico — 32 Exercícios Guiados | Calistenia Pro</title>
 <meta name="description" content="Explore 32 exercícios por grupo muscular no mapa interativo, filtre por nível, favorite e crie rotinas personalizadas com timer.">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
+<link rel="icon" href="assets/img/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -63,7 +66,7 @@
 <p style="max-width:680px;margin:0 auto">Clique no músculo no mapa, filtre por categoria ou busque por nome. Favorite ⭐, crie rotinas e execute com <strong>Treino Ativo</strong>.</p>
 <div class="search-container">
 <span class="search-icon">🔍</span>
-<input type="text" id="librarySearch" class="search-input" placeholder="Buscar por nome, músculo ou objetivo (ex: flexão, peitoral, core)...">
+<input type="search" id="librarySearch" class="search-input" aria-label="Buscar exercícios" placeholder="Buscar por nome, músculo ou objetivo (ex: flexão, peitoral, core)...">
 </div>
 <div style="margin-top:1rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap">
 <button id="openCustomBuilderBtn" class="btn-cta btn-sm">⚙️ Criar Rotina Personalizada</button>
@@ -144,7 +147,7 @@
 </div>
 </section>
 
-<div id="customBuilderModal" class="modal-overlay" style="display:none">
+<div id="customBuilderModal" class="modal-overlay" style="display:none" aria-label="Criar rotina personalizada">
 <div class="modal-content">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem"><h2 style="margin:0">⚙️ Criar Rotina</h2><button id="closeBuilderBtn" class="btn-outline btn-sm">✕</button></div>
 <div class="form-group"><label for="customRoutineName">Nome da Rotina</label><input type="text" id="customRoutineName" class="form-control" placeholder="Ex: Treino de Parque 20min"></div>
@@ -222,21 +225,21 @@ function createCard(ex, key){
     const estCal=(caloriesMap[ex.category]||6)*4;
     const estTime='8-12 min';
     card.innerHTML=`
-        <button class="fav-star ${isFav?'faved':''}" title="Favoritar" data-name="${ex.name.replace(/"/g,'&quot;')}">${isFav?'★':'☆'}</button>
+        <button class="fav-star ${isFav?'faved':''}" type="button" title="Favoritar" aria-label="Favoritar ${escapeHtml(ex.name)}" aria-pressed="${isFav}" data-name="${escapeHtml(ex.name)}">${isFav?'★':'☆'}</button>
         <div>
             <div class="ex-card-tags">
-                <span class="label success" style="margin:0;font-size:0.7rem">${ex.categoryName}</span>
-                <span class="label" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;margin:0;font-size:0.7rem">${ex.levelName}</span>
+                <span class="label success" style="margin:0;font-size:0.7rem">${escapeHtml(ex.categoryName)}</span>
+                <span class="label" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;margin:0;font-size:0.7rem">${escapeHtml(ex.levelName)}</span>
             </div>
-            <h3 class="ex-card-title">${ex.name}</h3>
-            <p class="ex-card-purpose">${ex.purpose}</p>
+            <h3 class="ex-card-title">${escapeHtml(ex.name)}</h3>
+            <p class="ex-card-purpose">${escapeHtml(ex.purpose)}</p>
             <div class="ex-card-meta">
-                <span>⏱️ ${estTime}</span><span>🔥 ~${estCal} kcal</span><span>🎯 ${ex.muscles[0]}</span>
+                <span>⏱️ ${estTime}</span><span>🔥 ~${estCal} kcal</span><span>🎯 ${escapeHtml(ex.muscles[0])}</span>
             </div>
         </div>
         <div style="display:flex;gap:0.5rem">
             <a href="exercise.html?id=${encodeURIComponent(ex.name)}" class="btn-cta btn-sm" style="flex:1;justify-content:center">Ver Detalhes →</a>
-            <button class="btn-outline btn-sm start-quick-btn" data-name="${ex.name.replace(/"/g,'&quot;')}" style="padding:0.5rem 0.7rem" title="Treino rápido">▶️</button>
+            <button class="btn-outline btn-sm start-quick-btn" type="button" aria-label="Iniciar ${escapeHtml(ex.name)}" data-name="${escapeHtml(ex.name)}" style="padding:0.5rem 0.7rem" title="Treino rápido">▶️</button>
         </div>
     `;
     card.querySelector('.fav-star').addEventListener('click', ()=>{
@@ -252,6 +255,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const grid=document.getElementById('libraryGrid'); const searchInput=document.getElementById('librarySearch');
     const muscleTag=document.getElementById('selectedMuscleTag'); const clearBtn=document.getElementById('clearMuscleBtn');
     document.querySelectorAll('.muscle-node').forEach(node=>{
+        node.setAttribute('role','button');
+        node.setAttribute('tabindex','0');
+        node.setAttribute('aria-label',`Filtrar por ${node.getAttribute('data-muscle')}`);
+        node.addEventListener('keydown', (e)=>{
+            if(e.key==='Enter' || e.key===' '){ e.preventDefault(); node.dispatchEvent(new Event('click')); }
+        });
         node.addEventListener('click', ()=>{
             const muscle=node.getAttribute('data-muscle');
             if(selectedMuscleFilter===muscle){
@@ -288,19 +297,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
             if(key==='descanso') return; const ex=exerciseDB[key];
             const item=document.createElement('label');
             item.style.display='flex'; item.style.alignItems='center'; item.style.justifyContent='space-between'; item.style.padding='0.6rem 0.4rem'; item.style.borderBottom='1px solid var(--color-border)'; item.style.cursor='pointer'; item.style.gap='0.6rem';
-            item.innerHTML=`<span style="display:flex;align-items:center;gap:0.6rem;font-weight:600;font-size:0.92rem"><input type="checkbox" class="builder-ex-check" value="${ex.name.replace(/"/g,'&quot;')}" style="accent-color:var(--color-cta)"> ${ex.name}</span><span style="font-size:0.75rem;color:var(--color-text-muted);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.2rem 0.5rem;border-radius:999px">${ex.categoryName}</span>`;
+            item.innerHTML=`<span style="display:flex;align-items:center;gap:0.6rem;font-weight:600;font-size:0.92rem"><input type="checkbox" class="builder-ex-check" value="${escapeHtml(ex.name)}" style="accent-color:var(--color-cta)"> ${escapeHtml(ex.name)}</span><span style="font-size:0.75rem;color:var(--color-text-muted);background:var(--color-bg-alt);border:1px solid var(--color-border);padding:0.2rem 0.5rem;border-radius:999px">${escapeHtml(ex.categoryName)}</span>`;
             builderExerciseList.appendChild(item);
         });
     }
-    openBuilderBtn.addEventListener('click', ()=>{ populateBuilderList(); builderModal.style.display='flex'; });
-    closeBuilderBtn.addEventListener('click', ()=> builderModal.style.display='none');
-    builderModal.addEventListener('click', e=>{ if(e.target===builderModal) builderModal.style.display='none'; });
+    const closeBuilder=()=> ModalA11y.close(builderModal);
+    openBuilderBtn.addEventListener('click', ()=>{ populateBuilderList(); ModalA11y.open(builderModal, closeBuilder); });
+    closeBuilderBtn.addEventListener('click', closeBuilder);
+    builderModal.addEventListener('click', e=>{ if(e.target===builderModal) closeBuilder(); });
     saveCustomRoutineBtn.addEventListener('click', ()=>{
         const name=document.getElementById('customRoutineName').value.trim() || 'Minha Rotina Personalizada';
         const checked=document.querySelectorAll('.builder-ex-check:checked');
         if(checked.length===0){ showToast('Selecione pelo menos 1 exercício','warning'); return; }
         const exercises=[...checked].map(c=> ({name:c.value, reps:"3 séries de 10-12"}));
-        CustomRoutines.saveRoutine(name, exercises); showToast(`Rotina "${name}" salva!`,'success'); builderModal.style.display='none'; renderCustomRoutines(); Achievements.checkAll();
+        CustomRoutines.saveRoutine(name, exercises); showToast(`Rotina "${name}" salva!`,'success'); closeBuilder(); renderCustomRoutines(); Achievements.checkAll();
     });
     function renderCustomRoutines(){
         const sec=document.getElementById('customRoutinesSection'); const grid2=document.getElementById('customRoutinesGrid');
@@ -317,9 +327,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
                         <span class="label success" style="background:#ECFDF5;color:#065F46;border-color:#A7F3D0;margin:0">Rotina • ${estTime} min • ~${estTime*8} kcal</span>
                         <button class="btn-outline btn-sm delete-rt-btn" data-idx="${idx}" style="color:#EF4444 !important;border-color:#FECACA;padding:0.25rem 0.6rem;font-size:0.75rem">Excluir</button>
                     </div>
-                    <h3 style="font-size:1.15rem;margin-bottom:0.6rem">${rt.name}</h3>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.6rem">${escapeHtml(rt.name)}</h3>
                     <ul style="list-style:none;padding:0;margin-bottom:1rem;font-size:0.9rem;display:flex;flex-direction:column;gap:0.35rem">
-                        ${rt.exercises.map(e=> `<li style="display:flex;justify-content:space-between;gap:0.6rem"><span>🎯 ${e.name}</span><span style="color:var(--color-cta);font-weight:700;font-size:0.8rem">${e.reps}</span></li>`).join('')}
+                        ${rt.exercises.map(e=> `<li style="display:flex;justify-content:space-between;gap:0.6rem"><span>🎯 ${escapeHtml(e.name)}</span><span style="color:var(--color-cta);font-weight:700;font-size:0.8rem">${escapeHtml(e.reps)}</span></li>`).join('')}
                     </ul>
                 </div>
                 <button class="btn-cta btn-sm start-custom-player-btn" data-idx="${idx}" style="width:100%">▶️ Executar Treino Ativo</button>

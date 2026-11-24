@@ -5,6 +5,8 @@
 <title>Dashboard — Meu Progresso, XP e Conquistas | Calistenia Pro</title>
 <meta name="description" content="Seu centro de comando: progresso 30 dias, XP e níveis, calendário, hidratação, peso e 12 conquistas.">
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2563EB">
+<link rel="icon" href="assets/img/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -108,17 +110,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
     ];
     const qEl=document.getElementById('dailyQuote');
     document.getElementById('newQuoteBtn')?.addEventListener('click', ()=>{ qEl.textContent= quotes[Math.floor(Math.random()*quotes.length)]; });
-    document.getElementById('enableNotifyBtn')?.addEventListener('click', async ()=>{
+    const notifyBtn=document.getElementById('enableNotifyBtn');
+    const notifyOn=()=>{ try{ return localStorage.getItem('calistenia_pro_notify')==='1' && 'Notification' in window && Notification.permission==='granted' }catch(e){ return false } };
+    if(notifyOn() && notifyBtn){ notifyBtn.textContent='🔔 Lembrete ativo'; notifyBtn.disabled=true; }
+    notifyBtn?.addEventListener('click', async ()=>{
         if(!('Notification' in window)){ showToast('Notificações não suportadas','warning'); return }
         const perm=await Notification.requestPermission();
-        if(perm==='granted'){ showToast('🔔 Lembrete ativado! Você receberá incentivo diário','success'); localStorage.setItem('calistenia_pro_notify','1'); }
+        if(perm==='granted'){
+            localStorage.setItem('calistenia_pro_notify','1');
+            if(notifyBtn){ notifyBtn.textContent='🔔 Lembrete ativo'; notifyBtn.disabled=true; }
+            showToast('🔔 Lembrete ativado! Avisamos ao abrir o app se o treino do dia estiver pendente','success');
+        }
         else showToast('Permissão negada','error');
     });
-    // gentle daily reminder toast if not trained today
+    // Lembrete diário: notificação do sistema (se autorizada) ou toast ao abrir o dashboard.
     setTimeout(()=>{
         const completed=CalisteniaTracker.getCompletedDays(); const next=(Math.max(...completed,0)+1);
         if(next<=30 && !CalisteniaTracker.isDayCompleted(next)){
-            showToast(`💪 Lembrete: Dia ${next} te espera. Bora manter a sequência de ${CalisteniaTracker.getStreak()} dias?`,'info');
+            const message=`💪 Dia ${next} te espera. Bora manter a sequência de ${CalisteniaTracker.getStreak()} dias?`;
+            if(notifyOn()){
+                try{ new Notification('Calistenia Pro', { body: message, icon: 'assets/img/icon-192.png', tag: 'calistenia-daily' }); return; }catch(e){}
+            }
+            showToast(message,'info');
         }
     }, 1200);
 });
