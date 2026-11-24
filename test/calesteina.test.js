@@ -98,6 +98,19 @@ describe('Programa 30 dias', () => {
     });
 });
 
+describe('Séries do Treino Ativo', () => {
+    test('interpreta séries e rounds das prescrições', () => {
+        assert.strictEqual(getExerciseSets({ reps: '3 séries de 8-12' }), 3);
+        assert.strictEqual(getExerciseSets({ reps: '5 séries explosivas de 5' }), 5);
+        assert.strictEqual(getExerciseSets({ reps: 'Tabata: 20s on / 10s off (4 rounds)' }), 4);
+    });
+
+    test('atividades contínuas viram uma única etapa', () => {
+        assert.strictEqual(getExerciseSets({ reps: 'Caminhada Leve — 20-30 min' }), 1);
+        assert.strictEqual(getExerciseSets({ reps: 'Descanso Total' }), 1);
+    });
+});
+
 describe('Treino de hoje', () => {
     beforeEach(() => { localStorageStub._store = {}; });
 

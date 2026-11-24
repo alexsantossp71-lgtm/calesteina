@@ -393,8 +393,17 @@ window.ModalA11y=ModalA11y;
 // ==================================================
 // WORKOUT PLAYER (compat + wake lock + vibration)
 // ==================================================
+// Cada exercício do programa vira uma sequência de séries/rounds.
+function getExerciseSets(exercise){
+    const reps=String(exercise && exercise.reps || '');
+    const series=reps.match(/(\d+)\s*s[ée]ries?/i);
+    const rounds=reps.match(/(\d+)\s*rounds?/i);
+    const count=series ? parseInt(series[1],10) : (rounds ? parseInt(rounds[1],10) : 1);
+    return Math.max(1, Math.min(20, Number.isFinite(count) ? count : 1));
+}
+
 const WorkoutPlayer = {
-    overlay:null, currentWorkoutTitle:'', currentExercises:[], currentIndex:0, restInterval:null, restOnFinish:null, dayNum:null,
+    overlay:null, currentWorkoutTitle:'', currentExercises:[], currentIndex:0, currentSet:0, currentSets:1, restInterval:null, restOnFinish:null, dayNum:null, stepTemplate:'',
     init(){
         if(document.getElementById('workoutPlayerOverlay')) return;
         const div=document.createElement('div'); div.id='workoutPlayerOverlay'; div.className='modal-overlay'; div.style.display='none'; div.setAttribute('aria-labelledby','wpTitle');
@@ -425,6 +434,7 @@ const WorkoutPlayer = {
                 <p style="font-size:0.75rem;color:var(--color-text-muted);margin-top:1rem">💡 Dica: mantenha a tela ativa. Vibração e som ao fim do descanso.</p>
             </div>`;
         document.body.appendChild(div); this.overlay=div;
+        this.stepTemplate=document.getElementById('wpContentBox').innerHTML;
         document.getElementById('wpCloseBtn').addEventListener('click', ()=> this.close());
         document.getElementById('wpPrevBtn').addEventListener('click', ()=> this.prev());
         document.getElementById('wpNextBtn').addEventListener('click', ()=> this.next());
@@ -434,18 +444,26 @@ const WorkoutPlayer = {
             if(this.restInterval){ this.restSeconds+=15 }
         });
     },
+    // Depois da tela de vitória o conteúdo é substituído; restaura antes do próximo treino.
+    restoreStepContent(){
+        const box=document.getElementById('wpContentBox');
+        if(box && !document.getElementById('wpExName')) box.innerHTML=this.stepTemplate;
+    },
     start(title, exercises, dayNum=null){
-        this.init(); this.currentWorkoutTitle=title; this.currentExercises=exercises; this.currentIndex=0; this.dayNum=dayNum;
+        this.init(); this.currentWorkoutTitle=title; this.currentExercises=exercises; this.currentIndex=0; this.currentSet=0; this.dayNum=dayNum;
+        this.stopRest(); this.restoreStepContent();
         document.getElementById('wpTitle').textContent=title;
         ModalA11y.open(this.overlay, ()=> this.close());
         this.renderStep();
         try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen'); }catch(e){}
     },
     renderStep(){
-        this.stopRest();
+        this.stopRest(); this.restoreStepContent();
         if(this.currentIndex >= this.currentExercises.length){ this.renderVictory(); return; }
         const exItem=this.currentExercises[this.currentIndex]; const total=this.currentExercises.length;
-        document.getElementById('wpStepCount').textContent=`Exercício ${this.currentIndex+1} de ${total}`;
+        this.currentSets=getExerciseSets(exItem);
+        this.currentSet=Math.max(0, Math.min(this.currentSet, this.currentSets-1));
+        document.getElementById('wpStepCount').textContent=`Exercício ${this.currentIndex+1} de ${total} • Série ${this.currentSet+1} de ${this.currentSets}`;
         document.getElementById('wpExName').textContent=exItem.name;
         document.getElementById('wpExReps').textContent=exItem.reps;
         let exId="flexao-de-braco"; if(typeof processIdStr==='function'){ exId=processIdStr(exItem.name) }
@@ -469,16 +487,28 @@ const WorkoutPlayer = {
             img.style.maxHeight='170px'; img.style.borderRadius='12px'; img.style.border='1px solid var(--color-border)'; img.style.objectFit='contain'; img.style.background='var(--color-bg-alt)'; img.style.padding='4px';
             imgBox.appendChild(img);
         });
-        document.getElementById('wpPrevBtn').style.display = this.currentIndex===0 ? 'none':'inline-flex';
-        document.getElementById('wpNextBtn').textContent = this.currentIndex===total-1 ? 'Concluir Treino! 🎉' : 'Próximo / Descanso →';
+        const lastSet=this.currentSet>=this.currentSets-1; const lastExercise=this.currentIndex>=total-1;
+        document.getElementById('wpPrevBtn').style.display = (this.currentIndex===0 && this.currentSet===0) ? 'none':'inline-flex';
+        document.getElementById('wpNextBtn').textContent = (lastSet && lastExercise) ? 'Concluir Treino! 🎉' : (lastSet ? 'Próximo Exercício / Descanso →' : 'Próxima Série / Descanso →');
         document.getElementById('wpNextBtn').style.display='inline-flex';
     },
     next(){
-        if(this.currentIndex < this.currentExercises.length -1){
-            this.startRest(()=>{ this.currentIndex++; this.renderStep(); });
-        } else { this.currentIndex++; this.renderVictory(); }
+        const total=this.currentExercises.length; if(this.currentIndex>=total) return;
+        const lastSet=this.currentSet>=this.currentSets-1; const lastExercise=this.currentIndex>=total-1;
+        if(lastSet && lastExercise){ this.currentIndex=total; this.renderVictory(); return; }
+        // O callback do descanso avança apenas uma série; pular o descanso não pula séries.
+        this.startRest(()=>{
+            if(lastSet){ this.currentIndex++; this.currentSet=0; }
+            else { this.currentSet++; }
+            this.renderStep();
+        });
     },
-    prev(){ if(this.currentIndex>0){ this.currentIndex--; this.renderStep(); } },
+    prev(){
+        if(this.currentSet>0){ this.currentSet--; this.renderStep(); return; }
+        if(this.currentIndex>0){
+            this.currentIndex--; this.currentSet=getExerciseSets(this.currentExercises[this.currentIndex])-1; this.renderStep();
+        }
+    },
     restSeconds:30,
     startRest(onFinish){
         this.stopRest();

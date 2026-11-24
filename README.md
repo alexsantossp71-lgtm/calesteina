@@ -2,7 +2,7 @@
 
 ![CI](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/ci.yml?label=CI&logo=github)
 ![Pages](https://img.shields.io/github/actions/workflow/status/alexsantossp71-lgtm/calesteina/pages.yml?label=Pages&logo=github)
-![Tests](https://img.shields.io/badge/testes-38%20passando-00ff88)
+![Tests](https://img.shields.io/badge/testes-43%20passando-00ff88)
 ![PWA](https://img.shields.io/badge/PWA-offline%20ready-5C2D91)
 
 PWA de **calistenia** com programa completo de 30 dias, gamificação (XP, níveis e conquistas) e dashboard de acompanhamento. Tudo funciona **sem equipamentos** e **offline**, com dados salvos localmente no navegador.
