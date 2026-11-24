@@ -98,6 +98,28 @@ describe('Programa 30 dias', () => {
     });
 });
 
+describe('Treino de hoje', () => {
+    beforeEach(() => { localStorageStub._store = {}; });
+
+    test('sem dias concluídos, o próximo treino é o dia 1', () => {
+        assert.strictEqual(getNextWorkoutDay(), 1);
+        assert.strictEqual(getProgramDay(1).day, 1);
+    });
+
+    test('depois de concluir o dia 3, o próximo treino é o dia 4', () => {
+        localStorageStub.setItem('calistenia_pro_completed_days', JSON.stringify([1, 2, 3]));
+        assert.strictEqual(getNextWorkoutDay(), 4);
+        assert.strictEqual(getProgramDay(4).type, 'Membros Inferiores');
+    });
+
+    test('não ultrapassa o dia 30', () => {
+        const allDays = [...Array(30).keys()].map(i => i + 1);
+        localStorageStub.setItem('calistenia_pro_completed_days', JSON.stringify(allDays));
+        assert.strictEqual(getNextWorkoutDay(), 30);
+        assert.strictEqual(getProgramDay(30).day, 30);
+    });
+});
+
 // ---------------------------------------------------------------------------
 // Base de exercícios
 // ---------------------------------------------------------------------------

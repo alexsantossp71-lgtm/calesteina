@@ -511,6 +511,7 @@ const WorkoutPlayer = {
         document.getElementById('wpPrevBtn').style.display='none'; document.getElementById('wpNextBtn').style.display='none';
         if(this.dayNum){
             CalisteniaTracker.setDayCompleted(this.dayNum, true);
+            syncTodayWorkoutButtons();
             if(typeof renderProgressHeader==='function') renderProgressHeader();
             if(typeof renderWeek==='function' && window.currentActiveWeek) renderWeek(window.currentActiveWeek);
             try{ renderDashboardPremium(); }catch(e){}
@@ -824,6 +825,37 @@ const DataManager = {
 // PROGRAM UI (compat + premium)
 // ==================================================
 let currentActiveWeek=1;
+
+// Próximo treino: o dia seguinte ao último dia concluído (limitado ao dia 30).
+function getNextWorkoutDay(){
+    const completed=CalisteniaTracker.getCompletedDays();
+    const last=completed.length ? completed[completed.length-1] : 0;
+    return Math.min(last+1, 30);
+}
+
+function getProgramDay(dayNumber){
+    for(const days of Object.values(programData)){
+        const day=days.find((d)=> d.day===dayNumber);
+        if(day) return day;
+    }
+    return null;
+}
+
+function syncTodayWorkoutButtons(){
+    const finished=CalisteniaTracker.getCompletedDays().length>=30;
+    const nextDay=getNextWorkoutDay();
+    document.querySelectorAll('[data-start-today]').forEach((btn)=>{
+        btn.textContent=finished ? '🏆 Revisar Dia 30' : `▶️ Treinar Hoje • Dia ${nextDay}`;
+    });
+}
+
+function startTodayWorkout(){
+    const day=getProgramDay(getNextWorkoutDay());
+    if(!day) return;
+    WorkoutPlayer.start(`Dia ${day.day} - ${day.type}`, day.exercises, day.day);
+}
+window.getNextWorkoutDay=getNextWorkoutDay;
+window.startTodayWorkout=startTodayWorkout;
 function renderProgressHeader(){
     const container=document.getElementById('programProgressHeader');
     if(!container) return;
@@ -870,7 +902,7 @@ function renderProgressHeader(){
         </div>`;
     document.getElementById('resetProgressBtn')?.addEventListener('click', ()=>{
         if(confirm("Tem certeza que deseja resetar TODO o progresso? Isso apaga dias, diário, pesos, água, rotinas, XP e conquistas.")){
-            CalisteniaTracker.resetProgress(); renderProgressHeader(); renderWeek(currentActiveWeek); try{renderDashboardPremium()}catch(e){} showToast("Progresso resetado.","info");
+            CalisteniaTracker.resetProgress(); syncTodayWorkoutButtons(); renderProgressHeader(); renderWeek(currentActiveWeek); try{renderDashboardPremium()}catch(e){} showToast("Progresso resetado.","info");
         }
     });
     document.getElementById('btnOpenShareCard')?.addEventListener('click', ()=> ShareCardModal.open());
@@ -922,6 +954,7 @@ function renderWeek(weekNum){
             const nowDone=CalisteniaTracker.toggleDayCompleted(day.day);
             renderProgressHeader(); renderWeek(currentActiveWeek); try{renderDashboardPremium()}catch(e){}
             if(nowDone) showToast(`🎉 Dia ${day.day} concluído! +100 XP`, 'success'); else showToast(`Dia ${day.day} desmarcado.`, 'info');
+            syncTodayWorkoutButtons();
             try{Achievements.checkAll()}catch(e){}
         });
         card.querySelector('.btn-start-player').addEventListener('click', ()=> WorkoutPlayer.start(`Dia ${day.day} - ${day.type}`, day.exercises, day.day));
@@ -1178,4 +1211,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }catch(e){}
     // timer pro trigger
     document.querySelectorAll('[data-open-timer]').forEach(b=> b.addEventListener('click', ()=> TimerPro.open()));
+    // treino de hoje (próximo dia não concluído da sequência)
+    syncTodayWorkoutButtons();
+    document.querySelectorAll('[data-start-today]').forEach((b)=> b.addEventListener('click', ()=> startTodayWorkout()));
 });
