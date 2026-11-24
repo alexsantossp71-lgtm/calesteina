@@ -394,7 +394,7 @@ window.ModalA11y=ModalA11y;
 // WORKOUT PLAYER (compat + wake lock + vibration)
 // ==================================================
 const WorkoutPlayer = {
-    overlay:null, currentWorkoutTitle:'', currentExercises:[], currentIndex:0, restInterval:null, dayNum:null,
+    overlay:null, currentWorkoutTitle:'', currentExercises:[], currentIndex:0, restInterval:null, restOnFinish:null, dayNum:null,
     init(){
         if(document.getElementById('workoutPlayerOverlay')) return;
         const div=document.createElement('div'); div.id='workoutPlayerOverlay'; div.className='modal-overlay'; div.style.display='none'; div.setAttribute('aria-labelledby','wpTitle');
@@ -428,7 +428,7 @@ const WorkoutPlayer = {
         document.getElementById('wpCloseBtn').addEventListener('click', ()=> this.close());
         document.getElementById('wpPrevBtn').addEventListener('click', ()=> this.prev());
         document.getElementById('wpNextBtn').addEventListener('click', ()=> this.next());
-        document.getElementById('wpSkipRestBtn').addEventListener('click', ()=> this.stopRest());
+        document.getElementById('wpSkipRestBtn').addEventListener('click', ()=> this.stopRest(true));
         document.getElementById('wpAdd15Btn')?.addEventListener('click', ()=>{
             // add 15s logic
             if(this.restInterval){ this.restSeconds+=15 }
@@ -481,12 +481,15 @@ const WorkoutPlayer = {
     prev(){ if(this.currentIndex>0){ this.currentIndex--; this.renderStep(); } },
     restSeconds:30,
     startRest(onFinish){
+        this.stopRest();
         const restBox=document.getElementById('wpRestBox'); const display=document.getElementById('wpTimerDisplay'); restBox.style.display='block';
+        this.restOnFinish=onFinish || null;
         this.restSeconds=30;
         display.textContent=`00:${String(this.restSeconds).padStart(2,'0')}`;
         this.restInterval=setInterval(()=>{
             this.restSeconds--; display.textContent=`00:${String(Math.max(0,this.restSeconds)).padStart(2,'0')}`;
             if(this.restSeconds<=0){
+                const onFinish=this.restOnFinish;
                 this.stopRest();
                 try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const osc=ctx.createOscillator(); const g=ctx.createGain(); osc.connect(g); g.connect(ctx.destination); osc.frequency.value=880; g.gain.value=0.22; osc.start(); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.7); osc.stop(ctx.currentTime+0.7); }catch(e){}
                 try{ if(navigator.vibrate) navigator.vibrate([180,80,180]); }catch(e){}
@@ -494,7 +497,13 @@ const WorkoutPlayer = {
             }
         },1000);
     },
-    stopRest(){ if(this.restInterval){ clearInterval(this.restInterval); this.restInterval=null; } const rb=document.getElementById('wpRestBox'); if(rb) rb.style.display='none'; },
+    // Pular o descanso precisa executar o callback que avança o exercício.
+    stopRest(runFinish=false){
+        if(this.restInterval){ clearInterval(this.restInterval); this.restInterval=null; }
+        const onFinish=this.restOnFinish; this.restOnFinish=null;
+        const rb=document.getElementById('wpRestBox'); if(rb) rb.style.display='none';
+        if(runFinish && onFinish) onFinish();
+    },
     renderVictory(){
         const box=document.getElementById('wpContentBox');
         box.innerHTML=`
@@ -521,14 +530,31 @@ const WorkoutPlayer = {
         document.getElementById('wpDashBtn')?.addEventListener('click', ()=>{ this.close(); window.location.href='dashboard.html'; });
         try{ confettiBurst(); }catch(e){}
     },
-    close(){ this.stopRest(); ModalA11y.close(this.overlay); }
+    close(){ this.stopRest(); try{ stopConfetti(); }catch(e){} ModalA11y.close(this.overlay); }
 };
 window.WorkoutPlayer = WorkoutPlayer;
 
 // tiny confetti
+let stopConfettiAnimation=null;
+function stopConfetti(){
+    if(stopConfettiAnimation){ stopConfettiAnimation(); stopConfettiAnimation=null; }
+}
 function confettiBurst(){
     if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const c=document.createElement('canvas'); c.style.position='fixed'; c.style.inset='0'; c.style.pointerEvents='none'; c.style.zIndex='10001'; c.width=innerWidth; c.height=innerHeight; document.body.appendChild(c); const ctx=c.getContext('2d'); let parts=[]; for(let i=0;i<80;i++){ parts.push({x:Math.random()*c.width, y:Math.random()*c.height - c.height, r:Math.random()*6+4, c:`hsl(${200+Math.random()*40},90%,60%)`, vx:(Math.random()-0.5)*6, vy:Math.random()*4+3, rot:Math.random()*360}) } let f=0; function anim(){ ctx.clearRect(0,0,c.width,c.height); parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.rot+=4; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r); ctx.restore(); }); f++; if(f<140) requestAnimationFrame(anim); else c.remove(); } anim();
+    stopConfetti();
+    const c=document.createElement('canvas'); c.id='confettiCanvas'; c.style.position='fixed'; c.style.inset='0'; c.style.pointerEvents='none'; c.style.zIndex='10001'; c.width=innerWidth; c.height=innerHeight; document.body.appendChild(c); const ctx=c.getContext('2d'); let parts=[]; for(let i=0;i<80;i++){ parts.push({x:Math.random()*c.width, y:Math.random()*c.height - c.height, r:Math.random()*6+4, c:`hsl(${200+Math.random()*40},90%,60%)`, vx:(Math.random()-0.5)*6, vy:Math.random()*4+3, rot:Math.random()*360}) } let f=0, rafId=0, stopped=false;
+    const cleanup=()=>{ if(stopped) return; stopped=true; cancelAnimationFrame(rafId); clearTimeout(timeoutId); c.remove(); if(stopConfettiAnimation===cleanup) stopConfettiAnimation=null; };
+    // Limite por tempo: se a aba estiver em segundo plano e o rAF desacelerar, o canvas ainda é removido.
+    const timeoutId=setTimeout(cleanup, 3000);
+    function anim(){
+        if(stopped) return;
+        ctx.clearRect(0,0,c.width,c.height);
+        parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.rot+=4; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r); ctx.restore(); });
+        f++;
+        if(f<140) rafId=requestAnimationFrame(anim); else cleanup();
+    }
+    stopConfettiAnimation=cleanup;
+    rafId=requestAnimationFrame(anim);
 }
 
 // ==================================================
