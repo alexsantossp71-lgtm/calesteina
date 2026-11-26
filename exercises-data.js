@@ -666,19 +666,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const imgContainer = document.getElementById('ex-image-container');
         if (imgContainer) {
-            imgContainer.innerHTML = '';
-            targetImgs.forEach((srcImg, index) => {
-                let img = document.createElement('img');
-                img.src = srcImg;
-                img.alt = `${data.name} - Posição ${index + 1}`;
-                img.style.width = '100%';
-                img.style.maxHeight = '280px';
-                img.style.objectFit = 'contain';
-                img.style.borderRadius = '8px';
-                img.style.border = '1px solid rgba(255,255,255,0.1)';
-                img.style.background = '#1E293B';
-                imgContainer.appendChild(img);
-            });
+            if (window.ExerciseDemo) {
+                // Alterna start/end com crossfade, sem gerar GIF; estático se reduced-motion.
+                window.ExerciseDemo.render(imgContainer, targetImgs, data.name, { height: 260, interval: 1100 });
+            } else {
+                imgContainer.innerHTML = '';
+                targetImgs.forEach((srcImg, index) => {
+                    let img = document.createElement('img');
+                    img.src = srcImg;
+                    img.alt = `${data.name} - Posição ${index + 1}`;
+                    img.style.width = '100%';
+                    img.style.maxHeight = '280px';
+                    img.style.objectFit = 'contain';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '1px solid rgba(255,255,255,0.1)';
+                    img.style.background = '#1E293B';
+                    imgContainer.appendChild(img);
+                });
+            }
         }
     }
 });

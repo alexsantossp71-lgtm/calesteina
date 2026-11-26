@@ -468,6 +468,77 @@ function getExercisePrescription(name){
 window.getExercisePrescription=getExercisePrescription;
 
 // ==================================================
+// DEMONSTRAÇÃO ANIMADA (quadros start/end, sem GIF)
+// ==================================================
+// Alterna duas ilustrações que já existem com crossfade. Não gera arquivo novo,
+// pausa fora da tela/aba oculta, respeita prefers-reduced-motion e tem play/pause.
+const ExerciseDemo = {
+    reducedMotion(){ try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches }catch(e){ return false } },
+    render(container, images, alt, opts={}){
+        const noop={ destroy(){} };
+        if(!container) return noop;
+        const list=(Array.isArray(images)?images:[images]).filter(Boolean).slice(0,2);
+        if(!list.length) return noop;
+        container.innerHTML='';
+        container.classList.add('ex-demo');
+        const height=Number(opts.height)>0 ? Number(opts.height) : 260;
+        const staticMode=list.length<2 || this.reducedMotion();
+        const root=document.createElement('div');
+        root.className=staticMode ? 'ex-demo-static' : 'ex-demo-frame';
+        root.style.setProperty('--ex-demo-height', height+'px');
+        const imgs=list.map((src,i)=>{
+            const img=document.createElement('img');
+            img.src=src;
+            img.alt=i===0 ? alt : `${alt} — posição final`;
+            img.loading='eager'; img.decoding='async';
+            if(!staticMode) img.className='ex-demo-img'+(i===0?' is-active':'');
+            root.appendChild(img);
+            return img;
+        });
+        container.appendChild(root);
+        if(staticMode) return { destroy(){ root.remove(); container.classList.remove('ex-demo'); } };
+        const btn=document.createElement('button');
+        btn.type='button'; btn.className='ex-demo-toggle';
+        btn.setAttribute('aria-label','Pausar demonstração'); btn.title='Pausar demonstração';
+        btn.textContent='⏸';
+        root.appendChild(btn);
+        let index=0, timer=null, paused=false, inView=true, destroyed=false;
+        const interval=Math.max(400, Number(opts.interval)||1100);
+        const apply=()=>{ imgs.forEach((img,i)=> img.classList.toggle('is-active', i===index)); };
+        const shouldPlay=()=> !destroyed && !paused && inView && !document.hidden;
+        const stop=()=>{ if(timer){ clearInterval(timer); timer=null; } };
+        const sync=()=>{
+            stop();
+            if(shouldPlay()) timer=setInterval(()=>{ index=1-index; apply(); }, interval);
+            btn.textContent=paused ? '▶' : '⏸';
+            btn.setAttribute('aria-label', paused ? 'Retomar demonstração' : 'Pausar demonstração');
+            btn.title=btn.getAttribute('aria-label');
+        };
+        const onToggle=()=>{ paused=!paused; sync(); };
+        btn.addEventListener('click', onToggle);
+        let io=null;
+        if('IntersectionObserver' in window){
+            io=new IntersectionObserver((entries)=>{ entries.forEach((e)=>{ inView=e.isIntersecting }); sync(); }, {threshold:0.15});
+            io.observe(root);
+        }
+        const onVisibility=()=> sync();
+        document.addEventListener('visibilitychange', onVisibility);
+        sync();
+        return {
+            destroy(){
+                destroyed=true; stop();
+                btn.removeEventListener('click', onToggle);
+                document.removeEventListener('visibilitychange', onVisibility);
+                if(io) io.disconnect();
+                root.remove();
+                container.classList.remove('ex-demo');
+            }
+        };
+    }
+};
+window.ExerciseDemo=ExerciseDemo;
+
+// ==================================================
 // WORKOUT PLAYER (compat + wake lock + vibration)
 // ==================================================
 // Cada exercício do programa vira uma sequência de séries/rounds.
@@ -480,7 +551,7 @@ function getExerciseSets(exercise){
 }
 
 const WorkoutPlayer = {
-    overlay:null, currentWorkoutTitle:'', currentExercises:[], currentIndex:0, currentSet:0, currentSets:1, restInterval:null, restOnFinish:null, dayNum:null, stepTemplate:'',
+    overlay:null, currentWorkoutTitle:'', currentExercises:[], currentIndex:0, currentSet:0, currentSets:1, restInterval:null, restOnFinish:null, dayNum:null, stepTemplate:'', demo:null,
     init(){
         if(document.getElementById('workoutPlayerOverlay')) return;
         const div=document.createElement('div'); div.id='workoutPlayerOverlay'; div.className='modal-overlay'; div.style.display='none'; div.setAttribute('aria-labelledby','wpTitle');
@@ -526,6 +597,7 @@ const WorkoutPlayer = {
         const box=document.getElementById('wpContentBox');
         if(box && !document.getElementById('wpExName')) box.innerHTML=this.stepTemplate;
     },
+    stopDemo(){ if(this.demo){ try{ this.demo.destroy(); }catch(e){} this.demo=null; } },
     start(title, exercises, dayNum=null){
         this.init(); this.currentWorkoutTitle=title; this.currentExercises=exercises; this.currentIndex=0; this.currentSet=0; this.dayNum=dayNum;
         this.stopRest(); this.restoreStepContent();
@@ -535,6 +607,7 @@ const WorkoutPlayer = {
         WakeLockManager.acquire();
     },
     renderStep(){
+        this.stopDemo();
         this.stopRest(); this.restoreStepContent();
         if(this.currentIndex >= this.currentExercises.length){ this.renderVictory(); return; }
         const exItem=this.currentExercises[this.currentIndex]; const total=this.currentExercises.length;
@@ -558,12 +631,16 @@ const WorkoutPlayer = {
             "mergulho-no-banco": ["assets/img/dip_start.webp","assets/img/dip_end.webp"],
             "afundo": ["assets/img/lunge_start.webp","assets/img/lunge_end.webp"]
         };
-        let imgs = imageMapDup[exId] || [srcImg];
-        imgs.forEach(s=>{
-            const img=document.createElement('img'); img.src=s; img.alt=exItem.name;
-            img.style.maxHeight='170px'; img.style.borderRadius='12px'; img.style.border='1px solid var(--color-border)'; img.style.objectFit='contain'; img.style.background='var(--color-bg-alt)'; img.style.padding='4px';
-            imgBox.appendChild(img);
-        });
+        const demoImgs = imageMapDup[exId] || [srcImg];
+        if(window.ExerciseDemo){
+            this.demo=ExerciseDemo.render(imgBox, demoImgs, exItem.name, {height:170, interval:1000});
+        } else {
+            demoImgs.forEach(s=>{
+                const img=document.createElement('img'); img.src=s; img.alt=exItem.name;
+                img.style.maxHeight='170px'; img.style.borderRadius='12px'; img.style.border='1px solid var(--color-border)'; img.style.objectFit='contain'; img.style.background='var(--color-bg-alt)'; img.style.padding='4px';
+                imgBox.appendChild(img);
+            });
+        }
         const lastSet=this.currentSet>=this.currentSets-1; const lastExercise=this.currentIndex>=total-1;
         document.getElementById('wpPrevBtn').style.display = (this.currentIndex===0 && this.currentSet===0) ? 'none':'inline-flex';
         document.getElementById('wpNextBtn').textContent = (lastSet && lastExercise) ? 'Concluir Treino! 🎉' : (lastSet ? 'Próximo Exercício / Descanso →' : 'Próxima Série / Descanso →');
@@ -612,6 +689,7 @@ const WorkoutPlayer = {
         if(runFinish && onFinish) onFinish();
     },
     renderVictory(){
+        this.stopDemo();
         const box=document.getElementById('wpContentBox');
         box.innerHTML=`
             <div style="padding:1.2rem 0;">
@@ -639,7 +717,7 @@ const WorkoutPlayer = {
         document.getElementById('wpDashBtn')?.addEventListener('click', ()=>{ this.close(); window.location.href='dashboard.html'; });
         try{ confettiBurst(); }catch(e){}
     },
-    close(){ this.stopRest(); WakeLockManager.release(); try{ stopConfetti(); }catch(e){} ModalA11y.close(this.overlay); }
+    close(){ this.stopDemo(); this.stopRest(); WakeLockManager.release(); try{ stopConfetti(); }catch(e){} ModalA11y.close(this.overlay); }
 };
 window.WorkoutPlayer = WorkoutPlayer;
 
